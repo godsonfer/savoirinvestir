@@ -26,7 +26,7 @@ export const SidebarButton = ({ label, icon: Icon, isActive, href = "/dashboard"
                     isActive && ("bg-accent/30 text-sky-500  ")
                 )}
             >
-                <Icon className='size-5 text-white group-hover:scale-110 transition-all ' />
+                <Icon className='size-5 text-white group-hover:scale-150 transition-all ' />
             </Button>
             <span className='text-[12px] text-white font-bold  justify-center group-hover:text-accent '>
                 {label}

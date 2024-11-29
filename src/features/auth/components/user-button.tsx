@@ -50,7 +50,7 @@ const UserButton = () => {
           <DollarSign className='size-4 mr-2' />
           Abonnement
         </DropdownMenuItem>
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={() => router.push('/settings')}>
           <Settings className='size-4 mr-2' />
           Paramètres
         </DropdownMenuItem>

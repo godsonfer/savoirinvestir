@@ -18,9 +18,9 @@ export const Sidebar = () => {
     return (
         <aside className='w-[80px] h-full  flex  flex-col gap-y-4 items-center pt-[8px] pb-4 '>
             {workspaceId && <WorspaceSwitcher />}
-            <SidebarButton href='/dashboard' icon={Home} isActive={pathname.includes('/dashboard')} label='Dashboard' />
+            <SidebarButton href='/dashboard/courses' icon={Home} isActive={pathname.includes('/dashboard')} label='Dashboard' />
             <SidebarButton href='/workspace' icon={MessagesSquare} isActive={pathname.includes('/workspace')} label='Discussions' />
-            <SidebarButton href='/courses' icon={MonitorPlay} label='Cours' isActive={false} />
+            <SidebarButton href='/courses' icon={MonitorPlay} label='Cours' isActive={pathname.includes('/courses')} />
             <SidebarButton icon={BookOpenCheck} label='Exercices' isActive={false} />
             <SidebarButton icon={Headphones} label='Coaching' isActive={false} />
             <SidebarButton icon={Bell} label='Notitications' isActive={false} />

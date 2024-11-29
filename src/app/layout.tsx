@@ -9,6 +9,7 @@ import { NuqsAdapter } from 'nuqs/adapters/next/app'
 
 import { Modals } from "@/components/modals";
 import { Toaster } from "@/components/ui/sonner";
+import { QueryProvider } from "@/providers/query-provider"
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -43,7 +44,9 @@ export default function RootLayout({
               <Modals />
               {/* <ConfettiProvider />
               <ToastProvider /> */}
-              <NuqsAdapter>{children}</NuqsAdapter>
+              <QueryProvider>
+                <NuqsAdapter>{children}</NuqsAdapter>
+              </QueryProvider>
             </JotaiProvider>
           </ConvexClientProvider>
         </body>

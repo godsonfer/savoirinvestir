@@ -1,6 +1,103 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { mutation, query, QueryCtx } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { Id } from "./_generated/dataModel";
+import { paginationOptsValidator } from "convex/server";
+
+
+const populateChapters = async (ctx: QueryCtx, courseId: Id<"courses">) => {
+  const chapters = await ctx.db
+    .query("chapters")
+    .withIndex("by_course_id", (q) => q.eq("courseId", courseId))
+    .collect();
+  
+  const chaptersWithLessons = await Promise.all(
+    chapters.map(async (chapter) => {
+      const lessons = await populateChaptersLessons(ctx, chapter._id);
+      const lessonsWithMuxData = await Promise.all(
+        lessons.map(async (lesson) => {
+          const muxData = await ctx.db
+            .query("muxData")
+            .withIndex("by_lesson_id", (q) => q.eq("lessonId", lesson._id))
+            .first();
+          return {
+            ...lesson,
+            muxData
+          };
+        })
+      );
+      
+      return {
+        ...chapter,
+        lessons: lessonsWithMuxData,
+      };
+    })
+  );
+
+  return chaptersWithLessons;
+};
+
+const populateChaptersLessons = async (
+  ctx: QueryCtx,
+  chapterId: Id<"chapters">
+) => {
+  return await ctx.db
+    .query("lessons")
+    .withIndex("by_chapter_id", (q) => q.eq("chapterId", chapterId))
+  
+    .collect();
+};
+
+const populatePurchass = async (ctx: QueryCtx, courseId: Id<"courses">) => {
+  return await ctx.db
+    .query("purchases")
+    .withIndex("by_course_id", (q) => q.eq("courseId", courseId))
+    .collect();
+};
+
+const populateCategory = async (
+  ctx: QueryCtx,
+  categoryId: Id<"categories">
+) => {
+  return await ctx.db.get(categoryId);
+};
+
+const populateBookmarks = async (
+  ctx: QueryCtx,
+  userId: Id<"users">,
+  courseId: Id<"courses">
+) => {
+  const bookmarks = await ctx.db
+    .query("bookmarks")
+    .withIndex("by_user_id_course_id", (q) =>
+      q.eq("userId", userId).eq("courseId", courseId)
+    )
+    .collect();
+  return bookmarks;
+};
+const populateRating = async (ctx: QueryCtx, courseId: Id<"courses">) => {
+  const ratings = await ctx.db
+    .query("ratings")
+    .withIndex("by_course_id", (q) => q.eq("courseId", courseId))
+    .collect();
+  const _raters = [];
+  for (const rating of ratings) {
+    const user = await ctx.db.get(rating.userId);
+    _raters.push({
+      name: user?.name,
+      createdAt: user?._creationTime,
+    });
+  }
+  return {
+    users: _raters,
+    rates: ratings.map((rating) => ({
+      rate: rating.rating,
+      createdAt: rating._creationTime,
+      comment: rating.comment,
+    })),
+  };
+};
 
 export const createCourse = mutation({
   args: {
@@ -16,6 +113,7 @@ export const createCourse = mutation({
     const course = await ctx.db.insert("courses", {
       title,
       userId,
+      slug: slugify(title),
     });
 
     return course;
@@ -31,7 +129,47 @@ export const courseById = query({
     const course = await ctx.db.get(courseId);
     if (!course) return null;
 
-    return course;
+    const [chapters,  purchases, rating, bookmark] = await Promise.all([
+      populateChapters(ctx, courseId),
+      populatePurchass(ctx, courseId),
+      populateRating(ctx, courseId),
+      populateBookmarks(ctx, userId, courseId)
+    ]);
+    
+    const category = course.categoryId
+      ? await populateCategory(ctx, course.categoryId)
+      : null;
+
+    // Calcul des statistiques
+    const studentsCount = purchases.length;
+    const averageRating = rating.rates.length > 0
+      ? rating.rates.reduce((acc, curr) => acc + curr.rate, 0) / rating.rates.length
+      : 0;
+    const reviewsCount = rating.rates.length;
+
+    // Construction de l'objet de retour
+    return {
+      course: {
+        ...course,
+        title: course.title,
+        description: course.description,
+        cover: course.cover,
+        price: course.price || 0,
+        duration: course.duration || 0,
+        studentsCount,
+        rating: averageRating.toFixed(1),
+        reviewsCount,
+        category: category?.title,
+        isBookmarked: bookmark.length > 0,
+        chaptersCount: chapters.length,
+      },
+      chapters,
+  
+      purchases,
+      category,
+      rating,
+      isBookmarked: bookmark.length > 0
+    };
   },
 });
 
@@ -222,10 +360,12 @@ export const deleteCourse = mutation({
   handler: async (ctx, { courseId }) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Unauthorized");
-
+    const user = await ctx.db.get(userId);
     const courseExist = await ctx.db.get(courseId);
-
-    if (!courseExist || courseExist.userId !== userId)
+    if (
+      (courseExist && courseExist.userId !== userId) ||
+      user?.role === "admin"
+    )
       throw new Error("Unauthorized");
     // supprimer les chapitres et lecons du cours
 
@@ -253,13 +393,96 @@ export const deleteCourse = mutation({
   },
 });
 
-export const courses = query({
-  handler: async (ctx) => {
+export const get = query({
+  args: {
+    paginationOpts: paginationOptsValidator,
+  },
+  handler: async (ctx, { paginationOpts }) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) return null;
+    if (!userId) throw new Error("Unauthorized");
+    const user = await ctx.db.get(userId);
+    const courses = await ctx.db
+      .query("courses")
+      .order("desc")
+      .paginate(paginationOpts);
 
-    const courses = await ctx.db.query("courses").collect();
-
-    return courses;
+    return {
+      ...courses,
+      page: (
+        await Promise.all(
+          (await courses).page.map(async (course) => {
+            const chapters = await populateChapters(ctx, course._id);
+            if (!chapters) return null;
+            const purchases = await populatePurchass(ctx, course._id);
+            if (!purchases) return null;
+            const category = course.categoryId
+              ? await populateCategory(ctx, course.categoryId)
+              : null;
+            const rating = await populateRating(ctx, course._id);
+            const bookmark = await populateBookmarks(ctx, userId, course._id);
+            const isBookmarked = bookmark.length ? true : false;
+            const canDelete =
+              user?.role === "admin" || user?.role === "teacher" ? true : false;
+            return {
+              ...course,
+              canDelete,
+              chapters,
+              bookmark: isBookmarked,
+              enrollments:  purchases,
+              category,
+              rating,
+            };
+          })
+        )
+      ).filter((course) => course !== null),
+    };
   },
 });
+
+export const search = query({
+    args: { query: v.string() },
+    handler: async (ctx, args) => {
+        const { query } = args;
+        
+        const courses = await ctx.db
+            .query("courses")
+            .filter((q) => q.eq(q.field("title"), query) || q.eq(q.field("description"), query))
+            .order("desc")
+            .collect();
+
+        // Enrichir les résultats avec les informations supplémentaires
+        const enrichedCourses = await Promise.all(
+            courses.map(async (course) => {
+                const [chapters, purchases, rating] = await Promise.all([
+                    populateChapters(ctx, course._id),
+                    populatePurchass(ctx, course._id),
+                    populateRating(ctx, course._id),
+                ]);
+
+                const category = course.categoryId
+                    ? await populateCategory(ctx, course.categoryId)
+                    : null;
+
+                const studentsCount = purchases.length;
+                const averageRating = rating.rates.length > 0
+                    ? rating.rates.reduce((acc, curr) => acc + curr.rate, 0) / rating.rates.length
+                    : 0;
+
+                return {
+                    ...course,
+                    category: category?.title,
+                    studentsCount,
+                    rating: averageRating.toFixed(1),
+                    chaptersCount: chapters.length,
+                };
+            })
+        );
+
+        return enrichedCourses;
+    },
+});
+
+function slugify(title: string): string {
+  return title.toLowerCase().replace(/ /g, '-');
+}
+

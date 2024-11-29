@@ -17,12 +17,12 @@ const populateMember = async (ctx: QueryCtx, memberId: Id<"members">) => {
 const getMember = async (
   ctx: QueryCtx,
   workspaceId: Id<"workspaces">,
-  userId: Id<"users">,
+  userId: Id<"users">
 ) => {
   return await ctx.db
     .query("members")
     .withIndex("by_workspace_id_user_id", (q) =>
-      q.eq("workspaceId", workspaceId).eq("userId", userId),
+      q.eq("workspaceId", workspaceId).eq("userId", userId)
     )
     .unique();
 };
@@ -37,7 +37,7 @@ const populateThread = async (ctx: QueryCtx, messageId: Id<"messages">) => {
   const messages = await ctx.db
     .query("messages")
     .withIndex("by_parent_message_id", (q) =>
-      q.eq("parentMessageId", messageId),
+      q.eq("parentMessageId", messageId)
     )
     .collect();
 
@@ -51,9 +51,8 @@ const populateThread = async (ctx: QueryCtx, messageId: Id<"messages">) => {
   }
   const lastMessageUser = await populateUser(ctx, lastMessageMember.userId);
   if (!lastMessageMember)
-    if (!lastMessageMember) {
-      return { count: 0, image: undefined, timestamp: 0, name: "" };
-    }
+    return { count: 0, image: undefined, timestamp: 0, name: "" };
+
   return {
     count: messages.length,
     image: lastMessageUser?.image,
@@ -157,7 +156,7 @@ export const get = query({
         q
           .eq("channelId", args.channelId)
           .eq("parentMessageId", args.parentMessageId)
-          .eq("conversationId", _conversationId),
+          .eq("conversationId", _conversationId)
       )
       .order("desc")
       .paginate(args.paginationOpts);
@@ -188,11 +187,11 @@ export const get = query({
             const dedupeReactions = reactionsWithCounts.reduce(
               (acc, reaction) => {
                 const existingReaction = acc.find(
-                  (r) => r.value === reaction.value,
+                  (r) => r.value === reaction.value
                 );
                 if (existingReaction) {
                   existingReaction.memberIds = Array.from(
-                    new Set([...existingReaction.memberIds, reaction.memberId]),
+                    new Set([...existingReaction.memberIds, reaction.memberId])
                   );
                 } else {
                   acc.push({ ...reaction, memberIds: [reaction.memberId] });
@@ -202,12 +201,12 @@ export const get = query({
               [] as (Doc<"reactions"> & {
                 count: number;
                 memberIds: Id<"members">[];
-              })[],
+              })[]
             );
             // suppression de l'id du membre
             const reactionWithoutMemberIdProperty = dedupeReactions.map(
               // eslint-disable-next-line @typescript-eslint/no-unused-vars
-              ({ memberId, ...rest }) => rest,
+              ({ memberId, ...rest }) => rest
             );
             return {
               ...message,
@@ -220,7 +219,7 @@ export const get = query({
               threadName: thread.name,
               threadTimestamp: thread.timestamp,
             };
-          }),
+          })
         )
       ).filter((message) => message !== null),
     };
@@ -290,7 +289,7 @@ export const getById = query({
         const existingReaction = acc.find((r) => r.value === reaction.value);
         if (existingReaction) {
           existingReaction.memberIds = Array.from(
-            new Set([...existingReaction.memberIds, reaction.memberId]),
+            new Set([...existingReaction.memberIds, reaction.memberId])
           );
         } else {
           acc.push({ ...reaction, memberIds: [reaction.memberId] });
@@ -300,11 +299,11 @@ export const getById = query({
       [] as (Doc<"reactions"> & {
         count: number;
         memberIds: Id<"members">[];
-      })[],
+      })[]
     );
     const reactionWithoutMemberIdProperty = dedupeReactions.map(
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      ({ memberId, ...rest }) => rest,
+      ({ memberId, ...rest }) => rest
     );
     return {
       ...message,

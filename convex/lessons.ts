@@ -29,20 +29,20 @@ export const createLesson = mutation({
 });
 
 export const lessons = query({
-  args: { courseId: v.id("courses"), chapterId: v.id("chapters") },
-  handler: async (ctx, { courseId, chapterId }) => {
+  args: {
+    chapterId: v.id("chapters"),
+  },
+  handler: async (ctx, { chapterId }) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Unauthorized");
 
     const lessons = await ctx.db
       .query("lessons")
-      .withIndex("by_chapter_id_course_id", (q) =>
-        q.eq("chapterId", chapterId).eq("courseId", courseId),
-      )
+      .withIndex("by_chapter_id", (q) => q.eq("chapterId", chapterId))
       .collect();
 
     const orderPosition = lessons.sort(
-      (a, b) => (a?.position ?? 0) - (b?.position ?? 0),
+      (a, b) => (a?.position ?? 0) - (b?.position ?? 0)
     );
     return orderPosition;
   },
@@ -64,8 +64,7 @@ export const lessonById = query({
 
     const lesson = await ctx.db.get(lessonId);
     if (!lesson) throw new Error("Lesson not found");
-    if (lesson.courseId !== courseId || lesson.chapterId !== chapterId)
-      throw new Error("Lesson not found");
+
     return lesson;
   },
 });
@@ -91,7 +90,7 @@ export const reoaderLesson = mutation({
     const isOwner = await ctx.db
       .query("lessons")
       .withIndex("by_chapter_id_course_id", (q) =>
-        q.eq("chapterId", chapterId).eq("courseId", courseId),
+        q.eq("chapterId", chapterId).eq("courseId", courseId)
       )
       .collect();
 
@@ -124,7 +123,7 @@ export const removeLesson = mutation({
     const isOwner = await ctx.db
       .query("lessons")
       .withIndex("by_chapter_id_course_id", (q) =>
-        q.eq("chapterId", chapterId).eq("courseId", courseId),
+        q.eq("chapterId", chapterId).eq("courseId", courseId)
       )
       .collect();
 
@@ -268,7 +267,7 @@ export const updateLessonVideo = mutation({
   },
   handler: async (
     ctx,
-    { lessonId, courseId, chapterId, assetId, playback, duration, videoUrl },
+    { lessonId, courseId, chapterId, assetId, playback, duration, videoUrl }
   ) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Unauthorized");

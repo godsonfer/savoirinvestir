@@ -2,77 +2,74 @@
 @tailwind components;
 @tailwind utilities;
 
-html,
-body,
-:root {
-  height: 100%;
-}
-body {
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-}
-
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
+    --foreground: 222.2 84% 4.9%;
+
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
+    --card-foreground: 222.2 84% 4.9%;
+ 
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 240 5.9% 10%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
+    --popover-foreground: 222.2 84% 4.9%;
+ 
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+ 
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+ 
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+ 
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+ 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 240 10% 3.9%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+ 
     --radius: 0.5rem;
+
+    --primary-color: #0097A7;
+    --secondary-color: #D6620F;
+    --hover-transition: all 0.3s ease;
   }
+ 
   .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 240 5.9% 10%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+ 
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+ 
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+ 
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+ 
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+ 
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+ 
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+ 
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    --destructive-foreground: 210 40% 98%;
+ 
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
   }
 }
-
+ 
 @layer base {
   * {
     @apply border-border;
@@ -81,49 +78,317 @@ body {
     @apply bg-background text-foreground;
   }
 }
-.ql-toolbar {
-  border : none !important;
-  background-color: #f8f8f8 !important;
-}
-.ql-toolbar .ql-formats :not(:last-child) {
-  border-right: 1px solid #dcdcdc !important;
-  padding-right: 12px !important;
-}
-.ql-container {
-  font-family: 'Lato', sans-serif !important;
-  border : none !important;
-  height: unset !important;
-}
-.ql-editor {
-  line-height: 22px !important;
-  color: #1d1c1d !important;
-  padding: 8px 12px !important;
-  font-family: 'Lato', sans-serif !important;
-  font-size: 14px !important;
-  font-weight: 400 !important;
-}
 
-.ql-editor a {
-  color: #1264a3 !important;
-}
-.ql-editor a:hover{
-  text-decoration: underline !important;
-}
-.ql-renderer {
-  padding: 0 !important;
-}
-.ql-editor :before {
-  left: 12px !important;
-  color: #8d8d8d !important;
-  font-style: normal !important;
-  font-size: 14px !important;
-  font-weight: 400 !important;
-  font-family: 'Lato', sans-serif !important;
-  @apply truncate
-}
-
-.messages-scrollbar {
-  scrollbar-width: thin; 
-  scrollbar-color: #8d8d8d #f8f8f8;
+@layer utilities {
+  .popover-animation {
+    @apply transition-all duration-300 
+    opacity-0 group-hover:opacity-100 
+    translate-y-2 group-hover:translate-y-0;
+  }
+ 
+  /* Styles de la barre de défilement personnalisée */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) rgba(0, 0, 0, 0.1);
+  }
   
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  /* Optimisations pour le défilement mobile */
+  .touch-pan-y {
+    touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Style pour le momentum scroll sur iOS */
+  .overscroll-y-contain {
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Masquer la barre de défilement sur mobile tout en gardant la fonctionnalité */
+  @media (max-width: 768px) {
+    .scrollbar-thin {
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    
+    .scrollbar-thin::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  /* Optimisation du défilement sur mobile */
+  @supports (-webkit-touch-callout: none) {
+    .h-screen {
+      height: -webkit-fill-available;
+    }
+  }
+
+  /* Optimisations pour le défilement iOS */
+  .h-[100dvh] {
+    height: 100dvh;
+    height: -webkit-fill-available;
+  }
+
+  /* Empêcher le rebond de page sur iOS */
+  .overscroll-contain {
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Animation pour le skeleton */
+  @keyframes shimmerAnimation {
+    0% {
+      background-position: -1000px 0;
+    }
+    100% {
+      background-position: 1000px 0;
+    }
+  }
+
+  .animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    background-image: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.03) 25%,
+      rgba(255, 255, 255, 0.08) 50%,
+      rgba(255, 255, 255, 0.03) 75%
+    );
+    background-size: 200% 100%;
+    background-position: 0 0;
+  }
+
+  @keyframes pulse {
+    50% {
+      background-position: 100% 0;
+    }
+  }
+}
+
+/* Ajouter ces styles globaux */
+@layer base {
+  html {
+    height: 100%;
+    overflow: hidden;
+  }
+  
+  body {
+    height: 100%;
+    overflow: hidden;
+  }
+}
+
+.gradient-button {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: white;
+  transition: var(--hover-transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.gradient-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: var(--hover-transition);
+}
+
+.gradient-button:hover::before {
+  left: 100%;
+}
+
+.gradient-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px -4px rgba(0, 151, 167, 0.2);
+}
+
+.card-hover-effect {
+  transition: var(--hover-transition);
+}
+
+.card-hover-effect:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px -8px rgba(0, 151, 167, 0.25);
+}
+
+/* Animation pour les statistiques */
+@keyframes countUp {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.stats-animation {
+  animation: countUp 0.5s ease-out forwards;
+}
+
+/* Animation pour le tableau */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.table-animation {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+/* Scrollbar personnalisée avec les couleurs du thème */
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  opacity: 0.5;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: rgba(0, 151, 167, 0.1);
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: var(--secondary-color);
+}
+
+/* Ajouter ces styles pour un défilement plus fluide */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Style personnalisé pour la barre de défilement */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, #0097A7, #D6620F);
+    border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(to bottom, #00b8d4, #ff7043);
+}
+
+/* Ajouter ces styles pour une meilleure transition */
+.sticky-header {
+    transition: all 0.3s ease-in-out;
+    backdrop-filter: blur(12px);
+}
+
+.sticky-header.visible {
+    transform: translateY(0);
+}
+
+.sticky-header.hidden {
+    transform: translateY(-100%);
+}
+
+/* Ajuster le z-index pour la superposition */
+.sticky-tabs {
+    position: sticky;
+    top: 72px; /* Hauteur du header + marge */
+    z-index: 40;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Ajouter ces styles */
+.hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+/* Ajuster la hauteur sur les grands écrans */
+@media (min-width: 1024px) {
+    .min-h-screen {
+        min-height: 100vh;
+        min-height: 100dvh;
+    }
+}
+
+/* Optimiser l'affichage sur les écrans très hauts */
+@media (min-height: 1000px) {
+    .lg\:h-screen {
+        height: 100vh;
+        height: 100dvh;
+    }
+}
+
+/* Ajouter ces styles */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(-100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+.dialog-content {
+    animation: fadeIn 0.3s ease-out;
+}
+
+.lesson-enter {
+    animation: slideIn 0.3s ease-out;
+}
+
+/* Amélioration du scroll */
+.custom-scrollbar {
+    scrollbar-gutter: stable;
+}
+
+/* Effet de hover amélioré */
+.hover-gradient {
+    background-size: 200% 200%;
+    transition: all 0.3s ease;
+}
+
+.hover-gradient:hover {
+    background-position: 100% 100%;
 }

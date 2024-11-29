@@ -1,0 +1,6 @@
+export * from './stats-cards'
+export * from './charts-section'
+export * from './users-table'
+export * from './user-details'
+export * from './email-modal'
+export * from './formations-modal' 

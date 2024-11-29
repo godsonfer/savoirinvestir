@@ -24,7 +24,7 @@ export const DahboardToolbar = () => {
         return () => document.removeEventListener("keydown", down)
     }, [])
 
-    const { data: courses, } = useGetCourses()
+    const { results: courses, } = useGetCourses()
     const onCoruseClick = (courseId: Id<"courses">) => {
         setOpen(false)
         router.push(`/dashboard/courses/${courseId}`)

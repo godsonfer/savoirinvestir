@@ -29,16 +29,32 @@ export const chapters = query({
   args: { courseId: v.id("courses") },
   handler: async (ctx, { courseId }) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Unauthorized");
+    if (!userId) return null;
 
     const chapters = await ctx.db
       .query("chapters")
       .withIndex("by_course_id", (q) => q.eq("courseId", courseId))
       .collect();
-    const orderPosition = chapters.sort(
-      (a, b) => (a?.position ?? 0) - (b?.position ?? 0),
+
+    const chaptersWithLessons = await Promise.all(
+      chapters.map(async (chapter) => {
+        const lessons = await ctx.db
+          .query("lessons")
+          .withIndex("by_chapter_id_course_id", (q) =>
+            q.eq("chapterId", chapter._id).eq("courseId", courseId)
+          )
+          .collect();
+
+        return {
+          ...chapter,
+          lessons: lessons.sort((a, b) => (a?.position ?? 0) - (b?.position ?? 0)),
+        };
+      })
     );
-    return orderPosition;
+
+    return chaptersWithLessons.sort(
+      (a, b) => (a?.position ?? 0) - (b?.position ?? 0)
+    );
   },
 });
 
@@ -46,12 +62,23 @@ export const chapterById = query({
   args: { chapterId: v.id("chapters"), courseId: v.id("courses") },
   handler: async (ctx, { chapterId, courseId }) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Unauthorized");
+    if (!userId) return null;
 
     const chapter = await ctx.db.get(chapterId);
-    if (!chapter) throw new Error("Chapter not found");
-    if (chapter.courseId !== courseId) throw new Error("Chapter not found");
-    return chapter;
+    if (!chapter) return null;
+    if (chapter.courseId !== courseId) return null;
+
+    const lessons = await ctx.db
+      .query("lessons")
+      .withIndex("by_chapter_id_course_id", (q) =>
+        q.eq("chapterId", chapterId).eq("courseId", courseId)
+      )
+      .collect();
+
+    return {
+      ...chapter,
+      lessons: lessons.sort((a, b) => (a?.position ?? 0) - (b?.position ?? 0)),
+    };
   },
 });
 
@@ -64,7 +91,7 @@ export const reoaderChapter = mutation({
   handler: async (ctx, { chapterId, courseId, position }) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Unauthorized");
-
+    
     const chapter = await ctx.db.get(chapterId);
     if (!chapter) throw new Error("Chapter not found");
     if (chapter.courseId !== courseId) throw new Error("Chapter not found");

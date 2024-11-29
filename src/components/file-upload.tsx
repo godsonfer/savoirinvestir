@@ -14,6 +14,7 @@ export const FileUpload = ({
   onChange,
   endpoint
 }: FileUploadProps) => {
+  
   return (
     <div className="w-50">
       <UploadDropzone

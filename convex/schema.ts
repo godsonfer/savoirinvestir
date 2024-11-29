@@ -22,7 +22,7 @@ const schema = defineSchema({
         v.literal("member"),
         v.literal("moderator"),
         v.literal("content_manager"),
-        v.literal("communication_manager"),
+        v.literal("communication_manager")
       ) || "member",
   }).index("email", ["email"]),
   // settings table
@@ -35,10 +35,10 @@ const schema = defineSchema({
             v.object({
               title: v.string(),
               url: v.string(),
-            }),
+            })
           ),
-        }),
-      ),
+        })
+      )
     ),
     homePageHero: v.optional(
       v.object({
@@ -51,7 +51,7 @@ const schema = defineSchema({
           fileUrl: v.optional(v.string()),
           buttonText: v.optional(v.string()),
         }),
-      }),
+      })
     ),
     homePageCarroussel: v.optional(
       v.array(
@@ -60,14 +60,14 @@ const schema = defineSchema({
           carrouselText: v.string(),
           fileType: v.optional(v.union(v.literal("image"), v.literal("video"))),
           fileUrl: v.optional(v.string()),
-        }),
-      ),
+        })
+      )
     ),
     HomePageTrendigText: v.optional(
       v.object({
         text: v.string(),
         subText: v.string(),
-      }),
+      })
     ),
     homePageAbout: v.optional(
       v.object({
@@ -79,9 +79,9 @@ const schema = defineSchema({
             text: v.string(),
             icons: v.optional(v.string()),
             buttonText: v.string(),
-          }),
+          })
         ),
-      }),
+      })
     ),
     homePageContact: v.optional(
       v.array(
@@ -89,8 +89,8 @@ const schema = defineSchema({
           contact: v.string(),
           link: v.string(),
           icon: v.string(),
-        }),
-      ),
+        })
+      )
     ),
     homePageFeatures: v.optional(
       v.array(
@@ -102,16 +102,16 @@ const schema = defineSchema({
               v.object({
                 coverUrl: v.string(),
                 coverType: v.optional(
-                  v.union(v.literal("image"), v.literal("video")),
+                  v.union(v.literal("image"), v.literal("video"))
                 ),
                 icon: v.optional(v.string()),
                 title: v.string(),
                 description: v.string(),
-              }),
-            ),
+              })
+            )
           ),
-        }),
-      ),
+        })
+      )
     ),
     homePageSubHeader: v.optional(
       v.object({
@@ -122,9 +122,9 @@ const schema = defineSchema({
             icon: v.string(),
             content: v.string(),
             url: v.string(),
-          }),
+          })
         ),
-      }),
+      })
     ),
     homePageFooter: v.optional(
       v.object({
@@ -138,10 +138,10 @@ const schema = defineSchema({
               title: v.string(),
               urlTitle: v.string(),
               url: v.string(),
-            }),
-          ),
+            })
+          )
         ),
-      }),
+      })
     ),
     teachers: v.optional(
       v.object({
@@ -160,11 +160,11 @@ const schema = defineSchema({
               v.object({
                 name: v.string(),
                 url: v.string(),
-              }),
+              })
             ),
-          }),
+          })
         ),
-      }),
+      })
     ),
     homePageFaqs: v.optional(
       v.object({
@@ -175,9 +175,9 @@ const schema = defineSchema({
           v.object({
             question: v.string(),
             answer: v.string(),
-          }),
+          })
         ),
-      }),
+      })
     ),
     otherInformation: v.optional(
       v.object({
@@ -189,10 +189,10 @@ const schema = defineSchema({
               icon: v.string(),
               title: v.string(),
               content: v.string(),
-            }),
-          ),
+            })
+          )
         ),
-      }),
+      })
     ),
   }),
 
@@ -205,7 +205,7 @@ const schema = defineSchema({
     title: v.string(),
     description: v.string(),
     marketingType: v.optional(
-      v.union(v.literal("banner"), v.literal("snackbar")),
+      v.union(v.literal("banner"), v.literal("snackbar"))
     ),
     isHomePage: v.optional(v.boolean() || false),
     isPublic: v.optional(v.boolean() || false),
@@ -238,11 +238,11 @@ const schema = defineSchema({
         v.literal("meeting"),
         v.literal("vacation"),
         v.literal("sick"),
-        v.literal("working"),
-      ),
+        v.literal("working")
+      )
     ),
     warning: v.optional(
-      v.union(v.literal("banned"), v.literal("muted"), v.literal("warned")),
+      v.union(v.literal("banned"), v.literal("muted"), v.literal("warned"))
     ),
     role: v.union(
       v.literal("admin"),
@@ -252,7 +252,7 @@ const schema = defineSchema({
       v.literal("member"),
       v.literal("moderator"),
       v.literal("content_manager"),
-      v.literal("communication_manager"),
+      v.literal("communication_manager")
     ),
   })
     .index("by_user_id", ["userId"])
@@ -276,8 +276,8 @@ const schema = defineSchema({
         v.literal("poll"),
         v.literal("post"),
         v.literal("board"),
-        v.literal("course"),
-      ),
+        v.literal("course")
+      )
     ),
     author: v.id("users"),
     visibility: v.optional(v.union(v.literal("public"), v.literal("private"))),
@@ -327,6 +327,7 @@ const schema = defineSchema({
   // course table
   courses: defineTable({
     title: v.string(),
+    slug: v.optional(v.string()),
     userId: v.id("users"),
     workspaceId: v.optional(v.id("workspaces")),
     categoryId: v.optional(v.id("categories")),
@@ -337,25 +338,58 @@ const schema = defineSchema({
     imageUrl: v.optional(v.array(v.string())),
     duration: v.optional(v.number()),
     skills: v.optional(v.array(v.string())),
+    level : v.optional (v.string ())
   })
     .index("by_workspace_id", ["workspaceId"])
     .index("by_user_id", ["userId"])
     .index("by_category_id", ["categoryId"]),
 
+  // bookmarks table
+  bookmarks: defineTable({
+    userId: v.id("users"),
+    courseId: v.id("courses"),
+    creation: v.number(),
+    note: v.optional(v.string()),
+    lessonId: v.optional(v.id("lessons")),
+    chapterId: v.optional(v.id("chapters")),
+  })
+    .index("by_user_id", ["userId"])
+    .index("by_user_id_course_id", ["userId", "courseId"])
+    .index("by_course_id", ["courseId"]),
+
+  // ratings table
+  ratings: defineTable({
+    userId: v.id("users"),
+    courseId: v.id("courses"),
+    workspaceId: v.optional(v.id("workspaces")),
+    lessonId: v.optional(v.id("lessons")),
+    chapterId: v.optional(v.id("chapters")),
+    rating: v.number(),
+    comment: v.optional(v.string()),
+  })
+    .index("by_user", ["userId"])
+    .index("by_course_id", ["courseId"])
+    .index("by_chapter_id", ["chapterId"])
+    .index("by_lesson_id", ["lessonId"])
+    .index("by_course_id_lesson_id", ["courseId", "lessonId"]),
   // categorie table
   categories: defineTable({
     title: v.string(),
     userId: v.id("users"),
-  }).index("by_user_id", ["userId"]),
+    workspaceId: v.optional(v.id("workspaces")),
+  }).index("by_user_id", ["userId"])
+    .index("by_workspace_id", ["workspaceId"]),
 
   // attachment table
   attachments: defineTable({
     courseId: v.id("courses"),
+    lessonId : v.optional (v.id('lessons')),
     chapterId: v.optional(v.id("chapters")),
     name: v.optional(v.string()),
     url: v.string(),
   })
     .index("by_course_id", ["courseId"])
+    .index ("by_lesson_id", ['lessonId'])
     .index("by_course_id_chapter_id", ["courseId", "chapterId"])
     .index("by_chapter_id", ["chapterId"]),
 
@@ -375,6 +409,15 @@ const schema = defineSchema({
   lessons: defineTable({
     title: v.string(),
     description: v.optional(v.string()),
+    type: v.optional(
+      v.union(
+        v.literal("video"),
+        v.literal("article"),
+        v.literal("quiz"),
+        v.literal("text")
+      ) ||"video"
+    ),
+    content: v.optional(v.string()),
     videoUrl: v.optional(v.string()),
     position: v.optional(v.number()),
     isPublished: v.optional(v.boolean() || false),
@@ -421,8 +464,8 @@ const schema = defineSchema({
       v.union(
         v.literal("pending"),
         v.literal("cancelled"),
-        v.literal("successful"),
-      ),
+        v.literal("successful")
+      )
     ),
   })
     .index("by_user_id", ["userId"])
@@ -438,7 +481,7 @@ const schema = defineSchema({
       v.literal("card"),
       v.literal("cfa"),
       v.literal("paypal"),
-      v.literal("stripe"),
+      v.literal("stripe")
     ),
     paymentIntentId: v.string(),
     createdAt: v.number(),
@@ -459,7 +502,7 @@ const schema = defineSchema({
     .index("by_user_id", ["userId"])
     .index("by_course_id", ["courseId"])
     .index("by_user_id_course_id", ["userId", "courseId"]),
-
+  // exercices table
   exercices: defineTable({
     userId: v.id("users"),
     courseId: v.id("courses"),
@@ -473,8 +516,8 @@ const schema = defineSchema({
           isRequired: v.boolean(),
           needMark: v.number(),
           note: v.optional(v.string()),
-        }),
-      ),
+        })
+      )
     ),
   }),
   // exercices done table
@@ -488,7 +531,7 @@ const schema = defineSchema({
         executedDate: v.number(),
         answer: v.string(),
         note: v.optional(v.string()),
-      }),
+      })
     ),
     updatedAt: v.optional(v.number()),
   })
@@ -506,7 +549,7 @@ const schema = defineSchema({
     lessonId: v.optional(v.id("lessons")),
     chapterId: v.id("chapters"),
     file: v.optional(v.array(v.id("_storage"))),
-    comment: v.string(),
+    content: v.string(),
     upatedAt: v.optional(v.number()),
   })
     .index("by_chapter_id", ["chapterId"])
