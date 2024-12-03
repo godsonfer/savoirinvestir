@@ -10,6 +10,11 @@ export const ourFileRouter = {
   }).onUploadComplete( () => {
       
   }),
+  imageUploader: f({ image: { maxFileSize: "1MB" } })
+  .onUploadComplete(async ({  file }) => {
+    return { url: file.url };
+  }),
+
   courseAttachment: f([
     "text",
     "image",

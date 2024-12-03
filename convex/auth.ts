@@ -6,11 +6,14 @@ const customPassword = Password<DataModel>({
     return {
       email: params.email as string,
       name: params.name as string,
+      image: params.image as string,
+      phone: params.phone as string,
       role: "member",
     };
   },
 });
 
-export const { auth, signIn, signOut, store } = convexAuth({
+export const { auth, signIn, signOut, store,  } = convexAuth({
   providers: [customPassword],
 });
+

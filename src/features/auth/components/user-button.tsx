@@ -22,7 +22,7 @@ const UserButton = () => {
 
   const handleSignOut = async () => {
     await signOut()
-    router.push('/')
+    window.location.href = '/'
   }
   //chargement n case de chargement
   if (isLoading) { return (<Loader className='size-6 animate-spin text-muted-foreground' />) }

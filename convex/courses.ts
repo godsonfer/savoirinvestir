@@ -493,6 +493,54 @@ export const get = query({
   },
 });
 
+
+export const getHomeCourses = query({
+  args: {
+    paginationOpts: paginationOptsValidator,
+  },
+  handler: async (ctx, { paginationOpts }) => {
+
+
+    const courses = await  ctx.db.query("courses").filter((q) => q.eq(q.field("isPublished"), true)).order("desc").paginate(paginationOpts);
+
+    return {
+      ...courses,
+      page: (
+        await Promise.all(
+          (await courses).page.map(async (course) => {
+            // Vérifier si l'utilisateur est l'auteur du cours
+        
+
+            const chapters = await populateChapters(ctx, course._id);
+            if (!chapters) return null;
+
+            // Filtrer les chapitres et leçons si l'utilisateur n'est pas l'auteur
+            const filteredChapters =  chapters.map(chapter => ({
+                  ...chapter,
+                  lessons: chapter.lessons.filter(lesson => lesson.isPublished)
+                })).filter(chapter => chapter.lessons.length > 0);
+
+            const purchases = await populatePurchass(ctx, course._id);
+            if (!purchases) return null;
+            
+            const category = course.categoryId
+              ? await populateCategory(ctx, course.categoryId)
+              : null;
+            const rating = await populateRating(ctx, course._id);
+         
+            return {
+              ...course,
+              chapters: filteredChapters,
+              enrollments: purchases,
+              category,
+              rating,
+            };
+          })
+        )
+      ).filter((course) => course !== null),
+    };
+  },
+});
 export const search = query({
     args: { query: v.string() },
     handler: async (ctx, args) => {

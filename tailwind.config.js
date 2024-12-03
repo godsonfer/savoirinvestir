@@ -1,102 +1,51 @@
 /** @type {import('tailwindcss').Config} */
+import { theme } from './src/lib/theme';
 import { withUt } from "uploadthing/tw";
 
+/** @type {import('tailwindcss').Config} */
+module.exports = withUt({
 
-module.exports =  withUt({ 
-  darkMode: ["class"],
-  content: [
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
-    './src/**/*.{ts,tsx}',
-    "./src/**/*.{ts,tsx,mdx}",
-  ],
-  theme: {
-    container: {
-      center: true,
-      padding: "2rem",
-      screens: {
-        "2xl": "1400px",
-      },
-    },
-    extend: {
-      colors: {
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
-        primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
-        },
-        secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
-        },
-        destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
-        },
-        muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
-        },
-        accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
-        },
-        popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
-        },
-        card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
-        },
-      },
-      borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
-      },
-      keyframes: {
-        shimmer: {
-          '0%': { transform: 'translateX(-100%)' },
-          '100%': { transform: 'translateX(100%)' }
-        },
-        "accordion-down": {
-          from: { height: "0" },
-          to: { height: "var(--radix-accordion-content-height)" },
-        },
-        "accordion-up": {
-          from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: "0" },
-        },
-        flash: {
-          '0%': { transform: 'translateX(-100%)' },
-          '50%': { transform: 'translateX(0)' },
-          '100%': { transform: 'translateX(100%)' }
-        },
-        gradient: {
-          '0%, 100%': {
-            'background-size': '200% 200%',
-            'background-position': 'left center'
-          },
-          '50%': {
-            'background-size': '200% 200%',
-            'background-position': 'right center'
-          }
+    darkMode: 'class',
+    content: [
+        './pages/**/*.{ts,tsx}',
+        './components/**/*.{ts,tsx}',
+        './app/**/*.{ts,tsx}',
+        './src/**/*.{ts,tsx}',
+    ],
+    theme: {
+        extend: {
+            colors: {
+                primary: {
+                    ...theme.light.primary,
+                    DEFAULT: theme.light.primary.main
+                },
+                secondary: {
+                    ...theme.light.secondary,
+                    DEFAULT: theme.light.secondary.main
+                },
+                background: {
+                    main: theme.dark.background.main,
+                    secondary: theme.dark.background.secondary,
+                    tertiary: theme.dark.background.tertiary,
+                },
+                text: {
+                    primary: theme.light.text.primary,
+                    secondary: theme.light.text.secondary,
+                    inverse: theme.light.text.inverse,
+                },
+                border: {
+                    light: theme.light.border.light,
+                    main: theme.light.border.main,
+                }
+            },
+            container: {
+                center: true,
+                padding: "2rem",
+                screens: {
+                    "2xl": "1400px",
+                },
+            },
         }
-      },
-      animation: {
-        shimmer: 'shimmer 2s infinite',
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
-        flash: 'flash 1.5s ease-in-out',
-        gradient: 'gradient 8s ease infinite'
-      },
     },
-  },
-  plugins: [require("tailwindcss-animate")],
-} )
+    plugins: [require("tailwindcss-animate")],
+})

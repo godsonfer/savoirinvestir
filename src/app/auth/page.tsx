@@ -1,10 +1,14 @@
 import { AuthScreen } from '@/features/auth/components/auth-screen'
+import { Metadata } from 'next'
 import React from 'react'
 
-const Sigin = () => {
-    return (
-        <AuthScreen />
-    )
+export const metadata: Metadata = {
+  title: 'Authentification - Plateforme de Formation',
+  description: 'Développez vos compétences en trading et investissement avec nos formations en ligne',
 }
 
-export default Sigin
+const Auth = () => {
+  return <AuthScreen />
+}
+
+export default Auth

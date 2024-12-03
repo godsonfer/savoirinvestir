@@ -6,9 +6,14 @@ import {
 import { NextRequest } from "next/server";
 
 // public pages
-const isPublic = createRouteMatcher(["/auth", "/api/uploadthing"]);
+const isPublic = createRouteMatcher(["/auth", "/api/uploadthing", '/legal/terms', '/legal/privacy']);
 export default convexAuthNextjsMiddleware(
   (request: NextRequest, { convexAuth }) => {
+    // Ne pas rediriger si on est sur la page d'accueil
+    if (request.nextUrl.pathname === '/') {
+      return;
+    }
+
     if (!isPublic(request) && !convexAuth.isAuthenticated()) {
       return nextjsMiddlewareRedirect(request, "/auth");
     }

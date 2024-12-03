@@ -6,389 +6,101 @@
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
- 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
- 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
- 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
- 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
- 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
- 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
- 
-    --radius: 0.5rem;
-
-    --primary-color: #0097A7;
-    --secondary-color: #D6620F;
-    --hover-transition: all 0.3s ease;
   }
- 
+
   .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
- 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
- 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
- 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
- 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
- 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
- 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
- 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
- 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
   }
 }
- 
+
 @layer base {
-  * {
-    @apply border-border;
-  }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-white dark:bg-background-main text-text-primary transition-colors duration-300;
   }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0) scale(1) rotate(0deg);
+  }
+  33% {
+    transform: translateY(-30px) scale(1.1) rotate(120deg);
+  }
+  66% {
+    transform: translateY(-15px) scale(1.05) rotate(240deg);
+  }
+  100% {
+    transform: translateY(0) scale(1) rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.1);
+  }
+}
+
+@keyframes sparkle {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-float {
+  animation: float 30s ease-in-out infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulse 8s ease-in-out infinite;
+}
+
+.animate-sparkle {
+  animation: sparkle 4s ease-in-out infinite;
+}
+
+/* Effet de glassmorphisme */
+.glass-effect {
+  @apply bg-white/70 dark:bg-background-main/70 backdrop-blur-md;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+html,
+body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+#__next {
+    height: 100%;
+    width: 100%;
 }
 
 @layer utilities {
-  .popover-animation {
-    @apply transition-all duration-300 
-    opacity-0 group-hover:opacity-100 
-    translate-y-2 group-hover:translate-y-0;
-  }
- 
-  /* Styles de la barre de défilement personnalisée */
-  .scrollbar-thin {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.2) rgba(0, 0, 0, 0.1);
-  }
-  
-  .scrollbar-thin::-webkit-scrollbar {
-    width: 8px;
-  }
-  
-  .scrollbar-thin::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.1);
-  }
-  
-  .scrollbar-thin::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 4px;
-  }
-  
-  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.3);
-  }
-
-  /* Optimisations pour le défilement mobile */
-  .touch-pan-y {
-    touch-action: pan-y;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  /* Style pour le momentum scroll sur iOS */
-  .overscroll-y-contain {
-    overscroll-behavior-y: contain;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  /* Masquer la barre de défilement sur mobile tout en gardant la fonctionnalité */
-  @media (max-width: 768px) {
-    .scrollbar-thin {
-      scrollbar-width: none;
-      -ms-overflow-style: none;
+    .hide-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
     }
-    
-    .scrollbar-thin::-webkit-scrollbar {
-      display: none;
+    .hide-scrollbar::-webkit-scrollbar {
+        display: none;
     }
-  }
-
-  /* Optimisation du défilement sur mobile */
-  @supports (-webkit-touch-callout: none) {
-    .h-screen {
-      height: -webkit-fill-available;
-    }
-  }
-
-  /* Optimisations pour le défilement iOS */
-  .h-[100dvh] {
-    height: 100dvh;
-    height: -webkit-fill-available;
-  }
-
-  /* Empêcher le rebond de page sur iOS */
-  .overscroll-contain {
-    overscroll-behavior-y: contain;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  /* Animation pour le skeleton */
-  @keyframes shimmerAnimation {
-    0% {
-      background-position: -1000px 0;
-    }
-    100% {
-      background-position: 1000px 0;
-    }
-  }
-
-  .animate-pulse {
-    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-    background-image: linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0.03) 25%,
-      rgba(255, 255, 255, 0.08) 50%,
-      rgba(255, 255, 255, 0.03) 75%
-    );
-    background-size: 200% 100%;
-    background-position: 0 0;
-  }
-
-  @keyframes pulse {
-    50% {
-      background-position: 100% 0;
-    }
-  }
-}
-
-/* Ajouter ces styles globaux */
-@layer base {
-  html {
-    height: 100%;
-    overflow: hidden;
-  }
-  
-  body {
-    height: 100%;
-    overflow: hidden;
-  }
-}
-
-.gradient-button {
-  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-  color: white;
-  transition: var(--hover-transition);
-  position: relative;
-  overflow: hidden;
-}
-
-.gradient-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, transparent, rgba(255,255,255,0.2), transparent);
-  transition: var(--hover-transition);
-}
-
-.gradient-button:hover::before {
-  left: 100%;
-}
-
-.gradient-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 16px -4px rgba(0, 151, 167, 0.2);
-}
-
-.card-hover-effect {
-  transition: var(--hover-transition);
-}
-
-.card-hover-effect:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px -8px rgba(0, 151, 167, 0.25);
-}
-
-/* Animation pour les statistiques */
-@keyframes countUp {
-  from {
-    transform: translateY(10px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-.stats-animation {
-  animation: countUp 0.5s ease-out forwards;
-}
-
-/* Animation pour le tableau */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.table-animation {
-  animation: fadeIn 0.6s ease-out forwards;
-}
-
-/* Scrollbar personnalisée avec les couleurs du thème */
-.scrollbar-thin::-webkit-scrollbar-thumb {
-  background: var(--primary-color);
-  opacity: 0.5;
-}
-
-.scrollbar-thin::-webkit-scrollbar-track {
-  background: rgba(0, 151, 167, 0.1);
-}
-
-.scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: var(--secondary-color);
-}
-
-/* Ajouter ces styles pour un défilement plus fluide */
-html {
-    scroll-behavior: smooth;
-}
-
-/* Style personnalisé pour la barre de défilement */
-.custom-scrollbar::-webkit-scrollbar {
-    width: 8px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-    background: linear-gradient(to bottom, #0097A7, #D6620F);
-    border-radius: 4px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(to bottom, #00b8d4, #ff7043);
-}
-
-/* Ajouter ces styles pour une meilleure transition */
-.sticky-header {
-    transition: all 0.3s ease-in-out;
-    backdrop-filter: blur(12px);
-}
-
-.sticky-header.visible {
-    transform: translateY(0);
-}
-
-.sticky-header.hidden {
-    transform: translateY(-100%);
-}
-
-/* Ajuster le z-index pour la superposition */
-.sticky-tabs {
-    position: sticky;
-    top: 72px; /* Hauteur du header + marge */
-    z-index: 40;
-    transition: all 0.3s ease-in-out;
-}
-
-/* Ajouter ces styles */
-.hide-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-}
-
-.hide-scrollbar::-webkit-scrollbar {
-    display: none;
-}
-
-/* Ajuster la hauteur sur les grands écrans */
-@media (min-width: 1024px) {
-    .min-h-screen {
-        min-height: 100vh;
-        min-height: 100dvh;
-    }
-}
-
-/* Optimiser l'affichage sur les écrans très hauts */
-@media (min-height: 1000px) {
-    .lg\:h-screen {
-        height: 100vh;
-        height: 100dvh;
-    }
-}
-
-/* Ajouter ces styles */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes slideIn {
-    from {
-        transform: translateX(-100%);
-    }
-    to {
-        transform: translateX(0);
-    }
-}
-
-.dialog-content {
-    animation: fadeIn 0.3s ease-out;
-}
-
-.lesson-enter {
-    animation: slideIn 0.3s ease-out;
-}
-
-/* Amélioration du scroll */
-.custom-scrollbar {
-    scrollbar-gutter: stable;
-}
-
-/* Effet de hover amélioré */
-.hover-gradient {
-    background-size: 200% 200%;
-    transition: all 0.3s ease;
-}
-
-.hover-gradient:hover {
-    background-position: 100% 100%;
 }
