@@ -9,15 +9,15 @@ interface SearchResult extends Doc<"courses"> {
     studentsCount?: number;
     rating?: string;
     chaptersCount?: number;
-    canDelete?: boolean;
-    chapters?: any[];
+    canDelete: boolean;
+    chapters?: unknown [];
     bookmark?: boolean;
-    enrollments?: any[];
+    enrollments?: unknown [];
 }
 
 export const useSearchCourses = () => {
     const [searchQuery, setSearchQuery] = useState("")
-    const debouncedSearch = useDebounce(searchQuery, 300)
+    const debouncedSearch = useDebounce(searchQuery, 1000)
 
     const searchResults = useQuery(
         api.courses.get,
@@ -35,7 +35,6 @@ export const useSearchCourses = () => {
             course.title.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
             (course.description && course.description.toLowerCase().includes(debouncedSearch.toLowerCase()))
         )
-
     return {
         searchQuery,
         setSearchQuery,

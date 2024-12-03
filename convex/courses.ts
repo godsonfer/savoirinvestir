@@ -125,17 +125,34 @@ export const courseById = query({
   handler: async (ctx, { courseId }) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) return null;
+    const user = await ctx.db.get(userId);
 
     const course = await ctx.db.get(courseId);
     if (!course) return null;
 
-    const [chapters,  purchases, rating, bookmark] = await Promise.all([
+    // Vérifier si l'utilisateur peut accéder au cours
+    const isAuthor = course.userId === userId;
+    const isAdminOrTeacher = user?.role === "admin" || user?.role === "teacher";
+    
+    if (!course.isPublished && !isAuthor && !isAdminOrTeacher) {
+      return null;
+    }
+
+    const [chapters, purchases, rating, bookmark] = await Promise.all([
       populateChapters(ctx, courseId),
       populatePurchass(ctx, courseId),
       populateRating(ctx, courseId),
       populateBookmarks(ctx, userId, courseId)
     ]);
-    
+
+    // Filtrer les chapitres et leçons si nécessaire
+    const filteredChapters = isAuthor || isAdminOrTeacher
+      ? chapters
+      : chapters.map(chapter => ({
+          ...chapter,
+          lessons: chapter.lessons.filter(lesson => lesson.isPublished)
+        })).filter(chapter => chapter.lessons.length > 0);
+
     const category = course.categoryId
       ? await populateCategory(ctx, course.categoryId)
       : null;
@@ -161,10 +178,9 @@ export const courseById = query({
         reviewsCount,
         category: category?.title,
         isBookmarked: bookmark.length > 0,
-        chaptersCount: chapters.length,
+        chaptersCount: filteredChapters.length,
       },
-      chapters,
-  
+      chapters: filteredChapters,
       purchases,
       category,
       rating,
@@ -233,6 +249,25 @@ export const updateSkills = mutation({
   },
 });
 
+export const updateLevel = mutation({
+  args: {
+    courseId: v.id("courses"),
+    level: v.optional(v.string()  ),
+  },
+  handler: async (ctx, { courseId, level }) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Unauthorized");
+
+    const courseExist = await ctx.db.get(courseId);
+
+    if (!courseExist || courseExist.userId !== userId)
+      throw new Error("Unauthorized");
+
+    const course = await ctx.db.patch(courseId, { level });
+
+    return course;
+  },
+});
 export const updatePrice = mutation({
   args: {
     courseId: v.id("courses"),
@@ -399,36 +434,55 @@ export const get = query({
   },
   handler: async (ctx, { paginationOpts }) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Unauthorized");
+    if (!userId) throw new Error("Non autorisé");
     const user = await ctx.db.get(userId);
-    const courses = await ctx.db
-      .query("courses")
-      .order("desc")
-      .paginate(paginationOpts);
+
+    let coursesQuery = ctx.db.query("courses");
+
+    // Si l'utilisateur n'est pas admin ou professeur, filtrer uniquement les cours publiés
+    if (user?.role !== "admin" && user?.role !== "teacher") {
+      coursesQuery = coursesQuery.filter(q => q.eq(q.field("isPublished"), true));
+    }
+
+    const courses = await coursesQuery.order("desc").paginate(paginationOpts);
 
     return {
       ...courses,
       page: (
         await Promise.all(
           (await courses).page.map(async (course) => {
+            // Vérifier si l'utilisateur est l'auteur du cours
+            const isAuthor = course.userId === userId;
+            const isAdminOrTeacher = user?.role === "admin" || user?.role === "teacher";
+
             const chapters = await populateChapters(ctx, course._id);
             if (!chapters) return null;
+
+            // Filtrer les chapitres et leçons si l'utilisateur n'est pas l'auteur
+            const filteredChapters = isAuthor || isAdminOrTeacher
+              ? chapters
+              : chapters.map(chapter => ({
+                  ...chapter,
+                  lessons: chapter.lessons.filter(lesson => lesson.isPublished)
+                })).filter(chapter => chapter.lessons.length > 0);
+
             const purchases = await populatePurchass(ctx, course._id);
             if (!purchases) return null;
+            
             const category = course.categoryId
               ? await populateCategory(ctx, course.categoryId)
               : null;
             const rating = await populateRating(ctx, course._id);
             const bookmark = await populateBookmarks(ctx, userId, course._id);
             const isBookmarked = bookmark.length ? true : false;
-            const canDelete =
-              user?.role === "admin" || user?.role === "teacher" ? true : false;
+            const canDelete = isAdminOrTeacher ? true : false;
+
             return {
               ...course,
               canDelete,
-              chapters,
+              chapters: filteredChapters,
               bookmark: isBookmarked,
-              enrollments:  purchases,
+              enrollments: purchases,
               category,
               rating,
             };

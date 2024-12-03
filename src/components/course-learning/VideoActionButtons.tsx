@@ -39,7 +39,7 @@ export const VideoActionButtons = ({ onShare, onSupport }: VideoActionButtonsPro
       )}>
         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
           <Button
-            variant="ghost"
+            variant="transparent"
             size="icon"
             className={`hover:bg-pink-500/10 ${isLiked ? 'text-pink-500' : 'text-gray-400 hover:text-pink-500'}`}
             onClick={handleLike}
@@ -50,7 +50,7 @@ export const VideoActionButtons = ({ onShare, onSupport }: VideoActionButtonsPro
 
         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
           <Button
-            variant="ghost"
+            variant="transparent"
             size="icon"
             className={`hover:bg-yellow-500/10 ${isBookmarked ? 'text-yellow-500' : 'text-gray-400 hover:text-yellow-500'}`}
             onClick={handleBookmark}
@@ -61,7 +61,7 @@ export const VideoActionButtons = ({ onShare, onSupport }: VideoActionButtonsPro
 
         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
           <Button
-            variant="ghost"
+            variant="transparent"
             size="icon"
             className="text-gray-400 hover:text-[#0097A7] hover:bg-[#0097A7]/10"
             onClick={() => setIsShareOpen(true)}
@@ -72,7 +72,7 @@ export const VideoActionButtons = ({ onShare, onSupport }: VideoActionButtonsPro
 
         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
           <Button
-            variant="ghost"
+            variant="transparent"
             size="icon"
             className="text-gray-400 hover:text-green-500 hover:bg-green-500/10"
             onClick={() => setIsSupportOpen(true)}

@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import MuxPlayer from "@mux/mux-player-react";
+import MuxPlayer, { MuxPlayerProps as MuxPlayerRefProps } from "@mux/mux-player-react";
 
 import Image from 'next/image'
 import { motion } from 'framer-motion'
@@ -13,7 +13,6 @@ interface MuxPlayerProps {
 
 export const CourseMuxPlayer = ({ playbackId, title, onLoad }: MuxPlayerProps) => {
     const playerRef = useRef<HTMLElement>(null)
-
     useEffect(() => {
         if (playerRef.current) {
             playerRef.current.addEventListener('loadeddata', () => {
@@ -23,15 +22,23 @@ export const CourseMuxPlayer = ({ playbackId, title, onLoad }: MuxPlayerProps) =
     }, [onLoad])
 
     return (
-        <div className="relative aspect-video bg-black">
+        <div className="relative aspect-video bg-black/90">
+              <MuxPlayer
+                ref={playerRef as React.LegacyRef<MuxPlayerElement>}
+                title={title}
+                playbackId={playbackId}
+                
+    
+            />
+
             {/* Logo watermark */}
-            <div className="absolute top-4 right-4 z-20 opacity-50">
+            <div className="absolute top-6 right-6 z-20 opacity-40 pointer-events-none hover:opacity-60 transition-opacity">
                 <Image 
                     src="/logo.svg" 
                     alt="Logo" 
-                    width={80} 
-                    height={40} 
-                    className="filter brightness-0 invert"
+                    width={90} 
+                    height={45} 
+                    className="filter brightness-0 invert drop-shadow-lg"
                 />
             </div>
 
@@ -39,36 +46,20 @@ export const CourseMuxPlayer = ({ playbackId, title, onLoad }: MuxPlayerProps) =
             <motion.div 
                 initial={{ opacity: 1 }}
                 animate={{ opacity: 0 }}
-                transition={{ delay: 0.5 }}
-                className="absolute inset-0 bg-black z-10 flex items-center justify-center"
+                transition={{ delay: 0.5, duration: 0.4 }}
+                className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none backdrop-blur-sm"
             >
-                <div className="flex flex-col items-center gap-4">
+                <div className="flex flex-col items-center gap-6">
                     <Image 
                         src="/logo.svg" 
                         alt="Logo" 
-                        width={120} 
-                        height={60}
-                        className="animate-pulse filter brightness-0 invert"
+                        width={140} 
+                        height={70}
+                        className="animate-pulse filter brightness-0 invert drop-shadow-lg"
                     />
-                    <Loader2 className="w-6 h-6 text-white animate-spin" />
+                    <Loader2 className="w-8 h-8 text-[#0097A7] animate-spin drop-shadow-lg" />
                 </div>
             </motion.div>
-
-            <MuxPlayer
-                playbackId={playbackId}
-              
-                title={title}
-                
-                metadata={{
-                    video_title: title,
-                    player_name: 'IMM Formation',
-                }}
-                themeProps={{
-                    colors: {
-                        accent: '#0097A7',
-                    },
-                }}
-            />
         </div>
     )
 } 

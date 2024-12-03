@@ -41,7 +41,7 @@ export const LessonVideoForm = ({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const muxtData = await axios.post("/api/muxt", {
+      const muxtData = await axios.post("/api/mux", {
         videoUrl: values.videoUrl
       })
       if (muxtData) {

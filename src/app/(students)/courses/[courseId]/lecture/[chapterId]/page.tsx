@@ -14,10 +14,27 @@ import { MobileNavigation } from '@/components/course-learning/MobileNavigation'
 import { ChevronLeft, ChevronRight, CheckCircle, ChevronLeftIcon, ChevronRightIcon } from 'lucide-react'
 import parse from 'html-react-parser'
 
+interface LessonFromAPI {
+  _id: string;
+  title: string;
+  description?: string;
+  type?: "video" | "text" | "article" | "quiz";
+  muxData: {
+    _id: string;
+    _creationTime: number;
+    playback?: string;
+    courseId: string;
+    lessonId: string;
+    chapterId: string;
+    assetId: string;
+  } | null;
+  chapterId: string;
+}
+
 const CourseLearningPage = () => {
   const courseId = useCourseId()
   const { data } = useGetCourse({ courseId })
-  const [currentLesson, setCurrentLesson] = useState<Lesson | null>(null)
+  const [currentLesson, setCurrentLesson] = useState<LessonFromAPI | null>(null)
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true)
   const [progress, setProgress] = useState<Progress | null>(null)
@@ -87,8 +104,8 @@ const CourseLearningPage = () => {
   const findAdjacentLessons = useCallback(() => {
     if (!data?.chapters || !currentLesson) return { prev: null, next: null }
     
-    let prevLesson: Lesson | null = null
-    let nextLesson: Lesson | null = null
+    let prevLesson: LessonFromAPI | null = null
+    let nextLesson: LessonFromAPI | null = null
     let foundCurrent = false
     
     for (let i = 0; i < data.chapters.length; i++) {
@@ -144,10 +161,10 @@ const CourseLearningPage = () => {
         >
           <div className="flex-1 overflow-y-auto scrollbar-hide">
             <ChaptersList 
-              chapters={data?.chapters || []}
+              chapters={data?.chapters || [] as any[]}
               currentLesson={currentLesson}
               progress={progress}
-              onLessonSelect={(lesson) => {
+              onLessonSelect={(lesson: LessonFromAPI) => {
                 setCurrentLesson(lesson)
                 handleLessonComplete(lesson._id)
                 if (isMobile) closeSidebars()

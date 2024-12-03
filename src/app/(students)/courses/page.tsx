@@ -9,6 +9,7 @@ import { Loader2 } from "lucide-react"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
 import { useSearchCourses } from "@/features/courses/api/use-search-courses"
+import { SearchForm } from "@/components/search-form"
 
 const CourseCardSkeleton = () => {
     return (
@@ -71,6 +72,7 @@ const CoursesExplorerPage = () => {
 
     // Détermine quels cours afficher (recherche ou liste normale)
     const displayedCourses = searchQuery ? searchResults : courses
+    console.log(displayedCourses)
     const isLoading = searchQuery ? isSearching : coursesLoading === "LoadingFirstPage"
 
     const calculateLessonLength = (course: Course) => {
@@ -95,12 +97,12 @@ const CoursesExplorerPage = () => {
 
                     {/* Barre de recherche améliorée */}
                     <div className="max-w-2xl mx-auto">
-                        {/* <SearchForm 
+                        <SearchForm 
                             value={searchQuery}
                             onChange={setSearchQuery}
                             isLoading={isSearching}
-                            results={searchResults}
-                        /> */}
+                            results={searchResults ?? []}
+                        />
                     </div>
                 </div>
             </div>

@@ -23,16 +23,10 @@ import { useGetCourses, getCoursesReturnType } from "@/features/courses/api/use-
 import { Id } from "../../../../../../convex/_generated/dataModel"
 import { CoursesSkeleton } from "./_components/courses-skeleton"
 
-type CourseType = {
+interface CourseWithDetails {
   _id: Id<"courses">;
-  title: string;
   price?: number;
-  isPublished?: boolean;
-  _creationTime: number;
-  cover?: string;
-  chapters?: {
-    lessons?: any[];
-  }[];
+  chapters?: any[];
   enrollments?: any[];
   category?: {
     title: string;
@@ -54,7 +48,7 @@ export default function CoursesPage() {
     setSortedCourses(courses)
   }, [courses])
 
-  const handleSort = (key: keyof CourseType, direction: "asc" | "desc") => {
+  const handleSort = (key: keyof CourseWithDetails, direction: "asc" | "desc") => {
     const sorted = [...(courses ?? [])].sort((a, b) => {
       const aValue = a[key]
       const bValue = b[key]
@@ -76,23 +70,63 @@ export default function CoursesPage() {
   }
   
   if (!courses || courses.length === 0) {
-    return <CoursesSkeleton />
+    return(
+      <div className="p-6">
+        <div className="flex items-center justify-between mb-8">
+          <CreateModal variant={variant} />
+          <div className="flex items-center gap-3">
+            <Button 
+              variant="orange" 
+              className="flex items-center gap-2 shadow-sm hover:shadow-md transition-shadow"
+            >
+              <Calendar className="w-4 h-4" />
+              <span>Evènement</span>
+            </Button>
+            <Button 
+              variant="orange"
+              className="flex items-center gap-2 shadow-sm hover:shadow-md transition-shadow"
+            >
+              <PiCertificate className="w-4 h-4" />
+              <span>Workshop</span>
+            </Button>
+            <Button 
+              onClick={() => changeVariant('course')}
+              variant="orange"
+              className="flex items-center gap-2 shadow-sm hover:shadow-md transition-shadow"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Formation</span>
+            </Button>
+            <Button 
+              onClick={() => changeVariant('category')}
+              variant="orange"
+              className="flex items-center gap-2 shadow-sm hover:shadow-md transition-shadow"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Categorie</span>
+            </Button>
+          </div>
+        </div>
+        <CoursesSkeleton />
+      </div>
+    )
+    
   }
 
   const totalCourses = courses?.length ?? 0
 
   const publishedCourses = courses?.filter((course) => course.isPublished).length ?? 0
 
-  const totalRevenue = courses?.reduce((acc: number, course: getCoursesReturnType) => 
+  const totalRevenue = courses?.reduce((acc: number, course: CourseWithDetails) => 
     acc + (course.price ?? 0), 0) ?? 0
 
-  const totalStudents = courses?.reduce((acc: number, course: getCoursesReturnType) => 
+  const totalStudents = courses?.reduce((acc: number, course: CourseWithDetails) => 
     acc + (course.enrollments?.length ?? 0), 0) ?? 0
 
-  const totalChapters = courses?.reduce((acc: number, course: getCoursesReturnType) => 
+  const totalChapters = courses?.reduce((acc: number, course: CourseWithDetails) => 
     acc + (course.chapters?.length ?? 0), 0) ?? 0
 
-  const totalLessons = courses?.reduce((acc: number, course: getCoursesReturnType) => {
+  const totalLessons = courses?.reduce((acc: number, course: CourseWithDetails) => {
     return acc + course.chapters?.reduce((chapterAcc: number, chapter: any) => {
       return chapterAcc + (chapter.lessons?.length ?? 0)
     }, 0) ?? 0
@@ -129,7 +163,7 @@ export default function CoursesPage() {
       acc + (course.enrollments?.length ?? 0), 0) ?? 0 },
   ]
 
-  const categoryDistribution = courses?.reduce((acc: Record<string, number>, course: getCoursesReturnType) => {
+  const categoryDistribution = courses?.reduce((acc: Record<string, number>, course: CourseWithDetails) => {
     const category = course.category?.title ?? 'Sans catégorie'
     acc[category] = (acc[category] ?? 0) + 1
     return acc

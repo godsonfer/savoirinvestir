@@ -1,8 +1,7 @@
 "use client";
 
-
 import { ourFileRouter } from "@/app/api/uploadthing/core";
-import { UploadDropzone } from "@/lib/uploadthing";
+import { UploadDropzone } from "@/utils/uploadthing";
 import { toast } from "sonner";
 
 interface FileUploadProps {
@@ -14,17 +13,22 @@ export const FileUpload = ({
   onChange,
   endpoint
 }: FileUploadProps) => {
-  
   return (
     <div className="w-50">
       <UploadDropzone
         endpoint={endpoint}
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        onClientUploadComplete={async (res: any) => {
-           onChange(res?.[0].url);
+        onClientUploadComplete={ (res) => {
+          toast.success("Upload réussi!");
+          if (res?.[0]) {
+            onChange(res[0].url);
+          }
         }}
-        onUploadError={(error: Error) => {
-          toast.error(`${error?.message}`);
+        onUploadAborted={() => {
+          toast.error("Upload annulé!");
+        }}
+        onUploadError={ () => {
+          console.log("Upload error:");
+          toast.error(`Upload error`);
         }}
       />
     </div>

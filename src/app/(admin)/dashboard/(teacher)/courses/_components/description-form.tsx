@@ -1,25 +1,19 @@
 "use client";
 
-import * as z from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
 import { Pencil, Save, X } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
+import "react-quill/dist/quill.snow.css";
 
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { Textarea } from "@/components/ui/textarea";
 import { Id } from "../../../../../../../convex/_generated/dataModel";
 import { useUpdateCourseDescription } from "@/features/courses/api/use-update-course-description";
 import { toast } from "sonner";
+
+const ReactQuill = dynamic(() => import("react-quill"), { 
+  ssr: false,
+  loading: () => <p>Chargement de l&apos;éditeur...</p>
+});
 
 interface DescriptionFormProps {
   initialData: {
@@ -28,91 +22,99 @@ interface DescriptionFormProps {
   courseId: Id<'courses'>;
 };
 
-const formSchema = z.object({
-  description: z.string().min(1, {
-    message: "Veuillez saisir une description pour votre formation.",
-  }),
-});
+const modules = {
+  toolbar: {
+    container: [
+      [{ 'header': '1'}, {'header': '2'}, { 'font': [] }],
+      [{size: []}],
+      ['bold', 'italic', 'underline', 'strike'],
+      [{'color': []}, {'background': []}],
+      [{'list': 'ordered'}, {'list': 'bullet'}],
+      ['link', 'clean']
+    ],
+  },
+  clipboard: {
+    matchVisual: false,
+  }
+};
 
 export const DescriptionForm = ({
   initialData,
   courseId
 }: DescriptionFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [content, setContent] = useState(initialData?.description || "");
+  const [mounted, setMounted] = useState(false);
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      description: initialData?.description || ""
-    },
-  });
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-  const { mutate, isPending } = useUpdateCourseDescription()
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    mutate({ description: values.description, courseId }, {
+  const { mutate, isPending } = useUpdateCourseDescription();
+
+  const onSubmit = async () => {
+    mutate({ description: content, courseId }, {
       onSuccess() {
-        setIsEditing(isPending)
-        toast.success('Modification terminée avec success!')
+        setIsEditing(false);
+        toast.success('Modification terminée avec succès!');
       },
       onError() {
-        toast.error('Une erreur est survenue lors de la modification !')
+        toast.error('Une erreur est survenue lors de la modification !');
       },
-    })
+    });
+  };
+
+  if (!mounted) {
+    return null;
   }
 
   return (
-    <div className="mt-1  bg-slate-100 rounded-md p-2">
-      <div className="mt-1 bg-slate-100 p-2 rounded-md text-muted-foreground tex-xl">
-        <div className="flex font-medium items-center justify-between">
-          {initialData.description ? (<span>{initialData.description}</span>) : 'Description de la formation'}
-          <Button variant={"transparent"} onClick={() => setIsEditing(true)}>
-            <Pencil className="ml-2 size-4" />
-          </Button>
-        </div>
-
+    <div className="mt-1 bg-slate-100 rounded-md p-4">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-medium">Description de la formation</h3>
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={() => setIsEditing(!isEditing)}
+        >
+          {isEditing ? (
+            <X className="h-4 w-4 mr-2" />
+          ) : (
+            <Pencil className="h-4 w-4 mr-2" />
+          )}
+          {isEditing ? "Annuler" : "Modifier"}
+        </Button>
       </div>
+
       {!isEditing && (
-        <p className={cn(
-          "text-sm mt-2",
-          !initialData.description && "text-slate-500 italic"
-        )}>
-          {!initialData.description && "Aucne description de la formation"}
-        </p>
+        <div 
+          className="bg-white rounded-md p-4 prose max-w-none"
+          dangerouslySetInnerHTML={{ __html: content || "Aucune description" }}
+        />
       )}
+
       {isEditing && (
-        <div className="  p-2 rounded-sm shadow-sm ">
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-4 mt-4"
+        <div className="bg-white rounded-md">
+          <ReactQuill
+            theme="snow"
+            value={content}
+            onChange={setContent}
+            modules={modules}
+            placeholder="Saisissez la description de votre formation..."
+            className="bg-white"
+          />
+          <div className="flex justify-end gap-2 p-4 border-t">
+            <Button 
+              disabled={isPending} 
+              variant="orange" 
+              onClick={onSubmit}
             >
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Textarea cols={500} rows={5}
-                        disabled={isPending}
-                        placeholder="e.g. 'Cette formation parle de ....'"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      Description de la formation
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <div className="flex gap-2 mt-3 flex-1 items-end justify-end">
-                <Button disabled={isPending} onClick={() => setIsEditing(isPending)} variant={"outline"} > <X></X>Annuler</Button>
-                <Button disabled={isPending} variant={"orange"} type="submit"> <Save /> Sauver</Button>
-              </div>
-            </form>
-          </Form>
+              <Save className="h-4 w-4 mr-2" />
+              Sauvegarder
+            </Button>
+          </div>
         </div>
       )}
     </div>
-  )
-}
+  );
+};

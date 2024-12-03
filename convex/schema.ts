@@ -338,7 +338,8 @@ const schema = defineSchema({
     imageUrl: v.optional(v.array(v.string())),
     duration: v.optional(v.number()),
     skills: v.optional(v.array(v.string())),
-    level : v.optional (v.string ())
+    level : v.optional (v.string ()),
+    updatedAt: v.optional(v.number()),
   })
     .index("by_workspace_id", ["workspaceId"])
     .index("by_user_id", ["userId"])

@@ -1,7 +1,16 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Command } from "cmdk"
+
+import {
+    Command,
+    CommandEmpty,
+    CommandInput,
+    CommandItem,
+    CommandList,
+  } from "@/components/ui/command"
+
+  
 import { Search, X, Command as CommandIcon, Loader2 } from "lucide-react"
 import { Dialog } from "@/components/ui/dialog"
 import { cn } from "@/lib/utils"
@@ -129,8 +138,7 @@ export const SearchForm = ({
                                         </div>
 
                                         <div className="relative flex items-center border-b">
-                                            <Search className="absolute left-4 h-4 w-4 text-muted-foreground" />
-                                            <Command.Input
+                                            <CommandInput
                                                 value={value}
                                                 onValueChange={onChange}
                                                 placeholder="Rechercher des formations..."
@@ -158,7 +166,7 @@ export const SearchForm = ({
                                             )}
                                         </div>
 
-                                        <Command.List className="max-h-[60vh] overflow-y-auto p-4">
+                                        <CommandList className="max-h-[60vh] overflow-y-auto p-4">
                                             {value && (
                                                 <AnimatePresence mode="wait">
                                                     {isLoading ? (
@@ -177,7 +185,7 @@ export const SearchForm = ({
                                                             exit={{ opacity: 0 }}
                                                             className="text-center py-8 text-muted-foreground"
                                                         >
-                                                            Aucun résultat trouvé
+                                                              <CommandEmpty>Aucun résultat trouvé</CommandEmpty>
                                                         </motion.div>
                                                     ) : hasResults && (
                                                         <motion.div
@@ -187,7 +195,7 @@ export const SearchForm = ({
                                                             className="space-y-2"
                                                         >
                                                             {results.map((result) => (
-                                                                <Command.Item
+                                                                <CommandItem
                                                                     key={result._id}
                                                                     value={result.title}
                                                                     className="px-2 py-1 rounded-md cursor-pointer hover:bg-muted"
@@ -196,13 +204,13 @@ export const SearchForm = ({
                                                                     }}
                                                                 >
                                                                     {result.title}
-                                                                </Command.Item>
+                                                                </CommandItem>
                                                             ))}
                                                         </motion.div>
                                                     )}
                                                 </AnimatePresence>
                                             )}
-                                        </Command.List>
+                                        </CommandList>
                                     </motion.div>
                                 </div>
                             </motion.div>

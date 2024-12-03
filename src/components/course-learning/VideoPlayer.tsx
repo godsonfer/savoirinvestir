@@ -22,7 +22,7 @@ interface VideoPlayerProps {
   hasPrevious?: boolean
 }
 
-const parseHTMLContent = (node: HTMLNode): React.ReactNode => {
+const parseHTMLContent = (node: any): React.ReactNode => {
   if (node.type === 'tag') {
     const content = node.children?.[0]?.data || '';
     
@@ -87,7 +87,6 @@ export const VideoPlayer = ({
   hasPrevious 
 }: VideoPlayerProps) => {
   const isMobile = useMediaQuery('(max-width: 768px)')
-
   if (!currentLesson) {
     return <VideoSkeleton />
   }
@@ -103,17 +102,11 @@ export const VideoPlayer = ({
           className="relative rounded-xl overflow-hidden bg-black/50 backdrop-blur-sm"
         >
           <div className="aspect-video bg-black">
-            {currentLesson.type === 'video' ? (
-                <CourseMuxPlayer
-                  playbackId={currentLesson?.muxData?.playback || ''}
-                  title = {currentLesson.title}
-                />
-            //   <iframe
-            //     src={currentLesson.content}
-            //     className="w-full h-full"
-            //     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            //     allowFullScreen
-            //   />
+            {currentLesson.muxData?.playback ? (
+              <CourseMuxPlayer
+                playbackId={currentLesson?.muxData?.playback || ''}
+                title={currentLesson.title}
+              />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
                 <Play className="w-16 h-16 text-white/50" />
@@ -125,7 +118,7 @@ export const VideoPlayer = ({
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="absolute inset-0 flex items-center justify-between p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            className="absolute inset-0 flex items-center justify-between p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
           >
             <AnimatePresence>
               {hasPrevious && (
@@ -133,15 +126,16 @@ export const VideoPlayer = ({
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
+                  className="pointer-events-auto"
                 >
                   <Button
-                    variant="ghost"
+                    variant="outline"
                     size="icon"
-                    className="w-12 h-12 rounded-full bg-black/50 hover:bg-black/70 backdrop-blur-sm
+                    className="w-12 h-12 rounded-full bg-[#0097A7] hover:bg-[#008697] backdrop-blur-sm
                       hover:scale-110 transition-all duration-300"
                     onClick={onPrevious}
                   >
-                    <ChevronLeft className="w-6 h-6" />
+                    <ChevronLeft className="w-6 h-6 text-white" />
                   </Button>
                 </motion.div>
               )}
@@ -150,15 +144,16 @@ export const VideoPlayer = ({
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 20 }}
+                  className="pointer-events-auto"
                 >
                   <Button
-                    variant="ghost"
+                    variant="outline"
                     size="icon"
-                    className="w-12 h-12 rounded-full bg-black/50 hover:bg-black/70 backdrop-blur-sm
+                    className="w-12 h-12 rounded-full bg-[#0097A7] hover:bg-[#008697] backdrop-blur-sm
                       hover:scale-110 transition-all duration-300"
                     onClick={onNext}
                   >
-                    <ChevronRight className="w-6 h-6" />
+                    <ChevronRight className="w-6 h-6 text-white" />
                   </Button>
                 </motion.div>
               )}
@@ -170,7 +165,8 @@ export const VideoPlayer = ({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className={cn(
-              "absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent",
+              "absolute bottom-0 left-0 right-0 bg-black ",
+              "pointer-events-none",
               isMobile ? "p-3" : "p-6"
             )}
           >
@@ -189,36 +185,27 @@ export const VideoPlayer = ({
                   </motion.h2>
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2">
-                      <Users className="w-4 h-4 text-white/60" />
-                      <span className="text-sm text-white/60">
+                      <Users className="w-4 h-4 text-white" />
+                      <span className="text-sm text-white">
                         {course?.studentsCount || 0} étudiants
                       </span>
                     </div>
                     <div className="w-1 h-1 bg-white/20 rounded-full" />
                     <div className="flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-white/60" />
-                      <span className="text-sm text-white/60">
+                      <Clock className="w-4 h-4 text-white" />
+                        <span className="text-sm text-white">
                         {currentLesson.duration || 0} min
                       </span>
                     </div>
                   </div>
-                  {currentLesson.description && (
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 0.2 }}
-                      className="mt-4 text-sm text-white/80 line-clamp-2"
-                    >
-                      {parse(currentLesson.description, {
-                        replace: parseHTMLContent
-                      })}
-                    </motion.div>
-                  )}
+              
                 </div>
-                <VideoActionButtons 
-                  onShare={() => toast.success("Lien copié !")}
-                  onSupport={() => toast.success("Merci pour votre soutien !")}
-                />
+                <div className="pointer-events-auto">
+                  <VideoActionButtons 
+                    onShare={() => toast.success("Lien copié !")}
+                    onSupport={() => toast.success("Merci pour votre soutien !")}
+                  />
+                </div>
               </div>
             </div>
           </motion.div>
@@ -227,7 +214,7 @@ export const VideoPlayer = ({
         {/* Barre de navigation et complétion */}
         <motion.div 
           className={cn(
-            "absolute left-0 right-0 z-10",
+            "absolute left-0 right-0 z-20",
             isMobile ? "-bottom-16 px-2" : "-bottom-12 px-4"
           )}
         >
@@ -267,7 +254,7 @@ export const VideoPlayer = ({
                         hover:shadow-lg hover:shadow-[#0097A7]/20"
                     >
                       <span className="hidden sm:inline">Suivant</span>
-                      <ChevronRight className="w-4 h-4" />
+                      <ChevronRight className="w-4 h-4 text-white" />
                     </Button>
                   </motion.div>
                 )}
