@@ -12,12 +12,16 @@ import { usePublishLesson } from "@/features/lessons/api/use-publish-lesson"
 import { toast } from "sonner"
 import { useConfirm } from "@/hooks/use-confirm"
 
+
 interface LessonEditoProps {
     lessonId: Id<"lessons">
     courseId: Id<"courses">;
     chapterId: Id<"chapters">;
 }
 export const LessonEditor = ({ lessonId, courseId, chapterId }: LessonEditoProps) => {
+
+
+
     const { data: lesson, isLoading: lessonLoading } = useGetlesson({
         courseId,
         chapterId,
@@ -48,6 +52,10 @@ export const LessonEditor = ({ lessonId, courseId, chapterId }: LessonEditoProps
             }
         })
     }
+
+
+
+
     return (
         <div className='p-1 '>
             <PublishDialog />
@@ -88,6 +96,7 @@ export const LessonEditor = ({ lessonId, courseId, chapterId }: LessonEditoProps
                                     />
                                 </div>
                             </div>
+                             
                             <div>
                                 <LessonVideoForm
                                     initialData={{

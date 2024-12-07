@@ -1,667 +1,598 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
 
-import { Bookmark, Clock, PlayCircle, Star, Trash2, User, Heart, Pencil, BookOpen, GraduationCap, Calendar, Search, Grid, List, ChevronDown } from "lucide-react"
-import Link from "next/link"
-import { useState, useRef, useEffect } from "react"
+import { Bookmark } from "lucide-react"
+import { useState, useEffect, Dispatch, SetStateAction } from "react"
 import { toast } from "sonner"
+import { SearchBar } from "@/components/bookmarks/SearchBar"
+import { ViewControls } from "@/components/bookmarks/ViewControls"
+import { CourseCard } from "@/components/bookmarks/CourseCard"
+import { CourseSkeleton } from "@/components/bookmarks/CourseSkeleton"
+import { EmptyState } from "@/components/bookmarks/EmptyState"
+import { CoursesLineChart, LineChartProps } from "@/components/charts/CoursesLineChart"
+import { CoursesBarChart, BarChartProps } from "@/components/charts/CoursesBarChart"
+import { HoursBarChart, HoursChartProps } from "@/components/charts/HoursBarChart"
+import { Id } from "../../../../convex/_generated/dataModel"
+import { useCreateBookmark } from "@/features/bookmarks/use-create-bookmark"
+import { SortOption as ImportedSortOption } from "@/types/course"
 
-type BookmarkedCourse = {
-    id: string
-    title: string
-    description: string
-    instructor: string
-    duration: number
-    rating: number
-    totalStudents: number
-    note?: string
-    bookmarkedAt: Date
-    thumbnailUrl: string
-    progress: number
-    price: number
-    originalPrice?: number
-    certification: boolean
-    reviews: number
-    liked: boolean
-    lastUpdated: Date
+import { useGetBookmarkPurchase } from "@/features/bookmarks/use-user-bookmark-purchase"
+// Types de base
+type ViewMode = 'grid' | 'list';
+type SortOption = ImportedSortOption;
+
+interface EditingNote {
+    courseId: string;
+    note?: string;
 }
 
-type SortOption = 'recent' | 'title' | 'progress' | 'rating';
-type ViewMode = 'grid' | 'list';
-type EditingNote = {
-    courseId: string;
-    note: string;
-} | null;
+// Définition des types pour les chapitres et leçons
+interface Lesson {
+    _id: Id<"lessons">;
+    title: string;
+    completed?: boolean;
+    duration?: number;
+    description?: string;
+    videoUrl?: string;
+    muxData?: {
+        _id: Id<"muxData">;
+        _creationTime: number;
+        playback?: string;
+        courseId: Id<"courses">;
+        lessonId: Id<"lessons">;
+        chapterId: Id<"chapters">;
+        assetId: string;
+    } | null;
+}
+
+interface Chapter {
+    _id: Id<"chapters">;
+    title: string;
+    description?: string;
+    lessons: Lesson[];
+    courseId: Id<"courses">;
+}
+
+interface Course {
+    _id: Id<"courses">;
+    title: string;
+    description?: string;
+    chapters?: Chapter[];
+    duration?: number;
+    category?: string;
+    instructor?: string;
+    price?: number;
+    cover?: string;
+    certification?: boolean;
+    updatedAt?: number;
+    _creationTime: number;
+}
+
+interface BookmarkedCourse {
+    course: Course;
+    progress?: number;
+    _creationTime: number;
+    type: 'bookmark';
+    note?: string;
+    rating?: number;
+    totalStudents?: number;
+    bookmarkedAt?: number;
+    thumbnailUrl?: string;
+}
+
+interface ChartData {
+    id: string;
+    title: string;
+    description: string;
+    instructor: string;
+    price: number;
+    duration: number;
+    progress: number;
+    category?: string;
+    rating?: number;
+    totalStudents?: number;
+    completedLessons?: number;
+    totalLessons?: number;
+}
+
+// Types pour les graphiques
+interface BaseChartData {
+    id: string;
+    title: string;
+    category?: string;
+}
+
+interface LineChartData extends BaseChartData {
+    progress: number;
+    timestamp: number;
+}
+
+interface BarChartData extends BaseChartData {
+    count: number;
+}
+
+interface HoursChartData extends BaseChartData {
+    duration: number;
+    completed: number;
+}
+
+// Props pour les composants de graphiques
+declare module "@/components/charts/CoursesLineChart" {
+    export interface LineChartProps {
+        courses: LineChartData[];
+    }
+}
+
+declare module "@/components/charts/CoursesBarChart" {
+    export interface BarChartProps {
+        courses: BarChartData[];
+    }
+}
+
+declare module "@/components/charts/HoursBarChart" {
+    export interface HoursChartProps {
+        courses: HoursChartData[];
+    }
+}
+
+interface ChartDataConverters {
+    toLineChart: (courses: BookmarkedCourse[]) => LineChartData[];
+    toBarChart: (courses: BookmarkedCourse[]) => BarChartData[];
+    toHoursChart: (courses: BookmarkedCourse[]) => HoursChartData[];
+}
+
+const chartConverters: ChartDataConverters = {
+    toLineChart: (courses) => {
+        return courses.map(course => ({
+            id: course.course._id,
+            title: course.course.title,
+            progress: course.progress || 0,
+            timestamp: course._creationTime,
+            category: course.course.category
+        }));
+    },
+
+    toBarChart: (courses) => {
+        const categoryCount = courses.reduce((acc, course) => {
+            const category = course.course.category || "Non catégorisé";
+            if (!acc[category]) {
+                acc[category] = {
+                    id: category,
+                    title: category,
+                    count: 0,
+                    category
+                };
+            }
+            acc[category].count++;
+            return acc;
+        }, {} as Record<string, BarChartData>);
+
+        return Object.values(categoryCount);
+    },
+
+    toHoursChart: (courses) => {
+        return courses.map(course => {
+            const totalDuration = course.course.duration || 0;
+            const progress = course.progress || 0;
+            return {
+                id: course.course._id,
+                title: course.course.title,
+                duration: totalDuration,
+                completed: (totalDuration * progress) / 100,
+                category: course.course.category
+            };
+        });
+    }
+};
+
+// Fonction utilitaire pour calculer le nombre total d'exercices
+const calculateTotalExercises = (courses: BookmarkedCourse[]): number => {
+    return courses.reduce((acc, course) => {
+        const chaptersExercises = course.course.chapters?.reduce((chAcc: number, ch: Chapter) => {
+            return chAcc + (ch.lessons?.length || 0);
+        }, 0) || 0;
+        return acc + chaptersExercises;
+    }, 0);
+};
+
+// Fonction utilitaire pour formater les durées
+const formatDuration = (minutes: number): string => {
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+    if (hours === 0) return `${remainingMinutes}min`;
+    if (remainingMinutes === 0) return `${hours}h`;
+    return `${hours}h ${remainingMinutes}min`;
+};
+
+// Fonction utilitaire pour formater les dates
+const formatDate = (timestamp: number): string => {
+    return new Date(timestamp).toLocaleDateString('fr-FR', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    });
+};
+
+// Fonction utilitaire pour formater les pourcentages
+const formatPercentage = (value: number): string => {
+    return `${Math.round(value)}%`;
+};
+
+const calculateStatistics = (courses: BookmarkedCourse[]) => {
+    const totalCourses = courses.length;
+    const totalExercises = courses.reduce((acc, course) => {
+        return acc + (course.course.chapters?.reduce((chAcc, ch) => {
+            return chAcc + (ch.lessons?.length || 0);
+        }, 0) || 0);
+    }, 0);
+    
+    const completedExercises = courses.reduce((acc, course) => {
+        return acc + (course.course.chapters?.reduce((chAcc, ch) => {
+            return chAcc + (ch.lessons?.filter(lesson => lesson.completed)?.length || 0);
+        }, 0) || 0);
+    }, 0);
+
+    const totalDuration = courses.reduce((acc, course) => {
+        return acc + (course.course.duration || 0);
+    }, 0);
+
+    const averageProgress = courses.reduce((acc, course) => {
+        return acc + (course.progress || 0);
+    }, 0) / (totalCourses || 1); // Éviter la division par zéro
+
+    const lastUpdated = Math.max(...courses.map(c => c._creationTime));
+
+    const categoriesCount = courses.reduce((acc, course) => {
+        const category = course.course.category || "Non catégorisé";
+        acc[category] = (acc[category] || 0) + 1;
+        return acc;
+    }, {} as Record<string, number>);
+
+    const topCategory = Object.entries(categoriesCount)
+        .sort(([,a], [,b]) => b - a)[0]?.[0] || "Non catégorisé";
+
+    return {
+        totalCourses,
+        totalExercises,
+        completedExercises,
+        completionRate: totalExercises > 0 ? (completedExercises / totalExercises) * 100 : 0,
+        totalDuration,
+        averageProgress,
+        lastUpdated,
+        topCategory,
+        categoriesCount,
+        formattedDuration: formatDuration(totalDuration),
+        formattedAverageDuration: formatDuration(Math.round(totalDuration / (totalCourses || 1))),
+        formattedLastUpdated: formatDate(lastUpdated),
+        formattedProgress: formatPercentage(averageProgress),
+        formattedCompletionRate: formatPercentage((completedExercises / (totalExercises || 1)) * 100)
+    };
+};
 
 const BookmarksPage = () => {
-    const [bookmarkedCourses, setBookmarkedCourses] = useState<BookmarkedCourse[]>([
-        {
-            id: '1',
-            title: 'Introduction au Développement Web',
-            description: 'Apprenez les bases du développement web avec HTML, CSS et JavaScript',
-            instructor: 'John Doe',
-            duration: 120,
-            rating: 4.8,
-            totalStudents: 1234,
-            note: 'Très bon cours pour les débutants',
-            bookmarkedAt: new Date(),
-            thumbnailUrl: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&auto=format&fit=crop&q=60',
-            progress: 45,
-            price: 49.99,
-            originalPrice: 199.99,
-            certification: true,
-            reviews: 234,
-            liked: true,
-            lastUpdated: new Date('2024-02-15'),
-        },
-        {
-            id: '2',
-            title: 'React.js pour les Débutants',
-            description: 'Maîtrisez React.js et créez des applications web modernes',
-            instructor: 'Jane Smith',
-            duration: 180,
-            rating: 4.9,
-            totalStudents: 2156,
-            note: 'Excellent cours sur React',
-            bookmarkedAt: new Date(),
-            thumbnailUrl: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&auto=format&fit=crop&q=60',
-            progress: 75,
-            price: 59.99,
-            originalPrice: 299.99,
-            certification: true,
-            reviews: 156,
-            liked: false,
-            lastUpdated: new Date('2024-02-10'),
-        },
-        {
-            id: '3',
-            title: 'Node.js et Express',
-            description: 'Développez des applications backend avec Node.js',
-            instructor: 'Mike Johnson',
-            duration: 150,
-            rating: 4.7,
-            totalStudents: 1876,
-            note: 'Très complet sur le backend',
-            bookmarkedAt: new Date(),
-            thumbnailUrl: 'https://images.unsplash.com/photo-1627398242454-45a1465c2479?w=800&auto=format&fit=crop&q=60',
-            progress: 30,
-            price: 39.99,
-            originalPrice: 199.99,
-            certification: false,
-            reviews: 123,
-            liked: false,
-            lastUpdated: new Date('2024-02-05'),
-        }
-    ])
+
+    const { results: bookmarkedCourses } = useGetBookmarkPurchase()
     const [searchQuery, setSearchQuery] = useState('')
     const [sortBy, setSortBy] = useState<SortOption>('recent')
     const [viewMode, setViewMode] = useState<ViewMode>('grid')
-    const [editingNote, setEditingNote] = useState<EditingNote>(null);
-    const textareaRef = useRef<HTMLTextAreaElement>(null);
-    const [isLoading, setIsLoading] = useState(true);
+    const [editingNote, setEditingNote] = useState<EditingNote | null>(null)
+    const [isLoading, setIsLoading] = useState(true)
+    const {mutate: deleteBookmark} = useCreateBookmark()
 
     useEffect(() => {
+        // Réduire le temps de chargement à 500ms
         const timer = setTimeout(() => {
-            setIsLoading(false);
-        }, 2000);
-        return () => clearTimeout(timer);
-    }, []);
-
-    useEffect(() => {
-        if (editingNote && textareaRef.current) {
-            textareaRef.current.focus();
-        }
-    }, [editingNote]);
+            setIsLoading(false)
+        }, 500)
+        return () => clearTimeout(timer)
+    }, [])
 
     const filteredCourses = bookmarkedCourses.filter(course => 
-        course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        course.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        course.instructor.toLowerCase().includes(searchQuery.toLowerCase())
-    )
+    {
+      return   course.course.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        course.course.description?.toLowerCase().includes(searchQuery.toLowerCase()) 
+    } )
 
     const sortedCourses = [...filteredCourses].sort((a, b) => {
         switch (sortBy) {
             case 'recent':
-                return b.bookmarkedAt.getTime() - a.bookmarkedAt.getTime()
+                return b._creationTime - a._creationTime;
             case 'title':
-                return a.title.localeCompare(b.title)
-            case 'progress':
-                return b.progress - a.progress
-            case 'rating':
-                return b.rating - a.rating
+                return a.course.title.localeCompare(b.course.title);
             default:
-                return 0
+                return b._creationTime - a._creationTime;
         }
-    })
+    });
 
-    const handleRemoveBookmark = (courseId: string) => {
-        toast.success(`Cours ${courseId} retiré des favoris`)
-        // Ajoutez ici la logique pour supprimer le favori
+    const handleRemoveBookmark = (courseId: Id<'courses'>) => {
+        deleteBookmark({courseId}, {
+            onSuccess: () => {
+                toast.success(`Cours retiré des favoris`)
+            },
+            onError: () => {
+                toast.error(`Une erreur est survenue lors de la suppression du cours des favoris`)
+            }
+        })
     }
 
-    const handleLike = (courseId: string) => {
-        toast.success("Statut du like mis à jour");
-        // Logique pour mettre à jour le statut "liked"
+    const handleLike = (courseId: Id<'courses'>) => {
+   
+        toast.success("Statut du like mis à jour")
     }
 
-    const handleEdit = (courseId: string, note?: string) => {
-        setEditingNote({ courseId, note: note || '' });
+    const handleEdit = (courseId: Id<'courses'>, note?: string) => {
+        setEditingNote({ courseId, note: note || '' })
+    }
+
+    const handleSaveNote = (courseId: Id<'courses'>, newNote: string) => {
+        setEditingNote({ courseId, note: newNote || '' })
+        toast.success("Note mise à jour")
+    }
+
+    const handleCancelEdit = () => {
+        setEditingNote(null)
+    }
+
+    const stats = calculateStatistics(bookmarkedCourses);
+    const lineChartData = chartConverters.toLineChart(bookmarkedCourses);
+    const barChartData = chartConverters.toBarChart(bookmarkedCourses);
+    const hoursChartData = chartConverters.toHoursChart(bookmarkedCourses);
+
+    const handleSortChange = (value: SortOption) => {
+        setSortBy(value);
     };
 
-    const handleSaveNote = (courseId: string, newNote: string) => {
-        setBookmarkedCourses(prev => prev.map(course => 
-            course.id === courseId 
-                ? { ...course, note: newNote.trim() }
-                : course
-        ));
-        setEditingNote(null);
-        toast.success("Note mise à jour");
-    };
-
-    const CoursePopover = ({ course }: { course: BookmarkedCourse }) => {
-        return (
-            <div className="absolute bottom-0 left-0 right-0 opacity-0 group-hover:opacity-100 
-                transition-all duration-300 z-50 bg-gray-900/95 backdrop-blur-lg
-                border-t border-white/10 overflow-hidden
-                transform translate-y-full group-hover:translate-y-0"
-            >
-                <div className="p-6 flex flex-col gap-4">
-                    <div className="flex items-start justify-between gap-2">
-                        <h4 className="text-gray-100 font-semibold text-lg">
-                            {course.title}
-                        </h4>
-                        <div className="px-2 py-1 bg-emerald-500/20 rounded-md">
-                            <span className="text-emerald-400 text-sm font-medium">
-                                {course.price}€
-                            </span>
-                        </div>
-                    </div>
-
-                    <p className="text-gray-400 text-sm">
-                        {course.description}
-                    </p>
-
-                    <div className="grid grid-cols-2 gap-3 text-sm">
-                        <div className="flex items-center gap-2 text-gray-400">
-                            <BookOpen className="w-4 h-4" />
-                            <span>{course.duration} minutes</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-gray-400">
-                            <GraduationCap className="w-4 h-4" />
-                            <span>{course.totalStudents} étudiants</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-gray-400">
-                            <Calendar className="w-4 h-4" />
-                            <span>Mis à jour {new Date(course.lastUpdated).toLocaleDateString()}</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-gray-400">
-                            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                            <span>{course.rating} ({course.reviews} avis)</span>
-                        </div>
-                    </div>
-
-                    {course.certification && (
-                        <div className="flex items-center gap-2 text-blue-400 text-sm bg-blue-500/10 p-2 rounded-lg">
-                            <GraduationCap className="w-4 h-4" />
-                            <span>Certification incluse</span>
-                        </div>
-                    )}
-
-                    {course.note || editingNote?.courseId === course.id ? (
-                        <div className="flex flex-col gap-3 p-3 md:p-4 rounded-xl bg-gradient-to-br from-emerald-500/5 to-emerald-500/10
-                            border border-emerald-500/20">
-                            <div className="flex items-center gap-2">
-                                <div className="p-1.5 md:p-2 rounded-lg bg-emerald-500/10">
-                                    <Pencil className="w-3.5 h-3.5 md:w-4 md:h-4 text-emerald-400" />
-                                </div>
-                                <span className="text-xs md:text-sm font-medium text-emerald-400">
-                                    Ma note personnelle
-                                </span>
-                            </div>
-                            {editingNote?.courseId === course.id ? (
-                                <div className="flex flex-col gap-2">
-                                    <textarea
-                                        ref={textareaRef}
-                                        value={editingNote.note}
-                                        onChange={(e) => setEditingNote(prev => prev ? { ...prev, note: e.target.value } : null)}
-                                        placeholder="Écrivez votre note ici..."
-                                        className="w-full h-20 md:h-24 px-2.5 md:px-3 py-2 text-sm text-gray-200 
-                                            bg-gray-800/50 rounded-lg border border-gray-700 
-                                            focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/25 
-                                            outline-none resize-none"
-                                    />
-                                    <div className="flex justify-end gap-2">
-                                        <button
-                                            onClick={() => setEditingNote(null)}
-                                            className="px-2.5 md:px-3 py-1.5 rounded-lg text-xs md:text-sm font-medium
-                                                bg-gray-800/50 hover:bg-gray-800 text-gray-300
-                                                transition-colors"
-                                        >
-                                            Annuler
-                                        </button>
-                                        <button
-                                            onClick={() => handleSaveNote(course.id, editingNote.note)}
-                                            className="px-2.5 md:px-3 py-1.5 rounded-lg text-xs md:text-sm font-medium
-                                                bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400
-                                                transition-colors"
-                                        >
-                                            Sauvegarder
-                                        </button>
-                                    </div>
-                                </div>
-                            ) : (
-                                <div className="flex items-start justify-between gap-2">
-                                    <p className="text-xs md:text-sm text-gray-300 italic">
-                                        &quot;{course.note}&quot;
-                                    </p>
-                                    <button 
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleEdit(course.id, course.note);
-                                        }}
-                                        className="p-1.5 rounded-lg hover:bg-white/5 text-gray-400 hover:text-emerald-400
-                                            transition-colors"
-                                    >
-                                        <Pencil className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    ) : (
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                handleEdit(course.id);
-                            }}
-                            className="flex items-center gap-2 p-2.5 md:p-3 rounded-lg text-xs md:text-sm
-                                bg-gray-800/50 hover:bg-gray-800 text-gray-400 hover:text-emerald-400
-                                transition-colors w-full"
-                        >
-                            <Pencil className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                            <span>Ajouter une note</span>
-                        </button>
-                    )}
-
-                    <div className="flex gap-2 pt-2 border-t border-white/10">
-                        <Link
-                            href={`/courses/${course.id}`}
-                            className="flex-1 px-4 py-2 rounded-lg font-medium text-center
-                                bg-gradient-to-r from-emerald-500 to-teal-600
-                                hover:from-emerald-600 hover:to-teal-700
-                                text-white transition-all duration-300"
-                        >
-                            Commencer
-                        </Link>
-                        <Link
-                            href={`/courses/${course.id}/details`}
-                            className="px-4 py-2 rounded-lg font-medium
-                                bg-white/10 hover:bg-white/20 text-white
-                                transition-all duration-300"
-                        >
-                            Plus d'infos
-                        </Link>
-                    </div>
-                </div>
-            </div>
-        )
-    }
-
-    const CourseSkeleton = ({ viewMode }: { viewMode: ViewMode }) => {
-        return (
-            <div className={`relative rounded-2xl overflow-hidden
-                bg-gradient-to-b from-gray-900/80 to-gray-900/60
-                border border-gray-800/50 backdrop-blur-sm
-                animate-pulse
-                ${viewMode === 'list' ? 'flex flex-col md:flex-row md:h-[240px]' : ''}`}
-            >
-                {/* Image skeleton */}
-                <div className={`relative bg-gray-800/50 ${
-                    viewMode === 'list' 
-                        ? 'w-full md:w-[360px] h-[200px] md:h-full shrink-0' 
-                        : 'aspect-video'
-                }`} />
-
-                {/* Contenu skeleton */}
-                <div className={`relative flex flex-col ${
-                    viewMode === 'list' ? 'flex-1 p-4 md:p-6' : 'p-6'
-                }`}>
-                    {/* En-tête */}
-                    <div className="flex items-center justify-between mb-4">
-                        <div className="w-2/3 h-6 bg-gray-800/50 rounded-lg" />
-                        <div className="w-20 h-8 bg-gray-800/50 rounded-lg" />
-                    </div>
-
-                    {/* Description */}
-                    <div className="space-y-2 mb-4">
-                        <div className="w-full h-4 bg-gray-800/50 rounded-lg" />
-                        <div className="w-4/5 h-4 bg-gray-800/50 rounded-lg" />
-                    </div>
-
-                    {/* Stats */}
-                    <div className={`grid gap-3 mb-6 ${
-                        viewMode === 'list' ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-2'
-                    }`}>
-                        {[...Array(4)].map((_, i) => (
-                            <div key={i} className="flex items-center gap-2">
-                                <div className="w-8 h-8 bg-gray-800/50 rounded-lg" />
-                                <div className="flex flex-col gap-1">
-                                    <div className="w-16 h-3 bg-gray-800/50 rounded-lg" />
-                                    <div className="w-12 h-4 bg-gray-800/50 rounded-lg" />
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Badges */}
-                    <div className="flex gap-2 mb-6">
-                        <div className="w-24 h-6 bg-gray-800/50 rounded-lg" />
-                        <div className="w-32 h-6 bg-gray-800/50 rounded-lg" />
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex items-center justify-between gap-2 mt-auto">
-                        <div className="flex gap-2">
-                            <div className="w-24 h-9 bg-gray-800/50 rounded-lg" />
-                            <div className="hidden md:block w-20 h-9 bg-gray-800/50 rounded-lg" />
-                        </div>
-                        <div className="flex gap-1.5">
-                            <div className="w-9 h-9 bg-gray-800/50 rounded-lg" />
-                            <div className="w-9 h-9 bg-gray-800/50 rounded-lg" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
+    const handleViewModeChange = (value: ViewMode) => {
+        setViewMode(value);
     };
 
     return (
-        <div className="flex flex-col min-h-screen h-[100dvh]">
-            {/* En-tête fixe */}
-            <div className="shrink-0 px-3 md:px-4 py-4 md:py-8 bg-background/80 backdrop-blur-sm sticky top-0 z-20">
+        <div className="flex flex-col min-h-screen h-[100dvh] bg-gradient-to-br from-gray-900 via-gray-800 to-gray-950 relative overflow-hidden">
+            {/* Effets de fond améliorés */}
+            <div className="absolute inset-0 bg-gradient-radial from-blue-500/5 via-transparent to-transparent animate-pulse-slow" />
+            <div className="absolute inset-0 bg-rotating-gradient from-emerald-500/5 via-blue-500/5 to-purple-500/5 animate-rotate-gradient" />
+            <div className="absolute inset-0">
+                <div className="absolute top-0 -left-4 w-72 h-72 bg-emerald-500 rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-blob" />
+                <div className="absolute top-0 -right-4 w-72 h-72 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-blob animation-delay-2000" />
+                <div className="absolute -bottom-8 left-20 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-blob animation-delay-4000" />
+            </div>
+
+            {/* En-tête fixe avec navigation et recherche */}
+            <header className="shrink-0 px-3 md:px-4 py-3 dark:bg-gray-900/60 backdrop-blur-2xl sticky top-0 z-20 border-b border-gray-700/30 shadow-glass transition-all duration-300">
                 <div className="container mx-auto">
-                    {/* En-tête plus compact sur mobile */}
-                    <div className="flex flex-col gap-3 mb-4 md:mb-8">
-                        <div className="flex items-center gap-2 md:gap-3">
-                            <div className="p-2 md:p-3 rounded-xl bg-gradient-to-br from-emerald-500/20 via-[#178F65]/20 to-teal-500/20 backdrop-blur-xl border border-emerald-500/10">
-                                <Bookmark className="w-5 h-5 md:w-7 md:h-7 text-gray-200" />
+                    <div className="flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 shadow-neon-emerald hover:bg-emerald-500/15 transition-all duration-300 hover:scale-105 animate-float">
+                                <Bookmark className="w-5 h-5 text-emerald-400" />
                             </div>
-                            <h1 className="text-xl md:text-3xl font-bold text-gray-100">
-                                Mes cours favoris
-                            </h1>
+                            <div className="animate-slide-right">
+                                <h1 className="text-xl font-bold text-white tracking-tight">Mes cours</h1>
+                            </div>
                         </div>
-                        <p className="text-sm md:text-base text-gray-400 max-w-2xl font-medium">
-                            Retrouvez ici tous vos cours favoris pour y accéder rapidement
-                        </p>
-                    </div>
-
-                    {/* Contrôles plus adaptés au mobile */}
-                    <div className="flex flex-col gap-3 md:gap-4">
-                        {/* Recherche */}
-                        <div className="relative w-full">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-400" />
-                            <input
-                                type="text"
-                                placeholder="Rechercher un cours..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full pl-9 md:pl-10 pr-4 py-2 text-sm md:text-base rounded-lg bg-white/5 border border-white/10
-                                    focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/25
-                                    text-gray-100 placeholder-gray-400 outline-none transition-all"
+                        <div className="flex items-center gap-4 animate-slide-left">
+                            <SearchBar value={searchQuery} onChange={setSearchQuery} />
+                            <ViewControls 
+                                sortBy={sortBy}
+                                onSortChange={handleSortChange}
+                                viewMode={viewMode}
+                                onViewModeChange={handleViewModeChange}
                             />
-                        </div>
-
-                        {/* Contrôles sur une ligne */}
-                        <div className="flex items-center gap-2 md:gap-3">
-                            {/* Tri */}
-                            <div className="flex-1">
-                                <select
-                                    value={sortBy}
-                                    onChange={(e) => setSortBy(e.target.value as SortOption)}
-                                    className="w-full text-sm md:text-base appearance-none px-3 py-2 rounded-lg bg-white/5 border border-white/10
-                                        text-gray-100 outline-none cursor-pointer transition-all
-                                        focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/25"
-                                >
-                                    <option value="recent">Plus récents</option>
-                                    <option value="title">Alphabétique</option>
-                                    <option value="progress">Progression</option>
-                                    <option value="rating">Note</option>
-                                </select>
-                            </div>
-
-                            {/* Basculer la vue */}
-                            <div className="flex items-center bg-white/5 rounded-lg p-1 border border-white/10">
-                                <button
-                                    onClick={() => setViewMode('grid')}
-                                    className={`p-1.5 md:p-2 rounded-md transition-all ${
-                                        viewMode === 'grid' 
-                                            ? 'bg-emerald-500/20 text-emerald-400' 
-                                            : 'text-gray-400 hover:bg-white/5'
-                                    }`}
-                                >
-                                    <Grid className="w-4 h-4 md:w-5 md:h-5" />
-                                </button>
-                                <button
-                                    onClick={() => setViewMode('list')}
-                                    className={`p-1.5 md:p-2 rounded-md transition-all ${
-                                        viewMode === 'list' 
-                                            ? 'bg-emerald-500/20 text-emerald-400' 
-                                            : 'text-gray-400 hover:bg-white/5'
-                                    }`}
-                                >
-                                    <List className="w-4 h-4 md:w-5 md:h-5" />
-                                </button>
-                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </header>
 
-            {/* Zone de défilement */}
-            <div className="flex-1 overflow-y-auto overscroll-contain px-3 md:px-4 pb-6 md:pb-8">
-                <div className="container mx-auto">
+            {/* Contenu principal défilant */}
+            <main className="flex-1 overflow-y-auto overscroll-auto px-3 md:px-2 py-2 relative z-10">
+                <div className="container mx-auto space-y-4">
                     {isLoading ? (
                         <div className={viewMode === 'grid' 
-                            ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6"
-                            : "flex flex-col gap-3 md:gap-4"
+                            ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+                            : "grid grid-cols-1 md:grid-cols-2 gap-6"
                         }>
                             {[...Array(6)].map((_, index) => (
-                                <CourseSkeleton key={index} viewMode={viewMode} />
-                            ))}
-                        </div>
-                    ) : sortedCourses.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center py-8 md:py-12 text-center">
-                            <Search className="w-12 h-12 md:w-16 md:h-16 text-gray-500/20 mb-4" />
-                            <h2 className="text-lg md:text-xl font-semibold text-gray-300 mb-2">
-                                Aucun résultat trouvé
-                            </h2>
-                            <p className="text-sm md:text-base text-gray-400">
-                                Essayez avec d&apos;autres termes de recherche
-                            </p>
-                        </div>
-                    ) : (
-                        <div className={viewMode === 'grid' 
-                            ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6"
-                            : "flex flex-col gap-3 md:gap-4"
-                        }>
-                            {sortedCourses.map((course) => (
                                 <div 
-                                    key={course.id} 
-                                    className={`group relative rounded-2xl overflow-hidden transition-all duration-500
-                                        bg-gradient-to-b from-gray-900/80 to-gray-900/60
-                                        hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)]
-                                        border border-gray-800/50 hover:border-emerald-500/30
-                                        backdrop-blur-sm
-                                        ${viewMode === 'list' 
-                                            ? 'flex flex-col md:flex-row md:h-[240px]' 
-                                            : ''}`}
+                                    key={index} 
+                                    className="bg-glass animate-shimmer"
+                                    style={{ animationDelay: `${index * 200}ms` }}
                                 >
-                                    <div className={`relative ${viewMode === 'list' 
-                                        ? 'w-full md:w-[360px] h-[200px] md:h-full shrink-0' 
-                                        : 'aspect-video'}`}
-                                    >
-                                        <img 
-                                            src={course.thumbnailUrl} 
-                                            alt={course.title}
-                                            className={`w-full h-full object-cover transition-all duration-500
-                                                group-hover:brightness-110
-                                                ${viewMode === 'list' 
-                                                    ? 'md:rounded-l-2xl md:object-center' 
-                                                    : 'group-hover:scale-105'}`}
-                                        />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent">
-                                            <div className="absolute bottom-4 left-4 right-4 flex items-center gap-3">
-                                                <div className="flex-1 h-1.5 rounded-full bg-gray-800/80 overflow-hidden">
-                                                    <div 
-                                                        className="h-full bg-gradient-to-r from-emerald-500 to-teal-400
-                                                            relative overflow-hidden rounded-full
-                                                            after:absolute after:inset-0 after:bg-gradient-to-r 
-                                                            after:from-white/20 after:via-white/40 after:to-transparent
-                                                            after:animate-shimmer"
-                                                        style={{ width: `${course.progress}%` }}
-                                                    />
-                                                </div>
-                                                <span className="text-sm font-medium text-white/90">
-                                                    {Math.round(course.progress)}%
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className={`relative flex flex-col ${viewMode === 'list' 
-                                        ? 'flex-1 p-4 md:p-6' 
-                                        : 'p-6'}`}
-                                    >
-                                        <div className="flex items-center justify-between mb-4 md:mb-0">
-                                            <h3 className="text-lg font-semibold text-white line-clamp-2 pr-4">
-                                                {course.title}
-                                            </h3>
-                                            <div className="flex items-center gap-2 shrink-0">
-                                                <div className="px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
-                                                    <span className="text-emerald-400 font-semibold">{course.price}€</span>
-                                                </div>
-                                                {course.originalPrice && (
-                                                    <span className="text-gray-500 line-through text-sm hidden md:inline-block">
-                                                        {course.originalPrice}€
-                                                    </span>
-                                                )}
-                                            </div>
-                                        </div>
-
-                                        <p className="text-gray-400 text-sm line-clamp-2 mb-4">
-                                            {course.description}
-                                        </p>
-
-                                        <div className={`grid gap-3 mb-4 md:mb-6 ${
-                                            viewMode === 'list' 
-                                                ? 'grid-cols-2 sm:grid-cols-4' 
-                                                : 'grid-cols-2'
-                                        }`}>
-                                            <div className="flex items-center gap-2">
-                                                <div className="p-2 rounded-lg bg-gray-800/50">
-                                                    <User className="w-4 h-4 text-gray-400" />
-                                                </div>
-                                                <div className="flex flex-col">
-                                                    <span className="text-xs text-gray-400">Instructeur</span>
-                                                    <span className="text-sm text-gray-300">{course.instructor}</span>
-                                                </div>
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                <div className="p-2 rounded-lg bg-yellow-500/10">
-                                                    <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                                                </div>
-                                                <div className="flex flex-col">
-                                                    <span className="text-xs text-gray-400">Note</span>
-                                                    <span className="text-sm text-gray-300">{course.rating} ({course.reviews} avis)</span>
-                                                </div>
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                <div className="p-2 rounded-lg bg-gray-800/50">
-                                                    <BookOpen className="w-4 h-4 text-gray-400" />
-                                                </div>
-                                                <div className="flex flex-col">
-                                                    <span className="text-xs text-gray-400">Durée</span>
-                                                    <span className="text-sm text-gray-300">{course.duration} min</span>
-                                                </div>
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                <div className="p-2 rounded-lg bg-gray-800/50">
-                                                    <GraduationCap className="w-4 h-4 text-gray-400" />
-                                                </div>
-                                                <div className="flex flex-col">
-                                                    <span className="text-xs text-gray-400">Étudiants</span>
-                                                    <span className="text-sm text-gray-300">{course.totalStudents.toLocaleString()}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div className="flex flex-wrap gap-2 mb-4">
-                                            {course.certification && (
-                                                <span className="px-2 py-1 bg-blue-500/10 text-blue-400 rounded-lg text-xs 
-                                                    font-medium border border-blue-500/20 flex items-center gap-1">
-                                                    <GraduationCap className="w-3 h-3" />
-                                                    <span className="hidden md:inline">Certification</span>
-                                                </span>
-                                            )}
-                                            <span className="px-2 py-1 bg-purple-500/10 text-purple-400 rounded-lg text-xs 
-                                                font-medium border border-purple-500/20 flex items-center gap-1">
-                                                <Calendar className="w-3 h-3" />
-                                                <span className="hidden md:inline">Mis à jour </span>
-                                                {new Date(course.lastUpdated).toLocaleDateString()}
-                                            </span>
-                                        </div>
-
-                                        <div className="flex items-center justify-between gap-2 mt-auto">
-                                            <div className="flex items-center gap-2">
-                                                <Link
-                                                    href={`/courses/${course.id}`}
-                                                    className="px-3 md:px-4 py-2 rounded-lg font-medium text-sm
-                                                        bg-gradient-to-r from-emerald-500 to-teal-600
-                                                        hover:from-emerald-600 hover:to-teal-700
-                                                        text-white transition-all duration-300
-                                                        shadow-lg shadow-emerald-500/20"
-                                                >
-                                                    Continuer
-                                                </Link>
-                                                <Link
-                                                    href={`/courses/${course.id}/details`}
-                                                    className="px-3 md:px-4 py-2 rounded-lg font-medium text-sm
-                                                        bg-gray-800/50 hover:bg-gray-800
-                                                        text-gray-300 hover:text-white
-                                                        border border-gray-700 hover:border-gray-600
-                                                        transition-all duration-300
-                                                        hidden md:block"
-                                                >
-                                                    Détails
-                                                </Link>
-                                            </div>
-
-                                            <div className="flex items-center gap-1.5">
-                                                <button 
-                                                    onClick={() => handleLike(course.id)}
-                                                    className={`p-2 rounded-lg transition-all duration-300 
-                                                        ${course.liked 
-                                                            ? 'bg-pink-500/20 text-pink-400 hover:bg-pink-500/30' 
-                                                            : 'bg-gray-800/50 text-gray-400 hover:bg-gray-800 hover:text-pink-400'}`}
-                                                >
-                                                    <Heart className={`w-4 h-4 ${course.liked ? 'fill-pink-400' : ''}`} />
-                                                </button>
-                                                <button 
-                                                    onClick={() => handleRemoveBookmark(course.id)}
-                                                    className="p-2 bg-gray-800/50 text-gray-400 hover:text-red-400 rounded-lg 
-                                                        hover:bg-gray-800 transition-all duration-300"
-                                                >
-                                                    <Trash2 className="w-4 h-4" />
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {viewMode === 'grid' && <CoursePopover course={course} />}
+                                    <CourseSkeleton key={index} viewMode={viewMode} />
                                 </div>
                             ))}
                         </div>
+                    ) : sortedCourses.length === 0 ? (
+                        <div className="animate-scale-up">
+                            <EmptyState />
+                        </div>
+                    ) : (
+                        <>
+                            {/* Cartes statistiques */}
+                            <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+                                <div className="group bg-glass p-6 rounded-2xl border border-gray-700/30 backdrop-blur-xl hover:bg-gray-800/50 transition-all duration-300 hover:shadow-glass-hover hover:border-gray-600/30 hover:scale-102 animate-scale-up">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <p className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors">Cours suivis</p>
+                                            <p className="text-3xl font-bold text-white mt-1 transition-all duration-300 group-hover:scale-105">
+                                                {stats.totalCourses}
+                                            </p>
+                                        </div>
+                                        <div className="p-3 rounded-xl bg-blue-500/10 group-hover:bg-blue-500/15 transition-all duration-300 group-hover:scale-110 shadow-neon">
+                                            <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div className="mt-4">
+                                        <p className="text-xs text-gray-400 group-hover:text-gray-300 transition-colors">Progression moyenne</p>
+                                        <div className="w-full bg-gray-700/30 rounded-full h-2 mt-2 overflow-hidden shadow-inner-glow">
+                                            <div 
+                                                className="bg-gradient-to-r from-blue-500 to-blue-400 h-2 rounded-full transition-all duration-500 ease-elastic animate-glow-pulse" 
+                                                style={{ width: `${stats.averageProgress}%` }}>
+                                            </div>
+                                        </div>
+                                        <p className="text-xs text-gray-400 mt-2 group-hover:text-gray-300 transition-colors">
+                                            {stats.formattedProgress} complété
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="group bg-glass p-6 rounded-2xl border border-gray-700/30 backdrop-blur-xl hover:bg-gray-800/50 transition-all duration-300 hover:shadow-glass-hover hover:border-gray-600/30 hover:scale-102 animate-scale-up">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <p className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors">Exercices complétés</p>
+                                            <div className="flex items-baseline gap-2">
+                                                <p className="text-3xl font-bold text-white mt-1 transition-all duration-300 group-hover:scale-105">
+                                                    {stats.completedExercises}
+                                                </p>
+                                                <p className="text-sm text-gray-400">/ {stats.totalExercises}</p>
+                                            </div>
+                                        </div>
+                                        <div className="p-3 rounded-xl bg-emerald-500/10 group-hover:bg-emerald-500/15 transition-all duration-300 group-hover:scale-110 shadow-neon-emerald">
+                                            <svg className="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div className="mt-4">
+                                        <p className="text-xs text-gray-400 group-hover:text-gray-300 transition-colors">Taux de réussite</p>
+                                        <div className="w-full bg-gray-700/30 rounded-full h-2 mt-2 overflow-hidden shadow-inner-glow">
+                                            <div 
+                                                className="bg-gradient-to-r from-emerald-500 to-emerald-400 h-2 rounded-full transition-all duration-500 ease-elastic animate-glow-pulse" 
+                                                style={{ width: `${stats.completionRate}%` }}>
+                                            </div>
+                                        </div>
+                                        <p className="text-xs text-gray-400 mt-2 group-hover:text-gray-300 transition-colors">
+                                            {stats.formattedCompletionRate} de réussite
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="group bg-glass p-6 rounded-2xl border border-gray-700/30 backdrop-blur-xl hover:bg-gray-800/50 transition-all duration-300 hover:shadow-glass-hover hover:border-gray-600/30 hover:scale-102 animate-scale-up">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <p className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors">Temps d&apos;apprentissage</p>
+                                            <div className="flex items-baseline gap-2">
+                                                <p className="text-3xl font-bold text-white mt-1 transition-all duration-300 group-hover:scale-105">
+                                                    {stats.formattedDuration}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="p-3 rounded-xl bg-purple-500/10 group-hover:bg-purple-500/15 transition-all duration-300 group-hover:scale-110 shadow-neon-purple">
+                                            <svg className="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div className="mt-4">
+                                        <p className="text-xs text-gray-400 group-hover:text-gray-300 transition-colors">Catégorie principale</p>
+                                        <p className="text-sm text-gray-300 mt-1 group-hover:text-white transition-colors">
+                                            {stats.topCategory}
+                                        </p>
+                                        <p className="text-xs text-gray-400 mt-2 group-hover:text-gray-300 transition-colors">
+                                            Dernière mise à jour : {stats.formattedLastUpdated}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="group bg-glass p-6 rounded-2xl border border-gray-700/30 backdrop-blur-xl hover:bg-gray-800/50 transition-all duration-300 hover:shadow-glass-hover hover:border-gray-600/30 hover:scale-102 animate-scale-up">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <p className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors">Temps moyen / cours</p>
+                                            <div className="flex items-baseline gap-2">
+                                                <p className="text-3xl font-bold text-white mt-1 transition-all duration-300 group-hover:scale-105">
+                                                    {stats.formattedAverageDuration}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="p-3 rounded-xl bg-pink-500/10 group-hover:bg-pink-500/15 transition-all duration-300 group-hover:scale-110 shadow-neon">
+                                            <svg className="w-6 h-6 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div className="mt-4">
+                                        <p className="text-xs text-gray-400 group-hover:text-gray-300 transition-colors">Répartition des catégories</p>
+                                        <div className="mt-2 space-y-1">
+                                            {Object.entries(stats.categoriesCount)
+                                                .sort(([,a], [,b]) => b - a)
+                                                .slice(0, 3)
+                                                .map(([category, count]) => (
+                                                    <div key={category} className="flex items-center justify-between">
+                                                        <p className="text-xs text-gray-400">{category}</p>
+                                                        <p className="text-xs text-gray-300">{count} cours</p>
+                                                    </div>
+                                                ))
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+
+                            {/* Section des graphiques avec le nouveau style */}
+                            <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                                <div className="group bg-glass p-6 rounded-2xl border border-gray-700/30 backdrop-blur-xl hover:bg-gray-800/50 transition-all duration-300 hover:shadow-glass-hover hover:scale-102 animate-scale-up">
+                                    <h3 className="text-sm font-medium text-gray-300 mb-4 group-hover:text-white transition-colors">Progression des cours</h3>
+                                    <CoursesLineChart courses={lineChartData} />
+                                </div>
+                                <div className="bg-gray-800/30 p-4 rounded-xl border border-gray-700/30 backdrop-blur-sm">
+                                    <h3 className="text-sm font-medium text-gray-300 mb-3">Répartition par catégorie</h3>
+                                    <CoursesBarChart courses={barChartData} />
+                                </div>
+                                <div className="md:col-span-2 xl:col-span-1 bg-gray-800/30 p-4 rounded-xl border border-gray-700/30 backdrop-blur-sm">
+                                    <h3 className="text-sm font-medium text-gray-300 mb-3">Heures de formation</h3>
+                                    <HoursBarChart courses={hoursChartData} />
+                                </div>
+                            </section>
+
+                            {/* Liste des cours avec animation améliorée */}
+                            <div className={viewMode === 'grid'
+                                ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+                                : "grid grid-cols-1 md:grid-cols-2 gap-6"
+                            }>
+                                {sortedCourses.map((course, index) => (
+                                    <div 
+                                        key={course.course._id} 
+                                        className="animate-scale-up transition-all duration-300 hover:scale-102"
+                                        style={{
+                                            animationDelay: `${index * 100}ms`
+                                        }}
+                                    >
+                                        <CourseCard 
+                                            isBookmarked={course.type === 'bookmark'}
+                                            course={{
+                                                id: course.course._id,
+                                                liked: false,
+                                                course: {
+                                                    _id: course.course._id,
+                                                    title: course.course.title,
+                                                    description: course.course?.description || "",
+                                                    cover: course.course.cover || "",
+                                                    price: course.course.price || 0,
+                                                    duration: course.course.duration || 0,
+                                                    certification: course.course.certification || true,
+                                                    lastUpdated: course.course.updatedAt || course.course._creationTime,
+                                                    chapters: course.course.chapters || []
+                                                }
+                                            }}
+                                            viewMode={viewMode}
+                                            bookmark={{
+                                                note: course.note || "",
+                                                creation: course._creationTime
+                                            }}
+                                            editingNote={course.note ? { courseId: course.course._id, note: course.note } : null}
+                                            onLike={() => handleLike(course.course._id)}
+                                            onRemove={() => handleRemoveBookmark(course.course._id)}
+                                            onEdit={(note) => handleEdit(course.course._id, note)}
+                                            onSaveNote={(newNote) => handleSaveNote(course.course._id, newNote)}
+                                            onCancelEdit={handleCancelEdit}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        </>
                     )}
                 </div>
-            </div>
+            </main>
         </div>
     )
 }

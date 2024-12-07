@@ -224,16 +224,7 @@ export const RegisterForm = ({ onLoginClick }: RegisterFormProps) => {
         </div>
       </div>
 
-      <div className="text-xs text-gray-500">
-        En créant un compte, vous acceptez nos{' '}
-        <Link href="/legal/terms" className="text-cyan-600 hover:underline">
-          conditions d&apos;utilisation
-        </Link>
-        {' '}et notre{' '}
-        <Link href="/legal/privacy" className="text-cyan-600 hover:underline">
-          politique de confidentialité
-        </Link>
-      </div>
+    
 
       <Button
         type="submit"

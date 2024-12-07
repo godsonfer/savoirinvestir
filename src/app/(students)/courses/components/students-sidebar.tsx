@@ -1,14 +1,12 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { SidebarItem } from '@/app/(admin)/dashboard/_components/sidebar-items'
 import {
-    ChartCandlestick, LibraryBig, GraduationCap, SearchCheck,  FileTerminal,
-    Notebook, 
-    Users,
-    Shapes,
-    ChartBar
+    LibraryBig, GraduationCap, SearchCheck,  FileTerminal,    Users,    Shapes,    
 } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 
 import React from 'react'
+import { FaChartBar } from 'react-icons/fa'
 
 
 const CourseSidebar = () => {
@@ -19,7 +17,7 @@ const CourseSidebar = () => {
             <div className="flex flex-col px-2 mt-4">
                 <SidebarItem
                     label="Statistiques"
-                    icon={ChartBar}
+                    icon={FaChartBar}
                     link="/dashboard/courses"
                     variant={pathname.includes('/dashboard') ? "active" : "default"}
                 />
@@ -32,20 +30,20 @@ const CourseSidebar = () => {
                 <SidebarItem
                     label="Mes cours"
                     icon={LibraryBig}
-                    variant={pathname.includes('/my_courses') ? "active" : "default"}
+                    variant={pathname.includes('/bookmarks') ? "active" : "default"}
                     link="/bookmarks"
                 />
               
-                <SidebarItem
+                {/* <SidebarItem
                     label="Mes Analyses"
                     icon={ChartCandlestick}
                     link="/courses"
-                />
-                <SidebarItem
+                /> */}
+                {/* <SidebarItem
                     label="Mon Journal"
                     icon={Notebook}
                     link="/certificates"
-                />
+                /> */}
                 {/* <SidebarItem
                     label="Mes Messages"
                     icon={MessageSquareWarning}
@@ -55,21 +53,25 @@ const CourseSidebar = () => {
                     label="Mes Exercices"
                     icon={FileTerminal}
                     link="/exercices"
+                    variant={pathname.includes('/exercices') ? "active" : "default"}
                 />
                 <SidebarItem
                     label="Mes Certificats"
                     icon={GraduationCap}
                     link="/certificates"
+                    variant={pathname.includes('/certificates') ? "active" : "default"}
                 />
                 <SidebarItem
                     label="Marketing"
                     icon={Shapes}
                     link="/marketing"
+                    variant={pathname.includes('/marketing') ? "active" : "default"}
                 />
                 <SidebarItem
                     label="Utilisateurs"
                     icon={Users}
                     link="/users"
+                    variant={pathname.includes('/users') ? "active" : "default"}
                 />
 
             </div>

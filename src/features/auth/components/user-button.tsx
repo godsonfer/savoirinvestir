@@ -1,12 +1,15 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client"
 import { AvatarFallback, Avatar, AvatarImage } from '@/components/ui/avatar'
+import { useTheme } from '@/contexts/theme-context';
+
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { DollarSign, Gift, Loader, LogOut, Settings, } from 'lucide-react'
+import { DollarSign, Gift, Loader, LogOut, Moon, Settings, Sun, } from 'lucide-react'
 
 import React from 'react'
 import { useCurrentUser } from '../api/user-current-user'
@@ -16,6 +19,8 @@ import { Separator } from '@/components/ui/separator'
 import { AvatarIcon } from '@radix-ui/react-icons'
 
 const UserButton = () => {
+  // const { isDarkMode, toggleTheme } = useTheme();
+
   const { data, isLoading } = useCurrentUser()
   const { signOut } = useAuthActions()
   const router = useRouter()
@@ -42,6 +47,10 @@ const UserButton = () => {
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent align='center' side='bottom' className='w-60' >
+        {/* <DropdownMenuItem onClick={toggleTheme}>
+          {isDarkMode ? <Sun className='size-4 mr-2' /> : <Moon className='size-4 mr-2' />}
+          {isDarkMode ? "Mode clair" : "Mode sombre"}
+        </DropdownMenuItem> */}
         <DropdownMenuItem>
           <Gift className='size-4 mr-2' />
           Faire un don

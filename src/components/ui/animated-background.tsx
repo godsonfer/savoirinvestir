@@ -9,7 +9,7 @@ export const AnimatedBackground = () => {
 
             {/* Motif de points */}
             <motion.div 
-                className="absolute inset-0 bg-[url('/patterns/dot-pattern.png')] opacity-5"
+                className="absolute inset-0  opacity-5"
                 animate={{ 
                     scale: [1, 1.2, 1],
                     rotate: [0, 5, 0] 

@@ -1,6 +1,6 @@
 import { api } from "../../../../convex/_generated/api";
 import { usePaginatedQuery } from "convex/react";
-const BATH_SIZE = 20;
+const BATH_SIZE = 6;
 
 export type getCoursesReturnType = (typeof api.courses.get._returnType)["page"];
 

@@ -333,13 +333,14 @@ const schema = defineSchema({
     categoryId: v.optional(v.id("categories")),
     cover: v.optional(v.string()),
     description: v.optional(v.string()),
+    certification : v.optional(v.boolean() || true),
     price: v.optional(v.number()),
     isPublished: v.optional(v.boolean() || false),
     imageUrl: v.optional(v.array(v.string())),
     duration: v.optional(v.number()),
     skills: v.optional(v.array(v.string())),
     level : v.optional (v.string ()),
-    updatedAt: v.optional(v.number()),
+    updatedAt: v.optional(v.number()) || Date.now(),
   })
     .index("by_workspace_id", ["workspaceId"])
     .index("by_user_id", ["userId"])
@@ -386,6 +387,7 @@ const schema = defineSchema({
     courseId: v.id("courses"),
     lessonId : v.optional (v.id('lessons')),
     chapterId: v.optional(v.id("chapters")),
+    exercicesId: v.optional(v.id("exercices")),
     name: v.optional(v.string()),
     url: v.string(),
   })
@@ -447,14 +449,16 @@ const schema = defineSchema({
   // user progress table
   userProgress: defineTable({
     userId: v.id("users"),
-    lessonId: v.id("lessons"),
+    courseId: v.id("courses"),
+    activeLessonId: v.id("lessons"),
     isCompleted: v.optional(v.boolean() || false),
     completionDate: v.optional(v.number()),
     progress: v.optional(v.number()),
   })
     .index("by_user_id", ["userId"])
-    .index("by_lesson_id", ["lessonId"])
-    .index("by_user_id_by_lesson_id", ["userId", "lessonId"]),
+    .index("by_lesson_id", ["activeLessonId"])
+    .index("by_user_id_by_lesson_id", ["userId", "activeLessonId"])
+    .index("by_user_id_course_id", ["userId", "courseId"]),
 
   // transactions table
   purchases: defineTable({
@@ -498,52 +502,68 @@ const schema = defineSchema({
   certificats: defineTable({
     userId: v.id("users"),
     courseId: v.id("courses"),
+    issueDate: v.number(),
+    expirationDate: v.number(),
+    completionRate: v.number(),
+    certificateNumber: v.string(),
     certificateUrl: v.optional(v.id("_storage")),
   })
     .index("by_user_id", ["userId"])
     .index("by_course_id", ["courseId"])
     .index("by_user_id_course_id", ["userId", "courseId"]),
+
   // exercices table
   exercices: defineTable({
-    userId: v.id("users"),
+    authorId: v.id("users"),
     courseId: v.id("courses"),
+    chapterId : (v.id("chapters")),
     title: v.string(),
+    difficulty: v.optional(v.string()),
+    score: v.optional(v.number()),
+    points: v.optional(v.number()),
     description: v.optional(v.string()),
-    poll: v.optional(
-      v.array(
-        v.object({
-          question: v.string(),
-          supposedAnsewer: v.string(),
-          isRequired: v.boolean(),
-          needMark: v.number(),
-          note: v.optional(v.string()),
-        })
-      )
-    ),
-  }),
+    updatedAt: v.optional(v.number()),
+    isPublished: v.optional(v.boolean() || false),
+    questions :v.optional( v.array( 
+      v.object({
+        questionId : v.string(),
+        question : v.string(),
+        points: v.optional(v.number()),
+        category: v.optional(v.string()),
+        hint: v.optional(v.string()),
+        options: v.optional(v.array(v.object({
+          id: v.string(),
+          text: v.string(),
+          isCorrect: v.boolean(),
+          explanation: v.optional(v.string()),  
+        }))),
+      })
+    ))
+  }) 
+    .index("by_course_id", ["courseId"])
+    .index("by_chapter_id", ["chapterId"])
+    .index("by_author_id_course_id", ["authorId", "courseId"]),
+
+
   // exercices done table
   useExercices: defineTable({
     userId: v.id("users"),
     courseId: v.id("courses"),
+    chapterId: v.id("chapters"),
+    exercicesId: v.id("exercices"),
+    executedDate: v.number(),
+    points: v.optional(v.number()),
     mark: v.optional(v.number()),
-    exerciseId: v.array(
-      v.object({
-        exercicesId: v.id("exercises"),
-        executedDate: v.number(),
-        answer: v.string(),
-        note: v.optional(v.string()),
-      })
-    ),
+    note: v.optional(v.string()),
     updatedAt: v.optional(v.number()),
   })
     .index("by_user_id", ["userId"])
-    .index("by_exercices_id", ["exerciseId"])
+    .index("by_course_id", ["courseId"])
+    .index("by_chapter_id", ["chapterId"])
     .index("by_user_id_course_id", ["userId", "courseId"])
-    .index("by_user_id_course_id_exercise_id", [
-      "userId",
-      "courseId",
-      "exerciseId",
-    ]),
+    .index("by_user_id_exercices_id", ["userId", "exercicesId"])
+    .index("by_user_id_chapter_id", ["userId", "chapterId"]),
+
   // comments
   comments: defineTable({
     userId: v.id("users"),

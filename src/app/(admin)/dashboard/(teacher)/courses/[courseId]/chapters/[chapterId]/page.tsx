@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client"
+import { mockCourses } from "@/app/(students)/exercices/data/mock-data"
 
 import { useCourseId } from '@/hooks/use-course-id'
 import { useChapterId } from '@/hooks/use-chapter-id'
@@ -8,7 +9,8 @@ import { useGetChapters } from '@/features/chapters/api/use-get-chapters'
 import { usePublishChapter } from '@/features/chapters/api/use-publish-chapter'
 import { usePanel } from '@/hooks/use-panel'
 import { useConfirm } from "@/hooks/use-confirm";
-
+import {  Plus } from "lucide-react"
+import { AddExerciseDialog } from "@/app/(students)/exercices/components/dialogs/add-exercise-dialog"
 import React from 'react'
 
 import { ChaptersForm } from '../../../_components/chapters-form'
@@ -29,7 +31,6 @@ import { toast } from 'sonner'
 
 export default function ChapterPage() {
   const { lessonId, onCLose } = usePanel()
-  // TODO: Faire un populate du chapitre pour avoir tous les lecons,  les appels API repétés dans
   const courseId = useCourseId()
   const chapterId = useChapterId()
   const { data: chapters, isLoading: chaptersLoading } = useGetChapters({ courseId: courseId })
@@ -37,7 +38,6 @@ export default function ChapterPage() {
   const { data: chapter, isLoading: chapterLoading } = useGetChapter({ courseId: courseId, chapterId: chapterId })
   const { mutate } = usePublishChapter()
   const showPanel = !!lessonId
-   
   const [PublishDialog, publish] = useConfirm('Etes-vous sûre ?', "Si vous publiez ce chapitre, il sera disponible pour tous les utilisateurs.");
 
   const publishChapter = async () => {
@@ -54,6 +54,20 @@ export default function ChapterPage() {
     })
   }
   const close = () => onCLose()
+
+  // exercices
+
+      // Adapter les données mockées pour correspondre au type attendu
+const adaptedMockCourses = mockCourses.map(course => ({
+  ...course,
+  chapters: course.chapters.map(chapter => ({
+    ...chapter,
+    lessons: [], // Ajouter la propriété lessons manquante
+    exercises: chapter.exercises || []
+  }))
+}))
+
+
   return (
     <div className="h-full p-2">
       <PublishDialog />
@@ -79,6 +93,18 @@ export default function ChapterPage() {
         <div className=" rounded-md flex h-[calc(100vh-45px)] w-[calc(100vw-85px)] bg-gradient-to-b from-white to-teal-50">
           <ResizablePanelGroup direction="horizontal" autoSaveId='immlab-lessons-layout'>
             <ResizablePanel defaultSize={20} minSize={20} className="">
+            <div className="flex flex-1  gap-2 mt-2 justify-end items-end">
+                          <AddExerciseDialog courses={adaptedMockCourses}  courseId={courseId} chapterId={chapterId}>
+                                        <Button
+                                            variant="default"
+                                            size="sm"
+                                            className="bg-primary dark:bg-primary/80 hover:bg-primary/90 text-white gap-2"
+                                            >
+                                            <Plus className="h-4 w-4" />
+                                            <span className="hidden sm:inline">Ajouter un exercice</span>
+                                        </Button>
+                                    </AddExerciseDialog>
+                                </div>
               {
                 chaptersLoading ? (<SpinLoader />) :
                   // liste des chapitres

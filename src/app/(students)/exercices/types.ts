@@ -1,44 +1,71 @@
-export interface Progress {
-  completed: boolean
-  score: number
-  submittedAt?: Date
-  attempts: number
-}
-
-export interface Question {
-  id: string
-  text: string
-  isCorrect: boolean
-  explanation?: string
-}
-
-export interface Lesson {
-  id: string
-  title: string
-  description: string
-  difficulty: 'easy' | 'medium' | 'hard'
-  order: number
-  questions: Question[]
-  progress?: Progress
-}
-
-export interface Chapter {
-  id: string
-  title: string
-  description: string
-  order: number
-  lessons: Lesson[]
-  progress?: Progress
-}
+export type Difficulty = "Facile" | "Moyen" | "Difficile"
+export type CourseDifficulty = "Débutant" | "Intermédiaire" | "Avancé"
 
 export interface Course {
   id: string
   title: string
   description: string
-  coverImage: string
-  duration: string
-  studentsCount: number
-  isCertified: boolean
+  progress: number
+  difficulty: CourseDifficulty
   chapters: Chapter[]
-  progress?: Progress
+}
+
+interface Lesson {
+  id: string
+  title: string
+  courseId: string
+  progress: number
+}
+
+export interface Chapter {
+    id: string
+    title: string
+    courseId: string
+    progress: number
+    lessons: Lesson[]
+  exercises: Exercise[]
+}
+
+export interface Exercise {
+  id: string
+  title: string
+  description: string
+  chapterId: string
+  isCompleted: boolean
+  difficulty: Difficulty
+  points: number
+  score?: number
+  mistakes?: string[]
+  attachments: Attachment[]
+  questions: Question[]
+}
+
+export interface Question {
+  id: string
+  text: string
+  options: Option[]
+  points: number
+  hint?: string
+  category?: string
+}
+
+export interface Option {
+  id: string
+  text: string
+  isCorrect: boolean
+  explanation: string
+}
+
+export interface Attachment {
+  id: string
+  name: string
+  url: string
+  type: string
+}
+
+export interface Stats {
+  totalExercises: number
+  completedExercises: number
+  totalPoints: number
+  earnedPoints: number
 } 

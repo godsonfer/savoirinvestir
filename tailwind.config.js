@@ -45,6 +45,29 @@ module.exports = withUt({
                     "2xl": "1400px",
                 },
             },
+            keyframes: {
+                shimmer: {
+                    '0%': { backgroundPosition: '200% 0' },
+                    '100%': { backgroundPosition: '-200% 0' },
+                },
+                pulse: {
+                    '0%, 100%': { opacity: 1 },
+                    '50%': { opacity: 0.5 },
+                },
+                glow: {
+                    '0%, 100%': {
+                        boxShadow: '0 0 0 0 rgba(var(--primary-rgb), 0)'
+                    },
+                    '50%': {
+                        boxShadow: '0 0 20px 0px rgba(var(--primary-rgb), 0.3)'
+                    }
+                }
+            },
+            animation: {
+                shimmer: 'shimmer 2s linear infinite',
+                pulse: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                glow: 'glow 2s ease-in-out infinite'
+            }
         }
     },
     plugins: [require("tailwindcss-animate")],

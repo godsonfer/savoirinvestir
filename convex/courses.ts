@@ -541,6 +541,8 @@ export const getHomeCourses = query({
     };
   },
 });
+
+
 export const search = query({
     args: { query: v.string() },
     handler: async (ctx, args) => {

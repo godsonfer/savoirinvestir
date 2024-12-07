@@ -69,8 +69,8 @@ export const PreferencesModal = ({ open, setOpen, initialValue }: PreferencesMod
         <>
             <ConfirmDialog />
             <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent className="p-0 bg-gray-50 overflow-hidden">
-                    <DialogHeader className="p-4 border-b bg-white">
+                <DialogContent className="p-0 dark:bg-white bg-black overflow-hidden">
+                    <DialogHeader className="p-4 border-b dark:bg-white bg-black">
                         <DialogTitle>
                             {value}
                         </DialogTitle>
@@ -78,7 +78,7 @@ export const PreferencesModal = ({ open, setOpen, initialValue }: PreferencesMod
                     <div className="px-4 pb-4 flex flex-col gap-y-2">
                         <Dialog open={editOpen} onOpenChange={setEditOpen}>
                             <DialogTrigger asChild>
-                                <div className="px-5 py-4 bg-white rounded-lg border cursor-pointer hover:bg-gray-50">
+                                <div className="px-5 py-4 dark:bg-white bg-black rounded-lg border cursor-pointer hover:bg-gray-50">
                                     <div className="flex justify-between items-center">
                                         <p className="text-sm font-semibold">
                                             Nom de l&apos;espace
@@ -121,7 +121,7 @@ export const PreferencesModal = ({ open, setOpen, initialValue }: PreferencesMod
                         </Dialog>
                         <button disabled={false}
                             onClick={handleRemove}
-                            className="flex items-center gap-x-2 px-5 py-4 bg-white rounded-lg  border cursor-pointer hover:bg-gray-50 text-rose-600" >
+                            className="flex items-center gap-x-2 px-5 py-4 dark:bg-white bg-black    rounded-lg  border cursor-pointer hover:bg-gray-50 text-rose-600" >
                             <TrashIcon className="size-4" />
                             <p className="text-sm font-semibold"> Supprimer l&apos;espace </p>
                         </button>

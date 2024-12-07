@@ -16,13 +16,16 @@ import type * as channels from "../channels.js";
 import type * as chapters from "../chapters.js";
 import type * as conversations from "../conversations.js";
 import type * as courses from "../courses.js";
+import type * as exercices from "../exercices.js";
 import type * as http from "../http.js";
 import type * as lessons from "../lessons.js";
 import type * as members from "../members.js";
 import type * as messages from "../messages.js";
+import type * as purchases from "../purchases.js";
 import type * as reactions from "../reactions.js";
 import type * as upload from "../upload.js";
 import type * as users from "../users.js";
+import type * as utils from "../utils.js";
 import type * as workspaces from "../workspaces.js";
 
 import type {
@@ -47,13 +50,16 @@ declare const fullApi: ApiFromModules<{
   chapters: typeof chapters;
   conversations: typeof conversations;
   courses: typeof courses;
+  exercices: typeof exercices;
   http: typeof http;
   lessons: typeof lessons;
   members: typeof members;
   messages: typeof messages;
+  purchases: typeof purchases;
   reactions: typeof reactions;
   upload: typeof upload;
   users: typeof users;
+  utils: typeof utils;
   workspaces: typeof workspaces;
 }>;
 declare const fullApiWithMounts: typeof fullApi;

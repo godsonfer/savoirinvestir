@@ -1,10 +1,9 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 
 import {
     Command,
-    CommandEmpty,
     CommandInput,
     CommandItem,
     CommandList,
@@ -17,15 +16,33 @@ import { cn } from "@/lib/utils"
 import { motion, AnimatePresence } from "framer-motion"
 import { Doc } from "../../convex/_generated/dataModel"
 
+interface Chapter {
+    _id: string;
+    title: string;
+    position: number;
+    isPublished?: boolean;
+}
+
+interface Enrollment {
+    _id: string;
+    userId: string;
+    courseId: string;
+    createdAt: string;
+}
+
 interface SearchResult extends Doc<"courses"> {
     category?: string;
     studentsCount?: number;
-    rating?: string;
+    rating?: {
+        _id: string;
+        value: number;
+        _creationTime: number;
+    }[];
     chaptersCount?: number;
     canDelete?: boolean;
-    chapters?: any[];
+    chapters?: Chapter[];
     bookmark?: boolean;
-    enrollments?: any[];
+    enrollments?: Enrollment[];
 }
 
 interface SearchFormProps {
@@ -35,6 +52,31 @@ interface SearchFormProps {
     className?: string
     isLoading?: boolean
     results?: SearchResult[]
+}
+
+type Filter = 'all' | 'popular' | 'recent' | 'bookmarked'
+
+const Badge = ({ children, variant = "default" }: { children: React.ReactNode, variant?: "default" | "success" | "warning" }) => (
+    <span className={cn(
+        "px-2 py-0.5 rounded-full text-xs font-medium",
+        variant === "success" && "bg-green-100 text-green-800",
+        variant === "warning" && "bg-yellow-100 text-yellow-800",
+        variant === "default" && "bg-muted text-muted-foreground"
+    )}>
+        {children}
+    </span>
+)
+
+const filterVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: (i: number) => ({
+        opacity: 1,
+        y: 0,
+        transition: {
+            delay: i * 0.1,
+            duration: 0.2
+        }
+    })
 }
 
 export const SearchForm = ({ 
@@ -47,6 +89,15 @@ export const SearchForm = ({
 }: SearchFormProps) => {
     const [open, setOpen] = useState(false)
     const [isMac, setIsMac] = useState(false)
+    const inputRef = useRef<HTMLInputElement>(null)
+    const [error, setError] = useState<string | null>(null)
+    const [searchHistory, setSearchHistory] = useState<string[]>(() => {
+        if (typeof window !== 'undefined') {
+            return JSON.parse(localStorage.getItem('searchHistory') || '[]')
+        }
+        return []
+    })
+    const [activeFilter, setActiveFilter] = useState<Filter>('all')
 
     useEffect(() => {
         setIsMac(navigator.platform.toUpperCase().indexOf('MAC') >= 0)
@@ -64,26 +115,95 @@ export const SearchForm = ({
         return () => document.removeEventListener("keydown", down)
     }, [])
 
+    useEffect(() => {
+        if (open) {
+            setTimeout(() => {
+                inputRef.current?.focus()
+            }, 100)
+        }
+    }, [open])
+
     const hasResults = Array.isArray(results) && results.length > 0
     const showNoResults = value && !isLoading && (!results || results.length === 0)
 
+    console.log(results, "results", showNoResults)
     const handleClose = () => {
         setOpen(false)
         onChange("")
     }
 
+    const searchAnimation = {
+        initial: { opacity: 0, scale: 0.95 },
+        animate: { opacity: 1, scale: 1 },
+        exit: { opacity: 0, scale: 0.95 },
+        transition: { duration: 0.2 }
+    };
+
+    const resultsAnimation = {
+        initial: { opacity: 0, y: -10 },
+        animate: { opacity: 1, y: 0 },
+        exit: { opacity: 0, y: 10 },
+        transition: { duration: 0.15 }
+    };
+
+    const handleSelect = (courseId: string) => {
+        try {
+            addToHistory(value)
+            window.location.href = `/courses/${courseId}`
+        } catch (err) {
+            setError("Une erreur est survenue lors de la redirection")
+            setTimeout(() => setError(null), 3000)
+        }
+    }
+
+    const addToHistory = (query: string) => {
+        if (query.trim()) {
+            const newHistory = [query, ...searchHistory.filter(item => item !== query)].slice(0, 5)
+            setSearchHistory(newHistory)
+            localStorage.setItem('searchHistory', JSON.stringify(newHistory))
+        }
+    }
+
+    const useKeyboardShortcuts = () => {
+        useEffect(() => {
+            const handleKeyDown = (e: KeyboardEvent) => {
+                if (open) {
+                    if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                        e.preventDefault()
+                    }
+                    
+                    if (e.key === '/' && document.activeElement?.tagName !== 'INPUT') {
+                        e.preventDefault()
+                        inputRef.current?.focus()
+                    }
+                }
+            }
+
+            window.addEventListener('keydown', handleKeyDown)
+            return () => window.removeEventListener('keydown', handleKeyDown)
+        }, )
+    }
+
+    useKeyboardShortcuts()
+
     return (
         <>
-            <button
+            <motion.button
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.99 }}
                 onClick={() => setOpen(true)}
+                aria-label="Ouvrir la recherche"
+                aria-expanded={open}
                 className={cn(
                     "group w-full relative",
                     "px-4 py-3 rounded-lg",
-                    "bg-muted/50 hover:bg-muted/80",
+                    "bg-gradient-to-r from-muted/50 to-muted/30",
+                    "hover:from-muted/70 hover:to-muted/50",
                     "text-muted-foreground text-sm text-left",
                     "transition-all duration-300",
                     "border border-border/50",
                     "focus:outline-none focus:ring-2 focus:ring-primary/20",
+                    "shadow-sm hover:shadow-md",
                     className
                 )}
             >
@@ -95,7 +215,7 @@ export const SearchForm = ({
                     <CommandIcon className="h-3 w-3" />
                     <span>{isMac ? 'R' : 'Ctrl R'}</span>
                 </kbd>
-            </button>
+            </motion.button>
 
             <Dialog open={open} onOpenChange={setOpen}>
                 <Command className="relative z-50">
@@ -139,6 +259,7 @@ export const SearchForm = ({
 
                                         <div className="relative flex items-center border-b">
                                             <CommandInput
+                                                ref={inputRef}
                                                 value={value}
                                                 onValueChange={onChange}
                                                 placeholder="Rechercher des formations..."
@@ -154,61 +275,130 @@ export const SearchForm = ({
                                                     }
                                                 }}
                                             />
-                                            {isLoading ? (
-                                                <Loader2 className="absolute right-14 h-4 w-4 animate-spin text-muted-foreground" />
-                                            ) : value && (
-                                                <button
-                                                    onClick={() => onChange("")}
-                                                    className="absolute right-14 hover:text-foreground text-muted-foreground"
+                                          
+                                        </div>
+
+                                        <div className="flex gap-2 p-2 border-b">
+                                            {[
+                                                { id: 'all', label: 'Tout' },
+                                                { id: 'popular', label: 'Populaire' },
+                                                { id: 'recent', label: 'Récent' },
+                                                { id: 'bookmarked', label: 'Favoris' },
+                                            ].map((filter, index) => (
+                                                <motion.button
+                                                    key={filter.id}
+                                                    onClick={() => setActiveFilter(filter.id as Filter)}
+                                                    className={cn(
+                                                        "px-3 py-1 text-sm rounded-full transition-colors",
+                                                        activeFilter === filter.id
+                                                            ? "bg-primary text-primary-foreground"
+                                                            : "bg-muted/50 text-muted-foreground hover:bg-muted"
+                                                    )}
+                                                    variants={filterVariants}
+                                                    custom={index}
+                                                    initial="hidden"
+                                                    animate="visible"
                                                 >
-                                                    <X className="h-4 w-4" />
-                                                </button>
-                                            )}
+                                                    {filter.label}
+                                                </motion.button>
+                                            ))}
                                         </div>
 
                                         <CommandList className="max-h-[60vh] overflow-y-auto p-4">
+                                            {!value && searchHistory.length > 0 && (
+                                                <div className="p-2">
+                                                    <p className="px-2 text-xs text-muted-foreground mb-2">Recherches récentes</p>
+                                                    {searchHistory.map((query, index) => (
+                                                        <CommandItem
+                                                            key={index}
+                                                            value={query}
+                                                            className="flex items-center gap-2 px-2 py-1.5 text-sm"
+                                                            onSelect={() => onChange(query)}
+                                                        >
+                                                            <Search className="h-4 w-4 text-muted-foreground" />
+                                                            {query}
+                                                        </CommandItem>
+                                                    ))}
+                                                </div>
+                                            )}
                                             {value && (
                                                 <AnimatePresence mode="wait">
                                                     {isLoading ? (
                                                         <motion.div
-                                                            initial={{ opacity: 0 }}
-                                                            animate={{ opacity: 1 }}
-                                                            exit={{ opacity: 0 }}
-                                                            className="flex justify-center py-8"
+                                                            {...searchAnimation}
+                                                            className="flex flex-col items-center justify-center py-12 space-y-4"
                                                         >
-                                                            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                                                            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                                                            <p className="text-sm text-muted-foreground">Recherche en cours...</p>
                                                         </motion.div>
                                                     ) : showNoResults ? (
                                                         <motion.div
-                                                            initial={{ opacity: 0 }}
-                                                            animate={{ opacity: 1 }}
-                                                            exit={{ opacity: 0 }}
-                                                            className="text-center py-8 text-muted-foreground"
+                                                            {...searchAnimation}
+                                                            className="flex flex-col items-center justify-center py-12 space-y-4"
                                                         >
-                                                              <CommandEmpty>Aucun résultat trouvé</CommandEmpty>
+                                                            <div className="p-4 rounded-full bg-muted">
+                                                                <Search className="h-6 w-6 text-muted-foreground" />
+                                                            </div>
+                                                            <p className="text-sm text-muted-foreground">
+                                                                Aucun résultat trouvé pour &ldquo;{value}&rdquo;
+                                                            </p>
                                                         </motion.div>
                                                     ) : hasResults && (
                                                         <motion.div
-                                                            initial={{ opacity: 0 }}
-                                                            animate={{ opacity: 1 }}
-                                                            exit={{ opacity: 0 }}
+                                                            {...resultsAnimation}
                                                             className="space-y-2"
                                                         >
                                                             {results.map((result) => (
                                                                 <CommandItem
                                                                     key={result._id}
                                                                     value={result.title}
-                                                                    className="px-2 py-1 rounded-md cursor-pointer hover:bg-muted"
+                                                                    className={cn(
+                                                                        "px-4 py-3 rounded-lg",
+                                                                        "cursor-pointer",
+                                                                        "hover:bg-muted/80",
+                                                                        "transition-all duration-200",
+                                                                        "flex items-center justify-between"
+                                                                    )}
                                                                     onSelect={() => {
-                                                                        window.location.href = `/courses/${result._id}`
+                                                                        handleSelect(result._id)
                                                                     }}
                                                                 >
-                                                                    {result.title}
+                                                                    <div className="flex flex-col gap-1">
+                                                                        <span className="font-medium">{result.title}</span>
+                                                                        <div className="flex items-center gap-2">
+                                                                            {result.category && (
+                                                                                <Badge>{result.category}</Badge>
+                                                                            )}
+                                                                            {result.studentsCount && (
+                                                                                <Badge variant="success">
+                                                                                    {result.studentsCount} étudiants
+                                                                                </Badge>
+                                                                            )}
+                                                                            {result.chaptersCount && (
+                                                                                <Badge variant="warning">
+                                                                                    {result.chaptersCount} chapitres
+                                                                                </Badge>
+                                                                            )}
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                                                        {result.rating && result.rating.length > 0 && (
+                                                                            <span className="flex items-center gap-1">
+                                                                                <span className="text-yellow-500">★</span>
+                                                                                {(result.rating.reduce((acc, r) => acc + r.value, 0) / result.rating.length).toFixed(1)}
+                                                                            </span>
+                                                                        )}
+                                                                    </div>
                                                                 </CommandItem>
                                                             ))}
                                                         </motion.div>
                                                     )}
                                                 </AnimatePresence>
+                                            )}
+                                            {error && (
+                                                <div className="p-4 text-sm text-red-500 text-center">
+                                                    {error}
+                                                </div>
                                             )}
                                         </CommandList>
                                     </motion.div>

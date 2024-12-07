@@ -4,7 +4,7 @@ export interface Course {
   _id: Id<"courses">
   _creationTime: number
   title: string
-  updatedAt: number
+  updatedAt?: number
   price?: number
   description?: string
   isPublished?: boolean

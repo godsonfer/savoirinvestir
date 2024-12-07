@@ -1,4 +1,5 @@
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
+import Script from "next/script";
  
 import type { Metadata } from "next";
 import localFont from "next/font/local";
@@ -27,8 +28,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Formation - Your Learning Platform for the Future",
-  description: "Formation is your learning platform for the future",
+  title: 'Explorez nos formations ',
+  description: 'Découvrez notre catalogue complet de formations et commencez votre parcours d\'apprentissage dès aujourd\'hui.',
 };
 
 export default function RootLayout({
@@ -39,6 +40,9 @@ export default function RootLayout({
   return (
     <ConvexAuthNextjsServerProvider>
       <html lang="en">
+        <head>
+          <Script src="https://cdn.fedapay.com/checkout.js?v=1.1.2" />
+        </head>
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased `}
         >
