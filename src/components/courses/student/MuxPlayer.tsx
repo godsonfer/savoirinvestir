@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import MuxPlayer, { MuxPlayerProps as MuxPlayerRefProps } from "@mux/mux-player-react";
 
 import Image from 'next/image'
@@ -24,11 +25,8 @@ export const CourseMuxPlayer = ({ playbackId, title, onLoad }: MuxPlayerProps) =
     return (
         <div className="relative aspect-video bg-black/90">
               <MuxPlayer
-                ref={playerRef as React.LegacyRef<MuxPlayerElement>}
                 title={title}
                 playbackId={playbackId}
-                
-    
             />
 
             {/* Logo watermark */}

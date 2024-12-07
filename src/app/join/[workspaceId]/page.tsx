@@ -14,7 +14,7 @@ import VerificationInput from "react-verification-input"
 
 import { Button } from '@/components/ui/button'
 
-import { Loader, SendToBack, User, } from 'lucide-react'
+import { Loader, SendToBack, } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface JoinPageProps {

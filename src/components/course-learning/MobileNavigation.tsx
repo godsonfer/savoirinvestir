@@ -1,6 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
-import { BookOpen, Users2, GraduationCap, UserCircle, MenuIcon, FileTextIcon } from 'lucide-react'
+import { BookOpen, Users2, GraduationCap,  MenuIcon, FileTextIcon } from 'lucide-react'
 import UserButton from '@/features/auth/components/user-button'
 
 interface MobileNavigationProps {

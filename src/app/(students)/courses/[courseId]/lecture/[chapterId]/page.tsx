@@ -7,7 +7,7 @@ import { ChaptersList } from '@/components/course-learning/ChaptersList'
 
 import { useState, useEffect, useCallback } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Lesson, Progress } from '@/types/course'
+import { Progress } from '@/types/course'
 import { ResourcesPanel } from '@/components/course-learning/ResourcesPanel'
 import { CommentsPanel } from '@/components/course-learning/CommentsPanel'
 import { MobileNavigation } from '@/components/course-learning/MobileNavigation'
@@ -161,7 +161,7 @@ const CourseLearningPage = () => {
         >
           <div className="flex-1 overflow-y-auto scrollbar-hide">
             <ChaptersList 
-              chapters={data?.chapters || [] as any[]}
+              chapters={data?.chapters || [] }
               currentLesson={currentLesson}
               progress={progress}
               onLessonSelect={(lesson: LessonFromAPI) => {

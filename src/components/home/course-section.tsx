@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
 import { useState } from "react";
 import { Search, BookOpen, Clock, Star } from "lucide-react";
+import Image from "next/image";
 
 export const CourseSection = () => {
     const [searchQuery, setSearchQuery] = useState("");
@@ -148,9 +149,11 @@ export const CourseSection = () => {
                             >
                                 <div className="relative h-48 overflow-hidden">
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10" />
-                                    <img 
+                                    <Image 
                                         src={course.image} 
                                         alt={course.title}
+                                        width={500}
+                                        height={300}
                                         className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-300"
                                     />
                                     <div className="absolute bottom-4 left-4 z-20">

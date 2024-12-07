@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React from 'react'
 import { Clock, Users, ChevronLeft, ChevronRight, CheckCircle, Play } from 'lucide-react'
 import type { Lesson, Course, HTMLNode } from '@/types/course'
@@ -5,7 +6,6 @@ import { VideoSkeleton } from './VideoSkeleton'
 import { Button } from "@/components/ui/button"
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from "@/lib/utils"
-import parse from 'html-react-parser'
 import { VideoActionButtons } from './VideoActionButtons'
 import { toast } from 'sonner'
 import { useMediaQuery } from '@/hooks/use-media-query'
@@ -22,59 +22,7 @@ interface VideoPlayerProps {
   hasPrevious?: boolean
 }
 
-const parseHTMLContent = (node: any): React.ReactNode => {
-  if (node.type === 'tag') {
-    const content = node.children?.[0]?.data || '';
-    
-    switch (node.name) {
-      case 'h1':
-        return <h1 className="text-xl font-bold mb-4">{content}</h1>;
-      case 'h2':
-        return <h2 className="text-lg font-semibold mb-3">{content}</h2>;
-      case 'h3':
-        return <h3 className="text-base font-semibold mb-2">{content}</h3>;
-      case 'p':
-        return <p className="text-gray-300 mb-4 leading-relaxed">{content}</p>;
-      case 'ul':
-        return (
-          <ul className="list-disc pl-6 mb-4 text-gray-300">
-            {node.children?.map((child: HTMLNode, index: number) => (
-              <li key={index} className="mb-1">{child.children?.[0]?.data || ''}</li>
-            ))}
-          </ul>
-        );
-      case 'ol':
-        return (
-          <ol className="list-decimal pl-6 mb-4 text-gray-300">
-            {node.children?.map((child: HTMLNode, index: number) => (
-              <li key={index} className="mb-1">{child.children?.[0]?.data || ''}</li>
-            ))}
-          </ol>
-        );
-      case 'code':
-        return (
-          <code className="bg-black/30 px-1.5 py-0.5 rounded text-sm font-mono">
-            {content}
-          </code>
-        );
-      case 'pre':
-        return (
-          <pre className="bg-black/30 p-4 rounded-lg overflow-x-auto mb-4">
-            {content}
-          </pre>
-        );
-      case 'blockquote':
-        return (
-          <blockquote className="border-l-4 border-[#0097A7] pl-4 italic text-gray-400 mb-4">
-            {content}
-          </blockquote>
-        );
-      default:
-        return null;
-    }
-  }
-  return null;
-};
+
 
 export const VideoPlayer = ({ 
   currentLesson, 

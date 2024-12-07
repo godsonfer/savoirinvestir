@@ -10,9 +10,8 @@ import { Eye, EyeOff, Lock, Mail, User, Phone, Camera } from 'lucide-react'
 import { RegisterFormData, registerSchema } from '../schemas/auth.schema'
 import { useAuthActions } from '@convex-dev/auth/react'
 import { toast } from 'sonner'
-import { Avatar } from '@/components/ui/avatar'
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { useUploadThing } from "@/utils/uploadthing";
-import Link from 'next/link'
 
 interface RegisterFormProps {
   onLoginClick: () => void
@@ -69,7 +68,6 @@ export const RegisterForm = ({ onLoginClick }: RegisterFormProps) => {
           toast.error("Erreur lors de l'upload de l'image")
         }
       } catch (error) {
-        console.error(error)
         toast.error("Erreur lors du traitement de l'image")
       } finally {
         setIsUploading(false)
@@ -92,7 +90,6 @@ export const RegisterForm = ({ onLoginClick }: RegisterFormProps) => {
       window.location.href = '/courses'
     } catch (error) {
       toast.error("Quelque chose s'est mal passé lors de la création du compte")
-      console.error(error)
     }
   }
 
@@ -106,13 +103,19 @@ export const RegisterForm = ({ onLoginClick }: RegisterFormProps) => {
     >
       <div className="flex flex-col items-center mb-6">
         <div className="relative">
-          <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-100 border-2 border-gray-200">
-            <Avatar 
-              src={avatarPreview}
-              alt="Avatar preview"
-              size={96}
-            />
-          </div>
+          <Avatar>
+            {avatarPreview ? (
+              <AvatarImage 
+                src={avatarPreview}
+                alt="Avatar preview"
+                className="h-24 w-24"
+              />
+            ) : (
+              <AvatarFallback>
+                <User className="h-24 w-24" />
+              </AvatarFallback>
+            )}
+          </Avatar>
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}

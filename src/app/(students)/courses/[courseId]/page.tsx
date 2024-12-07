@@ -20,7 +20,7 @@ const StudentCoursePage = () => {
     const courseId = useCourseId()
     const { data, isLoading } = useGetCourse({ courseId: courseId })
     const course = data?.course as Course | undefined
-    const chapters = data?.chapters as Chapter[] || []
+    const chapters = useMemo(() => (data?.chapters as unknown as Chapter[]) || [], [data?.chapters])
     
     const [isBookmarked, setIsBookmarked] = useState(false)
   

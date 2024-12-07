@@ -10,7 +10,7 @@ export const WelcomeSection = () => {
                         <p className="text-gray-600 leading-relaxed">
                             Notre plateforme vous offre une formation complète et structurée, 
                             conçue par des traders professionnels. Que vous soyez débutant ou 
-                            trader expérimenté, nos cours s'adaptent à votre niveau.
+                            trader expérimenté, nos cours s&apos;adaptent à votre niveau.
                         </p>
                         <div className="space-y-4">
                             {[

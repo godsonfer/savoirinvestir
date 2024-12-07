@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Mail, Phone, Calendar, BookOpen, Star } from "lucide-react"
-import { format } from "date-fns"
+import { formatDate } from "date-fns"
 
 type UserHoverCardProps = {
   user: {
@@ -72,7 +72,7 @@ export function UserHoverCard({ user, children }: UserHoverCardProps) {
                 Inscrit le
               </div>
               <div className="font-medium">
-                {formatDate(user.registeredAt)}
+                {formatDate(user.registeredAt, "dd/MM/yyyy")}
               </div>
             </div>
             <div className="space-y-1">
@@ -96,7 +96,7 @@ export function UserHoverCard({ user, children }: UserHoverCardProps) {
                 </span>
               </div>
               <Badge variant="secondary" className="text-xs">
-                Expire le {formatDate(user.subscription.validUntil)}
+                Expire le {formatDate(user.subscription.validUntil, "dd/MM/yyyy")}
               </Badge>
             </div>
           </div>

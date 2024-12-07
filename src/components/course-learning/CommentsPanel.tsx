@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from 'react'
 import { Mic, Paperclip, Send, Reply, MoreVertical, Trash2, Image, Video, FileText } from 'lucide-react'
 import { toast } from "sonner"
@@ -315,7 +316,7 @@ export const CommentsPanel = () => {
                 fileInputRef.current?.setAttribute('accept', 'image/*');
               }}
             >
-              <Image className="w-4 h-4" />
+              <Image className="w-4 h-4" aria-label="Ajouter des images" />
               <span className="text-sm">Images</span>
             </Button>
             <Button

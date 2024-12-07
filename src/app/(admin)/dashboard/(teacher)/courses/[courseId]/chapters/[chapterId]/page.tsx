@@ -63,7 +63,7 @@ const adaptedMockCourses = mockCourses.map(course => ({
   chapters: course.chapters.map(chapter => ({
     ...chapter,
     lessons: [], // Ajouter la propriété lessons manquante
-    exercises: chapter.exercises || []
+    exercices: chapter.exercices || []
   }))
 }))
 
