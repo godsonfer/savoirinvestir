@@ -13,6 +13,8 @@ import { cn } from "@/lib/utils"
 import { Exercise } from "../../types"
 import { DifficultyBadge } from "../ui/difficulty-badge"
 import { Clock, CheckCircle, ArrowRight, Trophy, Star } from "lucide-react"
+import { useUserDoneExercice } from "@/features/exercices/api/use-create-done-exercice"
+import { toast } from "sonner"
 
 const Confetti = dynamic(() => import('react-confetti'), {
   ssr: false
@@ -398,6 +400,7 @@ export function ExerciseDialog({ exercise }: ExerciseDialogProps) {
       percentage: Math.round((earnedPoints / totalPoints) * 100)
     }
   }
+  const {mutate: createDoneExercise} = useUserDoneExercice()
 
   const handleSubmit = () => {
     setAttempts(prev => prev + 1)
@@ -420,6 +423,20 @@ export function ExerciseDialog({ exercise }: ExerciseDialogProps) {
     if (bestScore === null || result.score > bestScore) {
       setBestScore(result.score)
     }
+    createDoneExercise({
+      exerciseId: exercise._id,
+      points: result.score,
+      mark: result.percentage,
+      note: result.score.toString()
+    }, {
+      onSuccess: () => {
+        toast.success("Exercice terminé ou mise à jour du score")
+      },
+      onError: (error) => {
+        toast.error("Erreur lors de la création ou de la mise à jour de l'exercice terminé")
+      }
+    })
+    
     setShowResults(true)
   }
 
@@ -630,9 +647,9 @@ export function ExerciseDialog({ exercise }: ExerciseDialogProps) {
                   </div>
                 )}
 
-                {/* {mistakes.length > 0 && (
+                {mistakes.length > 0 && (
                   <LearningTips mistakes={mistakes} />
-                )} */}
+                )}
               </motion.div>
             )}
 

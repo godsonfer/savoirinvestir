@@ -1,9 +1,9 @@
 export const metadata = {
-    title: 'Vos cours  | Invest Mastery Mind',
-    description: 'Découvrez notre catalogue complet de formations et commencez votre parcours d\'apprentissage dès aujourd\'hui.',
+    title: 'Vos tableaux de bord | Invest Mastery Mind',
+    description: 'Découvrez vos tableaux de bord et commencez votre parcours d\'apprentissage dès aujourd\'hui.',
 }
 
-export default function CoursesLayout({
+export default function BookmarksLayout({
     children,
 }: {
     children: React.ReactNode

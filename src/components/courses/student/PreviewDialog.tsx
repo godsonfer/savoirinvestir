@@ -6,6 +6,7 @@ import { motion } from 'framer-motion'
 import parse from 'html-react-parser'
 import DOMPurify from 'dompurify'
 import { CourseMuxPlayer } from './MuxPlayer'
+import MuxPlayer from "@mux/mux-player-react"
 
 interface PreviewDialogProps {
     lesson: Lesson
@@ -13,6 +14,7 @@ interface PreviewDialogProps {
 }
 
 export const PreviewDialog = ({ lesson, isLocked = false }: PreviewDialogProps) => {
+    console.log("Lesson:", lesson)
     const getIcon = () => {
         switch (lesson.type) {
             case 'video':
@@ -72,9 +74,9 @@ export const PreviewDialog = ({ lesson, isLocked = false }: PreviewDialogProps) 
                 </DialogHeader>
 
                 <div className="relative">
-                    {lesson.type === 'video' && lesson.playbackId ? (
+                    {lesson.muxData && lesson.muxData.playback ? (
                         <MuxPlayer 
-                            playbackId={lesson.playbackId}
+                            playbackId={lesson.muxData.playback}
                             title={lesson.title}
                         />
                     ) : (

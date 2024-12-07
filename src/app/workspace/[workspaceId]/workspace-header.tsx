@@ -7,7 +7,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-import { ChevronDown, ListFilter, SquarePen } from 'lucide-react'
+import { ChevronDown, ListFilter, Pencil as SquarePen } from 'lucide-react'
 import { PreferencesModal } from './preferences-modal'
 
 import { Hint } from '@/components/ui/hint'

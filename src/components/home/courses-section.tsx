@@ -7,6 +7,7 @@ import { AnimatedButton } from '@/components/ui/animated-button';
 import { useGetHomeCourses } from '@/features/courses/api/use-home-courses';
 import Link from 'next/link';
 import { useRef, useState, useEffect } from 'react';
+import { sanitizeAndParseHTML } from '@/utils/sanitizeAndParsedHtml';
 
 export const CoursesSection = () => {
     const { results: courses } = useGetHomeCourses()
@@ -241,7 +242,7 @@ export const CoursesSection = () => {
                                                 animate={{ opacity: 1 }}
                                                 className="text-slate-600 line-clamp-3 text-sm leading-relaxed"
                                             >
-                                                {course.description || 
+                                                {sanitizeAndParseHTML(course.description ?? "") || 
                                                     "Découvrez une formation complète et pratique pour maîtriser les fondamentaux de l'investissement. " +
                                                     "Des stratégies éprouvées et des conseils d'experts pour atteindre vos objectifs financiers."}
                                             </motion.p>

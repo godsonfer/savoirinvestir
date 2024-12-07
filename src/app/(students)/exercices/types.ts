@@ -1,3 +1,5 @@
+import { Id } from "../../../../convex/_generated/dataModel"
+
 export type Difficulty = "Facile" | "Moyen" | "Difficile"
 export type CourseDifficulty = "Débutant" | "Intermédiaire" | "Avancé"
 
@@ -23,10 +25,12 @@ export interface Chapter {
     courseId: string
     progress: number
     lessons: Lesson[]
-  exercises: Exercise[]
+    exercicesDone: Exercise[]
+    exercices: Exercise[]
 }
 
 export interface Exercise {
+  _id: Id<"exercices">
   id: string
   title: string
   description: string

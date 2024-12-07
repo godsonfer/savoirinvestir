@@ -10,6 +10,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Dialog, DialogTrigger } from "@/components/ui/dialog"
 import { ExerciseDialog } from "../dialogs/exercise-dialog"
 import { cn } from "@/lib/utils"
+import { sanitizeAndParseHTML } from "@/utils/sanitizeAndParsedHtml"
 
 interface CourseCardProps {
   course: Course
@@ -17,7 +18,7 @@ interface CourseCardProps {
 }
 
 export function CourseCard({ course, className }: CourseCardProps) {
-  
+  console.log(course)
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -46,7 +47,7 @@ export function CourseCard({ course, className }: CourseCardProps) {
                   <DifficultyBadge difficulty={course.difficulty} />
                 </div>
                 <p className="text-gray-700 dark:text-gray-200 text-sm md:text-base">
-                  {course.description}
+                  {sanitizeAndParseHTML(course.description)}
                 </p>
               </div>
             </div>

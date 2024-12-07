@@ -5,7 +5,7 @@ import { withUt } from "uploadthing/tw";
 /** @type {import('tailwindcss').Config} */
 module.exports = withUt({
 
-    darkMode: 'class',
+    darkMode: ['class'],
     content: [
         './pages/**/*.{ts,tsx}',
         './components/**/*.{ts,tsx}',
@@ -47,8 +47,16 @@ module.exports = withUt({
             },
             keyframes: {
                 shimmer: {
-                    '0%': { backgroundPosition: '200% 0' },
-                    '100%': { backgroundPosition: '-200% 0' },
+                    '0%': { transform: 'translateX(-100%)' },
+                    '100%': { transform: 'translateX(100%)' }
+                },
+                fadeOut: {
+                    '0%': { opacity: '1' },
+                    '100%': { opacity: '0' }
+                },
+                scaleUp: {
+                    '0%': { transform: 'scaleX(0)' },
+                    '100%': { transform: 'scaleX(1)' }
                 },
                 pulse: {
                     '0%, 100%': { opacity: 1 },
@@ -64,7 +72,9 @@ module.exports = withUt({
                 }
             },
             animation: {
-                shimmer: 'shimmer 2s linear infinite',
+                shimmer: 'shimmer 2s infinite',
+                fadeOut: 'fadeOut 300ms ease-in-out',
+                scaleUp: 'scaleUp 300ms ease-in-out',
                 pulse: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                 glow: 'glow 2s ease-in-out infinite'
             }

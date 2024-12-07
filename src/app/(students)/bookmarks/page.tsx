@@ -347,18 +347,18 @@ const BookmarksPage = () => {
     };
 
     return (
-        <div className="flex flex-col min-h-screen h-[100dvh] bg-gradient-to-br from-gray-900 via-gray-800 to-gray-950 relative overflow-hidden">
-            {/* Effets de fond améliorés */}
-            <div className="absolute inset-0 bg-gradient-radial from-blue-500/5 via-transparent to-transparent animate-pulse-slow" />
-            <div className="absolute inset-0 bg-rotating-gradient from-emerald-500/5 via-blue-500/5 to-purple-500/5 animate-rotate-gradient" />
+        <div className="flex flex-col min-h-screen h-[100dvh] bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-[#0097A7]/5 dark:via-[#001e21] dark:to-black relative overflow-hidden">
+            {/* Effets de fond améliorés avec animations */}
             <div className="absolute inset-0">
-                <div className="absolute top-0 -left-4 w-72 h-72 bg-emerald-500 rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-blob" />
-                <div className="absolute top-0 -right-4 w-72 h-72 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-blob animation-delay-2000" />
-                <div className="absolute -bottom-8 left-20 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-blob animation-delay-4000" />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#0097A7]/3 via-transparent to-[#D6620F]/3 dark:from-[#0097A7]/10 dark:to-[#D6620F]/10 animate-gradient-x"></div>
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0097A7]/3 to-transparent dark:via-[#0097A7]/10 animate-gradient-y"></div>
+                <div className="absolute top-0 -left-4 w-72 h-72 bg-[#0097A7] rounded-full mix-blend-multiply filter blur-xl opacity-[0.15] dark:opacity-10 animate-blob"></div>
+                <div className="absolute top-0 -right-4 w-72 h-72 bg-[#D6620F] rounded-full mix-blend-multiply filter blur-xl opacity-[0.15] dark:opacity-10 animate-blob animation-delay-2000"></div>
+                <div className="absolute -bottom-8 left-20 w-72 h-72 bg-[#0097A7] rounded-full mix-blend-multiply filter blur-xl opacity-[0.15] dark:opacity-10 animate-blob animation-delay-4000"></div>
             </div>
 
             {/* En-tête fixe avec navigation et recherche */}
-            <header className="shrink-0 px-3 md:px-4 py-3 dark:bg-gray-900/60 backdrop-blur-2xl sticky top-0 z-20 border-b border-gray-700/30 shadow-glass transition-all duration-300">
+            <header className="shrink-0 px-3 md:px-4 py-3 bg-white/90 dark:bg-[#001e21]/80 backdrop-blur-2xl sticky top-0 z-20 border-b border-[#0097A7]/10 dark:border-[#0097A7]/20 shadow-glass transition-all duration-300">
                 <div className="container mx-auto">
                     <div className="flex items-center justify-between gap-4">
                         <div className="flex items-center gap-3">
@@ -366,7 +366,7 @@ const BookmarksPage = () => {
                                 <Bookmark className="w-5 h-5 text-emerald-400" />
                             </div>
                             <div className="animate-slide-right">
-                                <h1 className="text-xl font-bold text-white tracking-tight">Mes cours</h1>
+                                <h1 className="text-xl font-bold dark:text-white tracking-tight">Mes cours</h1>
                             </div>
                         </div>
                         <div className="flex items-center gap-4 animate-slide-left">
@@ -383,8 +383,8 @@ const BookmarksPage = () => {
             </header>
 
             {/* Contenu principal défilant */}
-            <main className="flex-1 overflow-y-auto overscroll-auto px-3 md:px-2 py-2 relative z-10">
-                <div className="container mx-auto space-y-4">
+            <main className="flex-1 overflow-y-auto overscroll-auto px-3 md:px-2 py-2 pb-20 relative z-10">
+                <div className="container mx-auto space-y-6">
                     {isLoading ? (
                         <div className={viewMode === 'grid' 
                             ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
@@ -393,7 +393,7 @@ const BookmarksPage = () => {
                             {[...Array(6)].map((_, index) => (
                                 <div 
                                     key={index} 
-                                    className="bg-glass animate-shimmer"
+                                    className="bg-white/90 dark:bg-[#001e21]/80 backdrop-blur-xl animate-shimmer"
                                     style={{ animationDelay: `${index * 200}ms` }}
                                 >
                                     <CourseSkeleton key={index} viewMode={viewMode} />
@@ -408,43 +408,40 @@ const BookmarksPage = () => {
                         <>
                             {/* Cartes statistiques */}
                             <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-                                <div className="group bg-glass p-6 rounded-2xl border border-gray-700/30 backdrop-blur-xl hover:bg-gray-800/50 transition-all duration-300 hover:shadow-glass-hover hover:border-gray-600/30 hover:scale-102 animate-scale-up">
+                                <div className="group bg-white/90 dark:bg-[#001e21]/80 backdrop-blur-xl p-6 rounded-2xl border border-[#0097A7]/10 dark:border-[#0097A7]/20 hover:bg-[#0097A7]/5 dark:hover:bg-[#002a2f]/80 transition-all duration-300 hover:shadow-[0_0_15px_rgba(0,151,167,0.1)] hover:border-[#0097A7]/20 dark:hover:border-[#0097A7]/30 hover:scale-102 animate-scale-up">
                                     <div className="flex items-center justify-between">
                                         <div>
-                                            <p className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors">Cours suivis</p>
-                                            <p className="text-3xl font-bold text-white mt-1 transition-all duration-300 group-hover:scale-105">
+                                            <p className="text-sm text-gray-700 dark:text-gray-400 group-hover:text-[#0097A7] dark:group-hover:text-gray-300 transition-colors">Cours suivis</p>
+                                            <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1 transition-all duration-300 group-hover:scale-105">
                                                 {stats.totalCourses}
                                             </p>
                                         </div>
-                                        <div className="p-3 rounded-xl bg-blue-500/10 group-hover:bg-blue-500/15 transition-all duration-300 group-hover:scale-110 shadow-neon">
-                                            <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <div className="p-3 rounded-xl bg-[#0097A7]/10 group-hover:bg-[#0097A7]/15 transition-all duration-300 group-hover:scale-110 shadow-neon">
+                                            <svg className="w-6 h-6 text-[#0097A7]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                                             </svg>
                                         </div>
                                     </div>
                                     <div className="mt-4">
-                                        <p className="text-xs text-gray-400 group-hover:text-gray-300 transition-colors">Progression moyenne</p>
-                                        <div className="w-full bg-gray-700/30 rounded-full h-2 mt-2 overflow-hidden shadow-inner-glow">
+                                        <p className="text-xs text-gray-700 dark:text-gray-400 group-hover:text-[#0097A7] dark:group-hover:text-gray-300 transition-colors">Progression moyenne</p>
+                                        <div className="w-full bg-gray-200 dark:bg-gray-700/30 rounded-full h-2 mt-2 overflow-hidden shadow-inner-glow">
                                             <div 
-                                                className="bg-gradient-to-r from-blue-500 to-blue-400 h-2 rounded-full transition-all duration-500 ease-elastic animate-glow-pulse" 
+                                                className="bg-gradient-to-r from-[#0097A7] to-[#D6620F] h-2 rounded-full transition-all duration-500 ease-elastic animate-glow-pulse" 
                                                 style={{ width: `${stats.averageProgress}%` }}>
                                             </div>
                                         </div>
-                                        <p className="text-xs text-gray-400 mt-2 group-hover:text-gray-300 transition-colors">
-                                            {stats.formattedProgress} complété
-                                        </p>
                                     </div>
                                 </div>
 
-                                <div className="group bg-glass p-6 rounded-2xl border border-gray-700/30 backdrop-blur-xl hover:bg-gray-800/50 transition-all duration-300 hover:shadow-glass-hover hover:border-gray-600/30 hover:scale-102 animate-scale-up">
+                                <div className="group bg-white/90 dark:bg-[#001e21]/80 backdrop-blur-xl p-6 rounded-2xl border border-[#0097A7]/10 dark:border-[#0097A7]/20 hover:bg-[#0097A7]/5 dark:hover:bg-[#002a2f]/80 transition-all duration-300 hover:shadow-[0_0_15px_rgba(0,151,167,0.1)] hover:border-[#0097A7]/20 dark:hover:border-[#0097A7]/30 hover:scale-102 animate-scale-up">
                                     <div className="flex items-center justify-between">
                                         <div>
-                                            <p className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors">Exercices complétés</p>
+                                            <p className="text-sm text-gray-700 dark:text-gray-400 group-hover:text-[#0097A7] dark:group-hover:text-gray-300 transition-colors">Exercices complétés</p>
                                             <div className="flex items-baseline gap-2">
-                                                <p className="text-3xl font-bold text-white mt-1 transition-all duration-300 group-hover:scale-105">
+                                                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1 transition-all duration-300 group-hover:scale-105">
                                                     {stats.completedExercises}
                                                 </p>
-                                                <p className="text-sm text-gray-400">/ {stats.totalExercises}</p>
+                                                <p className="text-sm text-gray-700 dark:text-gray-400">/ {stats.totalExercises}</p>
                                             </div>
                                         </div>
                                         <div className="p-3 rounded-xl bg-emerald-500/10 group-hover:bg-emerald-500/15 transition-all duration-300 group-hover:scale-110 shadow-neon-emerald">
@@ -454,25 +451,25 @@ const BookmarksPage = () => {
                                         </div>
                                     </div>
                                     <div className="mt-4">
-                                        <p className="text-xs text-gray-400 group-hover:text-gray-300 transition-colors">Taux de réussite</p>
-                                        <div className="w-full bg-gray-700/30 rounded-full h-2 mt-2 overflow-hidden shadow-inner-glow">
+                                        <p className="text-xs text-gray-700 dark:text-gray-400 group-hover:text-[#0097A7] dark:group-hover:text-gray-300 transition-colors">Taux de réussite</p>
+                                        <div className="w-full bg-gray-200 dark:bg-gray-700/30 rounded-full h-2 mt-2 overflow-hidden shadow-inner-glow">
                                             <div 
                                                 className="bg-gradient-to-r from-emerald-500 to-emerald-400 h-2 rounded-full transition-all duration-500 ease-elastic animate-glow-pulse" 
                                                 style={{ width: `${stats.completionRate}%` }}>
                                             </div>
                                         </div>
-                                        <p className="text-xs text-gray-400 mt-2 group-hover:text-gray-300 transition-colors">
+                                        <p className="text-xs text-gray-700 dark:text-gray-400 mt-2 group-hover:text-[#0097A7] dark:group-hover:text-gray-300 transition-colors">
                                             {stats.formattedCompletionRate} de réussite
                                         </p>
                                     </div>
                                 </div>
 
-                                <div className="group bg-glass p-6 rounded-2xl border border-gray-700/30 backdrop-blur-xl hover:bg-gray-800/50 transition-all duration-300 hover:shadow-glass-hover hover:border-gray-600/30 hover:scale-102 animate-scale-up">
+                                <div className="group bg-white/90 dark:bg-[#001e21]/80 backdrop-blur-xl p-6 rounded-2xl border border-[#0097A7]/10 dark:border-[#0097A7]/20 hover:bg-[#0097A7]/5 dark:hover:bg-[#002a2f]/80 transition-all duration-300 hover:shadow-[0_0_15px_rgba(0,151,167,0.1)] hover:border-[#0097A7]/20 dark:hover:border-[#0097A7]/30 hover:scale-102 animate-scale-up">
                                     <div className="flex items-center justify-between">
                                         <div>
-                                            <p className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors">Temps d&apos;apprentissage</p>
+                                            <p className="text-sm text-gray-700 dark:text-gray-400 group-hover:text-[#0097A7] dark:group-hover:text-gray-300 transition-colors">Temps d&apos;apprentissage</p>
                                             <div className="flex items-baseline gap-2">
-                                                <p className="text-3xl font-bold text-white mt-1 transition-all duration-300 group-hover:scale-105">
+                                                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1 transition-all duration-300 group-hover:scale-105">
                                                     {stats.formattedDuration}
                                                 </p>
                                             </div>
@@ -484,22 +481,22 @@ const BookmarksPage = () => {
                                         </div>
                                     </div>
                                     <div className="mt-4">
-                                        <p className="text-xs text-gray-400 group-hover:text-gray-300 transition-colors">Catégorie principale</p>
+                                        <p className="text-xs text-gray-700 dark:text-gray-400 group-hover:text-[#0097A7] dark:group-hover:text-gray-300 transition-colors">Catégorie principale</p>
                                         <p className="text-sm text-gray-300 mt-1 group-hover:text-white transition-colors">
                                             {stats.topCategory}
                                         </p>
-                                        <p className="text-xs text-gray-400 mt-2 group-hover:text-gray-300 transition-colors">
+                                        <p className="text-xs text-gray-700 dark:text-gray-400 mt-2 group-hover:text-[#0097A7] dark:group-hover:text-gray-300 transition-colors">
                                             Dernière mise à jour : {stats.formattedLastUpdated}
                                         </p>
                                     </div>
                                 </div>
 
-                                <div className="group bg-glass p-6 rounded-2xl border border-gray-700/30 backdrop-blur-xl hover:bg-gray-800/50 transition-all duration-300 hover:shadow-glass-hover hover:border-gray-600/30 hover:scale-102 animate-scale-up">
+                                <div className="group bg-white/90 dark:bg-[#001e21]/80 backdrop-blur-xl p-6 rounded-2xl border border-[#0097A7]/10 dark:border-[#0097A7]/20 hover:bg-[#0097A7]/5 dark:hover:bg-[#002a2f]/80 transition-all duration-300 hover:shadow-[0_0_15px_rgba(0,151,167,0.1)] hover:border-[#0097A7]/20 dark:hover:border-[#0097A7]/30 hover:scale-102 animate-scale-up">
                                     <div className="flex items-center justify-between">
                                         <div>
-                                            <p className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors">Temps moyen / cours</p>
+                                            <p className="text-sm text-gray-700 dark:text-gray-400 group-hover:text-[#0097A7] dark:group-hover:text-gray-300 transition-colors">Temps moyen / cours</p>
                                             <div className="flex items-baseline gap-2">
-                                                <p className="text-3xl font-bold text-white mt-1 transition-all duration-300 group-hover:scale-105">
+                                                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1 transition-all duration-300 group-hover:scale-105">
                                                     {stats.formattedAverageDuration}
                                                 </p>
                                             </div>
@@ -511,14 +508,14 @@ const BookmarksPage = () => {
                                         </div>
                                     </div>
                                     <div className="mt-4">
-                                        <p className="text-xs text-gray-400 group-hover:text-gray-300 transition-colors">Répartition des catégories</p>
+                                        <p className="text-xs text-gray-700 dark:text-gray-400 group-hover:text-[#0097A7] dark:group-hover:text-gray-300 transition-colors">Répartition des catégories</p>
                                         <div className="mt-2 space-y-1">
                                             {Object.entries(stats.categoriesCount)
                                                 .sort(([,a], [,b]) => b - a)
                                                 .slice(0, 3)
                                                 .map(([category, count]) => (
                                                     <div key={category} className="flex items-center justify-between">
-                                                        <p className="text-xs text-gray-400">{category}</p>
+                                                        <p className="text-xs text-gray-700 dark:text-gray-400">{category}</p>
                                                         <p className="text-xs text-gray-300">{count} cours</p>
                                                     </div>
                                                 ))
@@ -528,18 +525,18 @@ const BookmarksPage = () => {
                                 </div>
                             </section>
 
-                            {/* Section des graphiques avec le nouveau style */}
+                            {/* Section des graphiques */}
                             <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                                <div className="group bg-glass p-6 rounded-2xl border border-gray-700/30 backdrop-blur-xl hover:bg-gray-800/50 transition-all duration-300 hover:shadow-glass-hover hover:scale-102 animate-scale-up">
-                                    <h3 className="text-sm font-medium text-gray-300 mb-4 group-hover:text-white transition-colors">Progression des cours</h3>
+                                <div className="group bg-white/90 dark:bg-[#001e21]/80 backdrop-blur-xl p-6 rounded-2xl border border-[#0097A7]/10 dark:border-[#0097A7]/20 hover:bg-[#0097A7]/5 dark:hover:bg-[#002a2f]/80 transition-all duration-300 hover:shadow-[0_0_15px_rgba(0,151,167,0.1)] hover:scale-102 animate-scale-up">
+                                    <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-[#0097A7] dark:group-hover:text-white transition-colors">Progression des cours</h3>
                                     <CoursesLineChart courses={lineChartData} />
                                 </div>
-                                <div className="bg-gray-800/30 p-4 rounded-xl border border-gray-700/30 backdrop-blur-sm">
-                                    <h3 className="text-sm font-medium text-gray-300 mb-3">Répartition par catégorie</h3>
+                                <div className="bg-white/90 dark:bg-[#001e21]/80 backdrop-blur-xl p-4 rounded-xl border border-[#0097A7]/10 dark:border-[#0097A7]/20">
+                                    <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Répartition par catégorie</h3>
                                     <CoursesBarChart courses={barChartData} />
                                 </div>
-                                <div className="md:col-span-2 xl:col-span-1 bg-gray-800/30 p-4 rounded-xl border border-gray-700/30 backdrop-blur-sm">
-                                    <h3 className="text-sm font-medium text-gray-300 mb-3">Heures de formation</h3>
+                                <div className="md:col-span-2 xl:col-span-1 bg-white/90 dark:bg-[#001e21]/80 backdrop-blur-xl p-4 rounded-xl border border-[#0097A7]/10 dark:border-[#0097A7]/20">
+                                    <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Heures de formation</h3>
                                     <HoursBarChart courses={hoursChartData} />
                                 </div>
                             </section>
@@ -596,5 +593,27 @@ const BookmarksPage = () => {
         </div>
     )
 }
+
+// Ajout des keyframes pour les animations
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes gradient-x {
+        0%, 100% { background-position: 0% 50% }
+        50% { background-position: 100% 50% }
+    }
+    @keyframes gradient-y {
+        0%, 100% { background-position: 50% 0% }
+        50% { background-position: 50% 100% }
+    }
+    .animate-gradient-x {
+        animation: gradient-x 15s ease infinite;
+        background-size: 200% 200%;
+    }
+    .animate-gradient-y {
+        animation: gradient-y 15s ease infinite;
+        background-size: 200% 200%;
+    }
+`;
+document.head.appendChild(style);
 
 export default BookmarksPage 

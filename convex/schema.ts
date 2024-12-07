@@ -199,7 +199,7 @@ const schema = defineSchema({
   // new letters
   newletters: defineTable({
     email: v.array(v.object({ email: v.string() })),
-  }),
+  }).index("by_email", ["email"]),
   // marketings table
   marketing: defineTable({
     title: v.string(),
@@ -551,6 +551,7 @@ const schema = defineSchema({
     courseId: v.id("courses"),
     chapterId: v.id("chapters"),
     exercicesId: v.id("exercices"),
+    isCompleted: v.optional(v.boolean() || true),
     executedDate: v.number(),
     points: v.optional(v.number()),
     mark: v.optional(v.number()),
@@ -647,5 +648,16 @@ const schema = defineSchema({
       "courseId",
     ])
     .index("by_user_id_workspace_id", ["userId", "workspaceId"]),
+
+  homeRating: defineTable({
+   rating:v.array(v.number()),
+   comment :v.array (v.string())
+  }),
+ homeContact: defineTable({
+  fullName: v.array(v.string()),
+  email:v.array(v.string()),
+  message :v.array (v.string())
+   }).index("by_fullName", ["fullName"])
+   .index("by_email", ["email"]),
 });
 export default schema;

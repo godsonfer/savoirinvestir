@@ -15,6 +15,8 @@ import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { extractRouterConfig } from "uploadthing/server";
 import { ourFileRouter } from "@/app/api/uploadthing/core";
 import { ThemeProvider } from "@/contexts/theme-context";
+import { LoadingProvider } from "@/providers/loading-provider";
+import { InitialLoader } from "@/components/initial-loader";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -28,8 +30,26 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: 'Explorez nos formations ',
-  description: 'Découvrez notre catalogue complet de formations et commencez votre parcours d\'apprentissage dès aujourd\'hui.',
+  title: 'Plateforme d\'apprentissage | Invest Mastery Mind',
+  description: 'Bienvenue sur la plateforme d\'apprentissage d\'Invest Mastery Mind. Notre objectif est de vous donner les outils nécessaires pour devenir un investisseur maîtrisé.',
+  icons: {
+    icon: '/logo.svg',
+    shortcut: '/logo.svg',
+    apple: '/logo.svg',
+    other: {
+      rel: 'apple-touch-icon',
+      url: '/logo.svg',
+    },
+  },
+  manifest: '/manifest.json',
+  twitter: {
+    card: 'summary',
+    title: 'Plateforme d\'apprentissage | Invest Mastery Mind',
+    description: 'Bienvenue sur la plateforme d\'apprentissage d\'Invest Mastery Mind. Notre objectif est de vous donner les outils nécessaires pour devenir un investisseur maîtrisé.',
+    creator: '@investmasterymind',
+    creatorId: 'investmasterymind',
+    images: ['/logo.svg'],
+  },
 };
 
 export default function RootLayout({
@@ -42,19 +62,36 @@ export default function RootLayout({
       <html lang="en">
         <head>
           <Script src="https://cdn.fedapay.com/checkout.js?v=1.1.2" />
+          <Script id="register-sw" strategy="afterInteractive">
+            {`
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                  navigator.serviceWorker.register('/sw.js').then(
+                    function(registration) {
+                      console.log('Service Worker enregistré avec succès:', registration.scope);
+                    },
+                    function(err) {
+                      console.log('Échec de l\'enregistrement du Service Worker:', err);
+                    }
+                  );
+                });
+              }
+            `}
+          </Script>
         </head>
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased `}
-        >
+        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
           <ThemeProvider>
             <ConvexClientProvider>
               <JotaiProvider>
-              <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
-              <Toaster />
-              <Modals />
-              <QueryProvider>
-                <NuqsAdapter>{children}</NuqsAdapter>
-              </QueryProvider>
+                <LoadingProvider>
+                  <InitialLoader />
+                  <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
+                  <Toaster />
+                  <Modals />
+                  <QueryProvider>
+                    <NuqsAdapter>{children}</NuqsAdapter>
+                  </QueryProvider>
+                </LoadingProvider>
               </JotaiProvider>
             </ConvexClientProvider>
           </ThemeProvider>

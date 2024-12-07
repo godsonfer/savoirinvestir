@@ -1,8 +1,16 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Button } from '@/components/ui/button'
 import { useGetWorkspace } from '@/features/workspaces/api/use-get-workspace'
+import {
+ 
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+    DropdownMenu,
+} from "@/components/ui/dropdown-menu"
 
 import { useWorkspaceId } from '@/hooks/use-workspace-id'
-import { Info, Search } from 'lucide-react'
+import { Info, Moon, Search, Sun } from 'lucide-react'
 import {
     CommandDialog,
     CommandEmpty,
@@ -20,6 +28,7 @@ import { useGetMembers } from '@/features/members/api/use-get-members'
 import { Id } from '../../../../convex/_generated/dataModel'
 import { useRouter } from 'next/navigation'
 import { DialogTitle } from '@radix-ui/react-dialog'
+import { useTheme } from 'next-themes'
 
 export const ToolBar = () => {
     const router = useRouter()
@@ -36,6 +45,7 @@ export const ToolBar = () => {
     const { data } = useGetWorkspace({ id: workspaceId })
     const { data: channels } = useGetChannels({ workspaceId })
     const { data: members } = useGetMembers({ workspaceId })
+    const { setTheme, theme } = useTheme()
 
     React.useEffect(() => {
         const down = (e: KeyboardEvent) => {
@@ -48,7 +58,7 @@ export const ToolBar = () => {
         return () => document.removeEventListener("keydown", down)
     }, [])
     return (
-        <nav className='bg-gradient-to-r from-[#178F65]  to-[#085867]/80 flex items-center  justify-between h-10 p-1.5'>
+        <nav className='  bg-gradient-to-r from-[#178F65]  to-[#085867]/80 flex items-center  justify-between h-10 p-1.5'>
             <div className='flex-1' />
             <div className="min-w-280px max-[642px] grow-[2] shrink"  >
                 <Button onClick={() => setOpen(true)} size='sm' className='bg-accent/25 hover:bg-accent-25 rounded-sm w-full justify-start h-7 px-2 '>
@@ -89,7 +99,27 @@ export const ToolBar = () => {
                     </CommandList>
                 </CommandDialog>
             </div>
-            <div className="ml-auto flex flex-1 items-center   justify-end">
+            <div className="ml-auto flex flex-1 items-center justify-end gap-2">
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="transparent" size="iconSm">
+                            <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 text-white" />
+                            <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 text-white" />
+                            <span className="sr-only">Changer le thème</span>
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => setTheme("light")}>
+                            Clair
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setTheme("dark")}>
+                            Sombre
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setTheme("system")}>
+                            Système
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
                 <Button variant='transparent' size="iconSm">
                     <Info className="size-5 text-white"></Info>
                 </Button>

@@ -7,6 +7,7 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { sanitizeAndParseHTML } from '@/utils/sanitizeAndParsedHtml'
 
 interface CourseDescriptionProps {
     description: string
@@ -23,7 +24,8 @@ export const CourseDescription = ({ description }: CourseDescriptionProps) => {
                 transition={{ delay: 0.4, duration: 0.5 }}
                 className="text-lg md:text-xl text-white/90 max-w-3xl font-light leading-relaxed line-clamp-3 md:line-clamp-4"
             >
-                {description}
+                                            {sanitizeAndParseHTML  (description)}
+        
             </motion.p>
             
             <TooltipProvider>
@@ -43,7 +45,7 @@ export const CourseDescription = ({ description }: CourseDescriptionProps) => {
                         className="max-w-xl bg-black/90 backdrop-blur-md border-white/10 p-4 text-white/90"
                     >
                         <p className="text-base leading-relaxed whitespace-pre-wrap">
-                            {description}
+                            {sanitizeAndParseHTML  (description)}
                         </p>
                     </TooltipContent>
                 </Tooltip>

@@ -5,14 +5,11 @@ import { Id } from "../../../../convex/_generated/dataModel";
 
 type RequestType = {
     exerciseId: Id<"exercices">,
-    courseId: Id<"courses">,
-    chapterId: Id<"chapters">,
     points: number | undefined,
     mark: number | undefined,
     note: string | undefined,
- 
 };
-type ResponseType = Id<"exercices"> | null;
+type ResponseType = Id<"useExercices"> | null;
 type Options = {
   onSuccess?: (data: ResponseType) => void;
   onError?: (error: Error) => void;
@@ -43,7 +40,6 @@ export const useUserDoneExercice = () => {
       setStatus("pending");
 
       try {
-        console.log(values)
         const response = await mutation(values);
         options?.onSuccess?.(response);
         setStatus("success");

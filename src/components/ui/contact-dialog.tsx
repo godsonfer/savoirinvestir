@@ -2,6 +2,8 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Send, Mail, Phone, MapPin } from "lucide-react";
+import { useNewHomeContact } from "@/features/home/add-new-contact";
+import { toast } from "sonner";
 
 interface ContactDialogProps {
     isOpen: boolean;
@@ -16,10 +18,20 @@ export const ContactDialog = ({ isOpen, onClose }: ContactDialogProps) => {
         message: ""
     });
 
+    const { mutate: newHomeContact } = useNewHomeContact();
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        // Implémentez ici la logique d'envoi
-        console.log("Form submitted:", formData);
+        newHomeContact({ fullName: formData.name, email: formData.email, message: formData.message }, {
+            onSuccess: () => {
+                toast.success("Merci pour votre message !");
+                onClose();
+            },
+            onError: () => {
+                toast.error("Une erreur est survenue lors de l'envoi de votre message.");
+                onClose();
+            }
+        });
         onClose();
     };
 

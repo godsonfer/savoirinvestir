@@ -57,9 +57,9 @@ export default function CertificatesPage() {
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-[#0097A7]/5 overflow-hidden"
+      className="min-h-screen bg-background dark:bg-slate-900 overflow-hidden"
     >
-      <div className="h-screen overflow-y-auto scrollbar-thin scrollbar-thumb-[#0097A7]/20 scrollbar-track-transparent hover:scrollbar-thumb-[#0097A7]/40 scroll-smooth">
+      <div className="h-screen overflow-y-auto scrollbar-thin scrollbar-thumb-[#0097A7]/20 dark:scrollbar-thumb-[#0097A7]/10 scrollbar-track-transparent hover:scrollbar-thumb-[#0097A7]/40 dark:hover:scrollbar-thumb-[#0097A7]/20 scroll-smooth">
         <div className="container mx-auto px-4 py-12 sm:px-6">
           <motion.div 
             initial={{ opacity: 0, y: -30 }}
@@ -71,15 +71,15 @@ export default function CertificatesPage() {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.2, duration: 0.5 }}
-              className="absolute -top-6 left-1/2 transform -translate-x-1/2 w-16 h-16 bg-white rounded-full shadow-lg flex items-center justify-center"
+              className="absolute -top-6 left-1/2 transform -translate-x-1/2 w-16 h-16 bg-card dark:bg-slate-800 rounded-full shadow-lg flex items-center justify-center"
             >
-              <Award className="w-8 h-8 text-[#0097A7]" />
+              <Award className="w-8 h-8 text-[#0097A7] dark:text-[#0097A7]/80" />
             </motion.div>
             
             <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-[#0097A7] via-[#2C7A7B] to-[#D6620F] bg-clip-text text-transparent mb-4">
               Mes Certificats
             </h1>
-            <p className="text-gray-600 max-w-2xl mx-auto text-lg">
+            <p className="text-muted-foreground dark:text-slate-400 max-w-2xl mx-auto text-lg">
               Découvrez vos certificats de formation et générez-les une fois les cours terminés
             </p>
             
@@ -99,22 +99,21 @@ export default function CertificatesPage() {
           >
             {certificates.map((certificate, index) => (
             <>
-         { certificate.type ==="purchase"  ? (
+              { certificate.type ==="purchase"  ? (
                 <motion.div
-                key={certificate.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 + 0.5, duration: 0.5 }}
+                  key={certificate.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 + 0.5, duration: 0.5 }}
                 >
-
-                    <CertificateCard
-                      certificate={certificate}
-                      index={index}
-                      onSelect={setSelectedCertificate}
-                      onGenerate={handleGenerateCertificate}
-                    />
+                  <CertificateCard
+                    certificate={certificate}
+                    index={index}
+                    onSelect={setSelectedCertificate}
+                    onGenerate={handleGenerateCertificate}
+                  />
                 </motion.div>
-          )   : null}
+              ) : null}
             </>
             ))}
           </motion.div>
@@ -125,17 +124,17 @@ export default function CertificatesPage() {
         open={!!selectedCertificate} 
         onOpenChange={() => setSelectedCertificate(null)}
       >
-        <DialogContent className="w-[98vw] max-w-4xl p-0 overflow-hidden bg-gradient-to-br from-white to-gray-50 max-h-[90vh] my-2">
+        <DialogContent className="w-[98vw] max-w-4xl p-0 overflow-hidden bg-card dark:bg-slate-900 max-h-[90vh] my-2">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.3 }}
             className="relative h-full flex flex-col"
           >
-            <DialogTitle className="p-2 text-center text-lg sm:text-xl font-bold text-gray-800 sticky top-0 bg-white/80 backdrop-blur-sm z-20 border-b">
+            <DialogTitle className="p-2 text-center text-lg sm:text-xl font-bold text-foreground dark:text-slate-100 sticky top-0 bg-background/80 dark:bg-slate-900/80 backdrop-blur-sm z-20 border-b border-border dark:border-slate-700">
               {selectedCertificate?.title}
             </DialogTitle>
-            <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-[#0097A7]/20 scrollbar-track-transparent hover:scrollbar-thumb-[#0097A7]/40 scroll-smooth">
+            <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-[#0097A7]/20 dark:scrollbar-thumb-[#0097A7]/10 scrollbar-track-transparent hover:scrollbar-thumb-[#0097A7]/40 dark:hover:scrollbar-thumb-[#0097A7]/20 scroll-smooth">
               <div className="p-1 sm:p-3">
                 {selectedCertificate && (
                   <CertificatePreview certificate={selectedCertificate} />

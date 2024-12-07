@@ -37,11 +37,11 @@ const UserButton = () => {
   const { image, } = data
   return (
     <DropdownMenu modal={false} >
-      <DropdownMenuTrigger className='outline-none relative'>
+      <DropdownMenuTrigger className='outline-none relative dark:bg-black dark:text-white'>
         <Avatar className="rounded-md siez-10 hover:opacity-75 transition">
           <AvatarImage className='rounded-md' alt='name' src={image} />
           <AvatarFallback className='rounded-md bg-sky-500 text-white'>
-            <AvatarIcon className='size-6' />
+            <AvatarIcon className='size-9' />
           </AvatarFallback>
 
         </Avatar>

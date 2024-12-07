@@ -1,10 +1,10 @@
 "use client"
 import React from "react";
 import { Button } from "@/components/ui/button";
+import { useTheme } from 'next-themes'
 import { Menu, BookOpen, BarChart2, Sun, Moon, X, Facebook, Youtube, Mail, User2, Loader, ArrowUp } from "lucide-react";
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { useTheme } from '@/contexts/theme-context';
 import { HeroSection } from "@/components/home/hero-section";
 import { FeaturesSection } from "@/components/home/features-section";
 import { CoursesSection } from "@/components/home/courses-section";
@@ -101,9 +101,9 @@ type NavigationItem = {
 
 export default function Home() {
     const { data: session, isLoading } = useCurrentUser();
-    const { isDarkMode, toggleTheme } = useTheme();
+    const { setTheme, theme } = useTheme()
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const [showPromo, setShowPromo] = useState(true);
+    const [showPromo, setShowPromo] = useState(false);
     const [showFeedback, setShowFeedback] = useState(false);
     const [isContactOpen, setIsContactOpen] = useState(false);
     const [showScrollTop, setShowScrollTop] = useState(false);
@@ -191,8 +191,8 @@ export default function Home() {
     }, [session, isLoading]);
 
     const socialLinks = [
-        { icon: <Facebook className="w-5 h-5" />, href: "#", label: "Facebook" },
-        { icon: <Youtube className="w-5 h-5" />, href: "#", label: "Youtube" }
+        { icon: <Facebook className="w-5 h-5" />, href: "https://web.facebook.com/godsonferdinand7/", label: "Facebook" },
+        { icon: <Youtube className="w-5 h-5" />, href: "https://www.youtube.com/@investmasterymind", label: "Youtube" }
     ];
 
     const scrollToSection = (sectionId: string) => {
@@ -218,7 +218,7 @@ export default function Home() {
     };
 
     return (
-        <div className={`relative w-full overflow-hidden ${isDarkMode ? 'dark' : ''}`}>
+        <div className="relative w-full overflow-hidden">
             {/* Bulles d'arrière-plan */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
                 {/* Grandes bulles */}
@@ -342,10 +342,10 @@ export default function Home() {
                             <Button
                                 variant="transparent"
                                 size="icon"
-                                onClick={toggleTheme}
+                                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
                                 className="hover:bg-primary-background/10 dark:hover:bg-primary-background/20"
                             >
-                                {isDarkMode ? (
+                                {theme === 'dark' ? (
                                     <Sun className="h-5 w-5 text-primary-main" />
                                 ) : (
                                     <Moon className="h-5 w-5 text-primary-main" />
@@ -479,12 +479,12 @@ export default function Home() {
 
                                     {/* Mode sombre/clair */}
                                     <button
-                                        onClick={toggleTheme}
+                                        onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
                                         className="flex items-center px-4 py-3 rounded-lg
                                         text-gray-600 dark:text-gray-300 hover:text-primary-main dark:hover:text-primary-main 
                                         hover:bg-primary-background/10 dark:hover:bg-primary-background/20"
                                     >
-                                        {isDarkMode ? (
+                                        {theme === 'dark' ? (
                                             <>
                                                 <Sun className="w-5 h-5 mr-3" />
                                                 <span>Mode clair</span>
@@ -558,7 +558,7 @@ export default function Home() {
                         bg-primary-main hover:bg-primary-dark text-white 
                         rounded-full shadow-lg transition-all duration-300"
                     >
-                        <ArrowUp className="w-6 h-6" />
+                        <ArrowUp className="w-6 h-6 size-12" />
                     </motion.button>
                 )}
             </AnimatePresence>

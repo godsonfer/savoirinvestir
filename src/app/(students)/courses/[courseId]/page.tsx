@@ -11,7 +11,6 @@ import { useState, useMemo, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Course, Chapter, Lesson } from '@/types/course'
 import { CourseDialogs } from '@/components/courses/student/CourseDialogs'
-import Link from 'next/link'
 import { CourseDescription } from '@/components/courses/student/CourseDescription'
 import { CoursePageSkeleton } from '@/components/courses/student/CoursePageSkeleton'
 import { FloatingHeader } from '@/components/courses/student/FloatingHeader'
@@ -24,8 +23,7 @@ const StudentCoursePage = () => {
     const chapters = data?.chapters as Chapter[] || []
     
     const [isBookmarked, setIsBookmarked] = useState(false)
-    const [ratingValue, setRating] = useState(0)
-    const [comment, setComment] = useState('')
+  
     const [isScrolled, setIsScrolled] = useState(false)
     const [showMobileAction, setShowMobileAction] = useState(true)
 

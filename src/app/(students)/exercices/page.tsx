@@ -202,15 +202,16 @@ type NewExercise = Omit<Exercise, 'id' | 'chapterId' | 'score' | 'mistakes'> & {
   chapterId?: string
 }
 
-// Adapter les données mockées pour correspondre au type attendu
-const adaptedMockCourses = mockCourses.map(course => ({
-  ...course,
-  chapters: course.chapters.map(chapter => ({
-    ...chapter,
-    lessons: [], // Ajouter la propriété lessons manquante
-    exercises: chapter.exercises || []
-  }))
-}))
+interface ExerciceType {
+  isCompleted?: boolean;
+  points?: number;
+  _id?: string;
+}
+
+interface ChapterType {
+  exercicesDone?: ExerciceType[];
+  exercices?: ExerciceType[];
+}
 
 // Composant principal amélioré
 const ExercicesPage = () => {
@@ -229,20 +230,34 @@ const ExercicesPage = () => {
       earnedPoints: 0
     }
 
+    console.log("Structure complète d'un résultat:", {
+      result: results[0],
+      exercicesDone: results[0].exercicesDone,
+      courseExercicesDone: results[0].course.exercicesDone,
+      premierChapitre: results[0].course.chapters[0],
+    });
+
     const totalExercises = results.reduce((acc: number, result) => 
       acc + result.course.chapters.reduce((chAcc: number, ch: { exercices: any[] }) => 
         chAcc + ch.exercices.length, 0
       ), 0
     )
-    
-    const completedExercises = results.reduce((acc: number, result) => 
-      acc + result.course.chapters.reduce((chAcc: number, ch: { exercices: any[] }) => 
-        chAcc + ch.exercices.filter(ex => ex.isCompleted).length, 0
-      ), 0
-    )
+
+
+    const completedExercises = results.reduce((acc: number, result) => {
+      // Exercices complétés au niveau du cours
+      const courseCompleted = result.course.exercices?.filter((ex: ExerciceType) => ex.isCompleted).length || 0;
+      
+      // Exercices complétés au niveau des chapitres
+      const chaptersCompleted = result.course.chapters.reduce((chAcc: number, chapter: ChapterType) => {
+        return chAcc + (chapter.exercicesDone?.length || 0);
+      }, 0);
+      
+      return acc + courseCompleted + chaptersCompleted;
+    }, 0);
 
     const totalPoints = results.reduce((acc: number, result) => {
-      return acc + result.course.chapters.reduce((chAcc: number, ch: { exercices: any[] }) => {
+      return acc + result.course.chapters.reduce((chAcc: number, ch: { exercices: Array<{ points?: number }> }) => {
         return chAcc + ch.exercices.reduce((exAcc: number, ex: { points?: number }) => 
           exAcc + (ex.points || 0), 0
         )
@@ -250,12 +265,20 @@ const ExercicesPage = () => {
     }, 0)
 
     const earnedPoints = results.reduce((acc: number, result) => {
-      return acc + result.course.chapters.reduce((chAcc: number, ch: { exercices: any[] }) => {
-        return chAcc + ch.exercices.reduce((exAcc: number, ex: { isCompleted?: boolean; points?: number }) => 
-          ex.isCompleted ? exAcc + (ex.points || 0) : exAcc, 0
-        )
-      }, 0)
-    }, 0)
+      // Points des exercices complétés au niveau du cours
+      const coursePoints = result.course.exercices?.reduce((exAcc: number, ex: ExerciceType) => 
+        ex.isCompleted ? exAcc + (ex.points || 0) : exAcc, 0
+      ) || 0;
+      
+      // Points des exercices complétés au niveau des chapitres
+      const chaptersPoints = result.course.chapters.reduce((chAcc: number, chapter: ChapterType) => {
+        return chAcc + (chapter.exercicesDone?.reduce((exAcc: number, ex: ExerciceType) => 
+          exAcc + (ex.points || 0), 0
+        ) || 0);
+      }, 0);
+      
+      return acc + coursePoints + chaptersPoints;
+    }, 0);
 
     return {
       totalExercises,
@@ -277,33 +300,62 @@ const ExercicesPage = () => {
           description: course.description,
           difficulty: course.difficulty,
           progress: course.progress,
-          chapters: course.chapters.map((chapter: { _id: string; title: string; description: string; exercices: any[] }) => ({
-            id: chapter._id,
-            title: chapter.title,
-            description: chapter.description,
-            exercises: chapter.exercices
-              .filter((exercise: { title?: string; description?: string; difficulty?: string; isCompleted?: boolean; _id?: string }) => {
-                const isExerciseDone = courseData.exercisesDone?.includes(exercise._id || "");
-                
-                const matchesSearch = 
-                  exercise.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                  exercise.description?.toLowerCase().includes(searchQuery.toLowerCase())
-                
-                const matchesDifficulty = 
-                  difficultyFilter === "all" || exercise.difficulty === difficultyFilter
-                
-                const matchesCompletion = 
-                  completionFilter === "all" ||
-                  (completionFilter === "completed" && isExerciseDone) ||
-                  (completionFilter === "inProgress" && !isExerciseDone)
-                
-                return matchesSearch && matchesDifficulty && matchesCompletion
-              })
-              .map((exercise: { title?: string; description?: string; difficulty?: string; _id?: string }) => ({
-                ...exercise,
-                isCompleted: courseData.exercisesDone?.includes(exercise._id || "")
-              }))
-          }))
+          chapters: course.chapters.map((chapter: { 
+            _id: string; 
+            title: string; 
+            description: string; 
+            exercices: any[];
+            exercicesDone: any[];
+          }) => {
+            // Créer un Set des IDs des exercices faits pour une recherche plus rapide
+            const completedExerciseIds = new Set(
+              chapter.exercicesDone?.map(ex => ex._id) || []
+            );
+
+            // Calculer le nombre d'exercices faits dans ce chapitre
+            const chapterCompletedCount = chapter.exercicesDone?.length || 0;
+            
+            return {
+              id: chapter._id,
+              title: chapter.title,
+              description: chapter.description,
+              completedCount: chapterCompletedCount,
+              totalCount: chapter.exercices.length,
+              exercises: chapter.exercices
+                .filter((exercise: { 
+                  title?: string; 
+                  description?: string; 
+                  difficulty?: string; 
+                  _id?: string 
+                }) => {
+                  const matchesSearch = 
+                    exercise.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    exercise.description?.toLowerCase().includes(searchQuery.toLowerCase())
+                  
+                  const matchesDifficulty = 
+                    difficultyFilter === "all" || exercise.difficulty === difficultyFilter
+                  
+                  const isExerciseDone = completedExerciseIds.has(exercise._id);
+                  
+                  const matchesCompletion = 
+                    completionFilter === "all" ||
+                    (completionFilter === "completed" && isExerciseDone) ||
+                    (completionFilter === "inProgress" && !isExerciseDone)
+                  
+                  return matchesSearch && matchesDifficulty && matchesCompletion
+                })
+                .map((exercise: { 
+                  title?: string; 
+                  description?: string; 
+                  difficulty?: string; 
+                  _id?: string 
+                }) => ({
+                  ...exercise,
+                  isCompleted: completedExerciseIds.has(exercise._id),
+                  isDisabled: completedExerciseIds.has(exercise._id) // Désactiver si déjà fait
+                }))
+            }
+          })
         }
       })
       .filter(course => 
@@ -436,7 +488,7 @@ const ExercicesPage = () => {
 
                   <div className="space-y-6 pb-20 px-2 mt-6">
                     <AnimatePresence mode="wait">
-                      {filteredAndSortedCourses.map((course: Course) => (
+                      {filteredAndSortedCourses.map((course) => (
                         <motion.div
                           key={course.id}
                           layout

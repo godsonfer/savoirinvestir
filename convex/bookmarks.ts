@@ -60,6 +60,9 @@ const populateChapters = async (ctx: QueryCtx, courseId: Id<"courses">, userId: 
     chapters.map(async (chapter) => {
       const exercises = await populateChapterExercises(ctx, chapter._id);
       const exercisesDone = await populateChapterDone(ctx, chapter._id, userId);
+      const remainingExercises = exercises.filter(exercise => 
+        !exercisesDone.some(done => done.exercicesId === exercise._id)
+      );
       const lessons = await populateChaptersLessons(ctx, chapter._id);
       const lessonsWithMuxData = await Promise.all(
         lessons.map(async (lesson) => {
@@ -76,7 +79,7 @@ const populateChapters = async (ctx: QueryCtx, courseId: Id<"courses">, userId: 
       
       return {
         ...chapter,
-        exercices: exercises,
+        exercices: remainingExercises,
         lessons: lessonsWithMuxData,
         numberExercisesDone: exercisesDone.length,
         exercicesDone: exercisesDone

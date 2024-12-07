@@ -19,6 +19,7 @@ import { useCreateBookmark } from "@/features/bookmarks/use-create-bookmark"
 import { toast } from "sonner"
 import { Id } from "../../convex/_generated/dataModel"
 import { SupportDialog } from "./course-learning/SupportDialog"
+import { sanitizeAndParseHTML } from "@/utils/sanitizeAndParsedHtml"
 
 export type ViewMode = "grid" | "list"
 
@@ -137,7 +138,6 @@ export const CourseCard = ({
             onHoverEnd={handleHoverEnd}
             className="h-full relative group"
         >
-            {/* Confetti container avec key unique */}
             <div className="absolute -top-2 left-1/2 -translate-x-1/2 z-50">
                 <Confetti 
                     key={confettiKey}
@@ -148,6 +148,8 @@ export const CourseCard = ({
 
             <Card className={cn(
                 "group relative overflow-hidden bg-card hover:shadow-2xl transition-all duration-500 h-full border-muted/40",
+                "dark:bg-slate-900/50 dark:hover:bg-slate-900/80 dark:border-slate-800/40",
+                "backdrop-blur-sm dark:backdrop-blur-lg",
                 viewMode === "list" ? "flex flex-row" : "flex flex-col"
             )}>
                 {/* Effet de lumière au hover */}
@@ -156,8 +158,16 @@ export const CourseCard = ({
                     animate={{ opacity: isHovered ? 1 : 0 }}
                     className="absolute inset-0 pointer-events-none"
                 >
-                    <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 via-transparent to-primary/10 opacity-70" />
-                    <div className="absolute -inset-[100%] animate-[spin_12s_linear_infinite] bg-gradient-to-r from-transparent via-primary/5 to-transparent" />
+                    <div className={cn(
+                        "absolute inset-0 bg-gradient-to-tr opacity-70",
+                        "from-primary/5 via-transparent to-primary/5",
+                        "dark:from-[#0097A7]/10 dark:via-transparent dark:to-[#D6620F]/10"
+                    )} />
+                    <div className={cn(
+                        "absolute -inset-[100%] animate-[spin_12s_linear_infinite]",
+                        "bg-gradient-to-r from-transparent via-primary/5 to-transparent",
+                        "dark:from-transparent dark:via-[#0097A7]/10 dark:to-transparent"
+                    )} />
                 </motion.div>
 
                 <Link href={`/courses/${id}`} className={cn(
@@ -167,7 +177,10 @@ export const CourseCard = ({
                     <motion.div 
                         className={cn(
                             "relative overflow-hidden",
-                            viewMode === "grid" ? "aspect-video w-full rounded-t-lg" : "w-48 rounded-l-lg"
+                            viewMode === "grid" ? "aspect-video w-full rounded-t-lg" : "w-48 rounded-l-lg",
+                            "after:absolute after:inset-0 after:bg-gradient-to-t after:from-black/80 after:via-black/20 after:to-transparent",
+                            "dark:after:from-black/90 dark:after:via-black/30 dark:after:to-transparent/10",
+                            "after:opacity-80 group-hover:after:opacity-70 after:transition-opacity after:duration-300"
                         )}
                         whileHover={{ scale: 1.03 }}
                         transition={{ duration: 0.4, ease: "easeOut" }}
@@ -176,17 +189,19 @@ export const CourseCard = ({
                             src={imageUrl || "/placeholder-course.jpg"}
                             alt={title}
                             fill
-                            className="object-cover transition-all duration-700 group-hover:saturate-110"
+                            className={cn(
+                                "object-cover transition-all duration-700",
+                                "group-hover:saturate-110",
+                                "dark:brightness-90 dark:group-hover:brightness-100"
+                            )}
                         />
-                        {/* Overlay gradient amélioré */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent opacity-80 group-hover:opacity-70 transition-opacity duration-300" />
                     </motion.div>
 
                     {/* Contenu avec animations */}
                     <motion.div 
                         className={cn(
                             "relative z-10",
-                            viewMode === "grid" ? "p-5" : "flex-1 p-4"
+                            viewMode === "grid" ? "p-5" : "p-4"
                         )}
                         initial={{ y: 20, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
@@ -198,19 +213,37 @@ export const CourseCard = ({
                                 "flex items-start",
                                 viewMode === "list" ? "justify-between gap-4" : "flex-col gap-3"
                             )}>
-                                <h3 className="font-semibold line-clamp-1 text-lg group-hover:text-primary transition-colors duration-300">
+                                <h3 className={cn(
+                                    "font-semibold line-clamp-1 text-lg transition-all duration-300",
+                                    "text-foreground dark:text-slate-100",
+                                    "group-hover:text-[#0097A7] dark:group-hover:text-[#0097A7]",
+                                    "group-hover:translate-x-1 dark:group-hover:text-shadow-glow"
+                                )}>
                                     {title}
                                 </h3>
                                 {viewMode === "list" && (
-                                    <Badge variant="secondary" className="px-2.5 py-0.5 text-xs font-medium shrink-0">
+                                    <Badge variant="secondary" className={cn(
+                                        "px-2.5 py-0.5 text-xs font-medium shrink-0",
+                                        "text-foreground/90 dark:text-slate-200",
+                                        "bg-secondary/80 dark:bg-slate-800/80",
+                                        "group-hover:bg-[#0097A7]/10 dark:group-hover:bg-[#0097A7]/20",
+                                        "transition-colors duration-300"
+                                    )}>
                                         {category}
                                     </Badge>
                                 )}
                             </div>
-                            <p className="text-muted-foreground text-sm line-clamp-2 leading-relaxed">{description}</p>
+                            <p className={cn(
+                                "text-sm line-clamp-2 leading-relaxed",
+                                "text-muted-foreground dark:text-slate-300/80",
+                                "group-hover:text-muted-foreground/80 dark:group-hover:text-slate-200/90",
+                                "transition-colors duration-300"
+                            )}>
+                                {sanitizeAndParseHTML(description)}
+                            </p>
                         </div>
 
-                        {/* Metadata */}
+                        {/* Metadata avec effets améliorés */}
                         <div className={cn(
                             "space-y-4",
                             viewMode === "grid" ? "mt-6" : "mt-4"
@@ -218,166 +251,96 @@ export const CourseCard = ({
                             {/* Première ligne: Catégorie et Note */}
                             <div className="flex items-center justify-between">
                                 {viewMode === "grid" && (
-                                    <Badge variant="secondary" className="px-2.5 py-0.5 text-xs font-medium">
+                                    <Badge variant="secondary" className={cn(
+                                        "px-2.5 py-0.5 text-xs font-medium",
+                                        "text-foreground/90 dark:text-slate-200",
+                                        "bg-secondary/80 dark:bg-slate-800/80",
+                                        "group-hover:bg-[#0097A7]/10 dark:group-hover:bg-[#0097A7]/20",
+                                        "transition-colors duration-300"
+                                    )}>
                                         {category}
                                     </Badge>
                                 )}
                                 <Tooltip content={`${reviewCount} avis - Note moyenne: ${averageRating.toFixed(1)}/5`}>
                                     <div className="flex items-center gap-2">
                                         <div className="flex items-center gap-1.5">
-                                            <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                                            <span className="font-medium">{averageRating.toFixed(1)}</span>
+                                            <Star className={cn(
+                                                "h-4 w-4 transition-transform duration-300",
+                                                "fill-[#D6620F] text-[#D6620F]",
+                                                "dark:fill-[#D6620F]/90 dark:text-[#D6620F]/90",
+                                                "group-hover:scale-110"
+                                            )} />
+                                            <span className="font-medium text-foreground dark:text-slate-100">
+                                                {averageRating.toFixed(1)}
+                                            </span>
                                         </div>
-                                        <span className="text-muted-foreground text-xs">({reviewCount})</span>
-                                    </div>
-                                </Tooltip>
-                            </div>
-
-                            {/* Deuxième ligne: Structure du cours */}
-                            <div className={cn(
-                                "grid gap-2 text-xs text-muted-foreground",
-                                viewMode === "grid" ? "grid-cols-3" : "grid-cols-4"
-                            )}>
-                                <Tooltip content="Chapitres">
-                                    <div className="flex items-center gap-1.5 bg-muted/30 rounded-md p-2">
-                                        <Layers className="h-3.5 w-3.5" />
-                                        <span>{chapterLength}</span>
-                                    </div>
-                                </Tooltip>
-                                <Tooltip content="Leçons">
-                                    <div className="flex items-center gap-1.5 bg-muted/30 rounded-md p-2">
-                                        <BookAIcon className="h-3.5 w-3.5" />
-                                        <span>{lessonLength}</span>
-                                    </div>
-                                </Tooltip>
-                                <Tooltip content="Durée">
-                                    <div className="flex items-center gap-1.5 bg-muted/30 rounded-md p-2">
-                                        <Timer className="h-3.5 w-3.5" />
-                                        <span>{formatDuration(duration)}</span>
-                                    </div>
-                                </Tooltip>
-                                {viewMode === "list" && (
-                                    <Tooltip content="Nombre d'étudiants inscrits">
-                                        <div className="flex items-center gap-1.5 bg-muted/30 rounded-md p-2">
-                                            <Users className="h-3.5 w-3.5" />
-                                            <span>{studentCount.toLocaleString('fr-FR')}</span>
-                                        </div>
-                                    </Tooltip>
-                                )}
-                            </div>
-
-                            {viewMode === "grid" && (
-                                <Tooltip content="Nombre d'étudiants inscrits">
-                                    <div className="flex items-center gap-2 text-sm">
-                                        <Users className="h-4 w-4 text-muted-foreground" />
-                                        <span className="text-muted-foreground font-medium">{studentCount.toLocaleString('fr-FR')}</span>
-                                        <span className="text-xs text-muted-foreground">étudiants</span>
-                                    </div>
-                                </Tooltip>
-                            )}
-
-                            {/* Progress Bar */}
-                            {progress !== null && (
-                                <Tooltip content={`Progression: ${progress}%`}>
-                                    <div className="w-full bg-secondary/50 rounded-full h-1.5 overflow-hidden">
-                                        <div 
-                                            className="bg-primary h-1.5 rounded-full transition-all duration-500 ease-out"
-                                            style={{ width: `${progress}%` }}
-                                        />
-                                    </div>
-                                </Tooltip>
-                            )}
-
-                            {/* Dates */}
-                            <div className={cn(
-                                "flex items-center justify-between text-xs text-muted-foreground border-t border-muted/30",
-                                viewMode === "grid" ? "pt-2" : "pt-3 mt-3"
-                            )}>
-                                <Tooltip content="Date de création">
-                                    <p className="flex items-center gap-1.5">
-                                        <Clock className="h-3 w-3" />
-                                        {format(creation, 'dd MMM yyyy', { locale: fr })}
-                                    </p>
-                                </Tooltip>
-                                
-                                {lastUpdate && lastUpdate !== creation && (
-                                    <Tooltip content={format(lastUpdate, 'dd/MM/yyyy HH:mm')}>
-                                        <p className="flex items-center gap-1.5">
-                                            <span className="h-1 w-1 rounded-full bg-muted-foreground/50" />
-                                            MAJ {formatDistanceToNow(lastUpdate, { locale: fr, addSuffix: true })}
-                                        </p>
-                                    </Tooltip>
-                                )}
-                            </div>
-
-                            {/* Bouton de soutien */}
-                            <div className="pt-3">
-                                <Button
-                                    variant="outline"
-                                    className="w-full bg-gradient-to-r from-orange-500/10 via-amber-500/10 to-yellow-500/10 hover:from-orange-500/20 hover:via-amber-500/20 hover:to-yellow-500/20 border-orange-500/20 hover:border-orange-500/30 transition-all duration-300 group"
-                                    onClick={(e) => {
-                                        e.preventDefault()
-                                        e.stopPropagation()
-                                        setIsSupportDialogOpen(true)
-                                    }}
-                                >
-                                    <div className="flex items-center justify-center gap-2">
-                                        <Coffee className="h-4 w-4 text-orange-600 group-hover:scale-110 transition-transform duration-300" />
-                                        <span className="text-sm font-medium bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">
-                                            Soutenir ce cours
+                                        <span className="text-muted-foreground dark:text-slate-400 text-xs">
+                                            ({reviewCount})
                                         </span>
                                     </div>
-                                </Button>
+                                </Tooltip>
                             </div>
+
+                            {/* Boutons d'action avec animations améliorées */}
+                            <AnimatePresence>
+                                {isHovered && (
+                                    <motion.div
+                                        initial={{ x: 20, opacity: 0 }}
+                                        animate={{ x: 0, opacity: 1 }}
+                                        exit={{ x: 20, opacity: 0 }}
+                                        transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                                        className="absolute right-3 top-3 z-50 flex flex-col gap-2"
+                                    >
+                                        <Tooltip content="Soutenir">
+                                            <Button
+                                                size="icon"
+                                                variant="transparent"
+                                                className={cn(
+                                                    "h-8 w-8 backdrop-blur-md shadow-lg transition-all duration-300",
+                                                    "bg-background/30 hover:bg-background/40",
+                                                    "dark:bg-slate-900/30 dark:hover:bg-slate-900/40",
+                                                    "hover:scale-110"
+                                                )}
+                                                onClick={(e) => {
+                                                    e.preventDefault()
+                                                    e.stopPropagation()
+                                                    setIsSupportDialogOpen(true)
+                                                }}
+                                            >
+                                                <Coffee className="h-4 w-4 text-[#D6620F] dark:text-[#D6620F]/90" />
+                                            </Button>
+                                        </Tooltip>
+
+                                        <Tooltip content={isBookmarked ? "Retirer des favoris" : "Ajouter aux favoris"}>
+                                            <Button
+                                                size="icon"
+                                                variant={isBookmarked ? "orange" : "transparent"}
+                                                className={cn(
+                                                    "h-8 w-8 backdrop-blur-md shadow-lg transition-all duration-300",
+                                                    "bg-background/30 hover:bg-background/40",
+                                                    "dark:bg-slate-900/30 dark:hover:bg-slate-900/40",
+                                                    "hover:scale-110"
+                                                )}
+                                                onClick={(e) => {
+                                                    e.preventDefault()
+                                                    e.stopPropagation()
+                                                    handleBookmark()
+                                                }}
+                                            >
+                                                <BookmarkIcon className={cn(
+                                                    "h-4 w-4 transition-all duration-300",
+                                                    isBookmarked 
+                                                        ? "fill-[#D6620F] text-[#D6620F] dark:fill-[#D6620F]/90 dark:text-[#D6620F]/90" 
+                                                        : "text-[#D6620F] dark:text-[#D6620F]/90"
+                                                )} />
+                                            </Button>
+                                        </Tooltip>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </div>
                     </motion.div>
                 </Link>
-
-                {/* Boutons d'action avec nouvelle animation */}
-                <AnimatePresence>
-                    {isHovered && (
-                        <motion.div
-                            initial={{ x: 20, opacity: 0 }}
-                            animate={{ x: 0, opacity: 1 }}
-                            exit={{ x: 20, opacity: 0 }}
-                            transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                            className="absolute right-3 top-3 z-50 flex flex-col gap-2"
-                        >
-                            <Tooltip content="Soutenir">
-                                <Button
-                                    size="icon"
-                                    variant="transparent"
-                                    className="h-8 w-8 backdrop-blur-md bg-background/30 hover:bg-background/40 shadow-lg"
-                                    onClick={(e) => {
-                                        e.preventDefault()
-                                        e.stopPropagation()
-                                        setIsSupportDialogOpen(true)
-                                    }}
-                                >
-                                    <Coffee className="h-4 w-4" />
-                                </Button>
-                            </Tooltip>
-
-                            <Tooltip content={isBookmarked ? "Retirer des favoris" : "Ajouter aux favoris"}>
-                                <Button
-                                    size="icon"
-                                    variant={isBookmarked ? "orange" : "transparent"}
-                                    className="h-8 w-8 backdrop-blur-md bg-background/30 hover:bg-background/40 shadow-lg"
-                                    onClick={(e) => {
-                                        e.preventDefault()
-                                        e.stopPropagation()
-                                        handleBookmark()
-                                    }}
-                                >
-                                    <BookmarkIcon className={cn(
-                                        "h-4 w-4 transition-colors duration-300",
-                                        isBookmarked && "fill-current text-orange-600"
-                                    )} />
-                                </Button>
-                            </Tooltip>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
             </Card>
 
             <SupportDialog 

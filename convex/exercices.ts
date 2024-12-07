@@ -73,8 +73,6 @@ export const createExercise = mutation({
 export const executeExercise = mutation({
     args: {
         exerciseId: v.id("exercices"),
-        courseId: v.id("courses"),
-        chapterId: v.id("chapters"),
         points: v.optional(v.number()),
         mark: v.optional(v.number()),
         note: v.optional(v.string()),
@@ -82,6 +80,9 @@ export const executeExercise = mutation({
     handler: async (ctx, args) => {
         const userId = await getAuthUserId(ctx)
         if (!userId) throw new Error("Unauthorized");
+        const exercise = await ctx.db.get(args.exerciseId)
+        if (!exercise) throw new Error("Exercice introuvable")
+
         const hasDoneExercise = await ctx.db.query("useExercices").filter(q => q.eq(q.field("userId"), userId) && q.eq(q.field("exercicesId"), args.exerciseId)).first()
         if (hasDoneExercise) {
             const exerciceDoneId = await ctx.db.patch(hasDoneExercise._id, {
@@ -95,28 +96,24 @@ export const executeExercise = mutation({
         }
        
         // Vérifier si le cours, le chapitre et la leçon existent  et l'exercice
-      const course = await ctx.db.get(args.courseId)
+      const course = await ctx.db.get(exercise.courseId)
       if (!course) throw new Error("Cours introuvable")
   
-      if (args.chapterId) {
-        const chapter = await ctx.db.get(args.chapterId)
+ 
+        const chapter =  exercise.chapterId && await ctx.db.get(exercise.chapterId)
         if (!chapter) throw new Error("Chapitre introuvable")
-      }
-
-      const exercise = await ctx.db.get(args.exerciseId)
-      if (!exercise) throw new Error("Exercice introuvable")
-
+   
       // Vérifier si l'exercice est dans le cours
-      if (exercise.courseId !== args.courseId) throw new Error("Exercice introuvable dans le cours")
+      if (exercise.courseId !== course._id) throw new Error("Exercice introuvable dans le cours")
 
       // Vérifier si l'exercice est dans le chapitre
-      if (exercise.chapterId !== args.chapterId) throw new Error("Exercice introuvable dans le chapitre")
+      if (exercise.chapterId !== chapter._id) throw new Error("Exercice introuvable dans le chapitre")
 
       // Créer l'exercice
       const exerciceDoneId = await ctx.db.insert("useExercices", {
         userId: userId,
-        courseId: args.courseId,
-        chapterId: args.chapterId,
+        courseId: course._id,
+        chapterId: chapter._id,
         exercicesId: args.exerciseId,
         executedDate: Date.now(),
         points: args.points,

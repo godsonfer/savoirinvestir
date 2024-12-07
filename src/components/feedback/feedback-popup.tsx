@@ -5,6 +5,8 @@ import { X, Star } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { Variants } from "framer-motion";
+import { useNewWebsiteRating } from "@/features/home/new-website-rating";
+import { toast } from "sonner";
 
 interface FeedbackPopupProps {
     onClose: () => void;
@@ -79,12 +81,21 @@ const starVariants: Variants = {
 };
 
 export const FeedbackPopup = ({ onClose, show }: FeedbackPopupProps) => {
+    const { mutate: newWebsiteRating } = useNewWebsiteRating();
     const [rating, setRating] = useState(0);
     const [feedback, setFeedback] = useState("");
 
     const handleSubmit = () => {
-        console.log({ rating, feedback });
-        onClose();
+        newWebsiteRating({ rating, comment: feedback }, {
+            onSuccess: () => {
+                toast.success("Merci pour votre avis !");
+                onClose();
+            }, 
+            onError: () => {
+                toast.error("Une erreur est survenue lors de l'envoi de votre avis.");
+                onClose();
+            }
+        });
     };
 
     if (!show) return null;
