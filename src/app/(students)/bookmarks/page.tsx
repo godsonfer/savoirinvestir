@@ -346,6 +346,31 @@ const BookmarksPage = () => {
         setViewMode(value);
     };
 
+    useEffect(() => {
+        if (typeof document !== 'undefined') {
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes gradient-x {
+                    0%, 100% { background-position: 0% 50% }
+                    50% { background-position: 100% 50% }
+                }
+                @keyframes gradient-y {
+                    0%, 100% { background-position: 50% 0% }
+                    50% { background-position: 50% 100% }
+                }
+                .animate-gradient-x {
+                    animation: gradient-x 15s ease infinite;
+                    background-size: 200% 200%;
+                }
+                .animate-gradient-y {
+                    animation: gradient-y 15s ease infinite;
+                    background-size: 200% 200%;
+                }
+            `;
+            document.head.appendChild(style);
+        }
+    }, []);
+
     return (
         <div className="flex flex-col min-h-screen h-[100dvh] bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-[#0097A7]/5 dark:via-[#001e21] dark:to-black relative overflow-hidden">
             {/* Effets de fond améliorés avec animations */}
@@ -593,27 +618,5 @@ const BookmarksPage = () => {
         </div>
     )
 }
-
-// Ajout des keyframes pour les animations
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes gradient-x {
-        0%, 100% { background-position: 0% 50% }
-        50% { background-position: 100% 50% }
-    }
-    @keyframes gradient-y {
-        0%, 100% { background-position: 50% 0% }
-        50% { background-position: 50% 100% }
-    }
-    .animate-gradient-x {
-        animation: gradient-x 15s ease infinite;
-        background-size: 200% 200%;
-    }
-    .animate-gradient-y {
-        animation: gradient-y 15s ease infinite;
-        background-size: 200% 200%;
-    }
-`;
-document.head.appendChild(style);
 
 export default BookmarksPage 

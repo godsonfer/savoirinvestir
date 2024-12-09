@@ -15,10 +15,10 @@ import {
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useUpdateCourseImages } from "@/features/courses/api/use-update-course-images";
 import Image from "next/image";
 import { Id } from "../../../../../../../convex/_generated/dataModel";
 import { toast } from "sonner";
+import { useUpdateCourseCover } from "@/features/categories/api/use-update-course-cover";
 
 interface ImageUrlFormProps {
   initialData: {
@@ -36,7 +36,7 @@ const formSchema = z.object({
 export const ImageUrlForm = ({ initialData, courseId }: ImageUrlFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [images, setImages] = useState<string[]>(initialData?.imageUrl || []);
-  const { mutate, isPending } = useUpdateCourseImages();
+  const { mutate, isPending } = useUpdateCourseCover();
 
   const toggleEdit = () => setIsEditing((current) => !current);
 
@@ -50,7 +50,7 @@ export const ImageUrlForm = ({ initialData, courseId }: ImageUrlFormProps) => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const updatedImages = [...images, values.url];
     mutate(
-      { courseId, imageUrl: updatedImages },
+      { courseId, cover: values.url },
       {
         onSuccess() {
           setImages(updatedImages);
@@ -67,7 +67,7 @@ export const ImageUrlForm = ({ initialData, courseId }: ImageUrlFormProps) => {
   const removeImage = (imageToRemove: string) => {
     const updatedImages = images.filter((image) => image !== imageToRemove);
     mutate(
-      { courseId, imageUrl: updatedImages },
+      { courseId, cover: updatedImages[0] || "" },
       {
         onSuccess() {
           setImages(updatedImages);

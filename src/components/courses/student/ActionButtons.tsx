@@ -6,6 +6,7 @@ interface ActionButtonsProps {
     isBookmarked: boolean
     onBookmark: () => void
     onShare: () => void
+    variant?: 'default' | 'compact'
 }
 
 const handleShare = (platform: 'facebook' | 'twitter' | 'linkedin' | 'copy') => {

@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client"
-import { mockCourses } from "@/app/(students)/exercices/data/mock-data"
 
 import { useCourseId } from '@/hooks/use-course-id'
 import { useChapterId } from '@/hooks/use-chapter-id'
@@ -58,14 +57,23 @@ export default function ChapterPage() {
   // exercices
 
       // Adapter les données mockées pour correspondre au type attendu
-const adaptedMockCourses = mockCourses.map(course => ({
-  ...course,
-  chapters: course.chapters.map(chapter => ({
-    ...chapter,
-    lessons: [], // Ajouter la propriété lessons manquante
-    exercices: chapter.exercices || []
-  }))
-}))
+const adaptedMockCourses = chapters?.map(chapter => ({
+  id: chapter._id,
+  _id: chapter._id,
+  title: chapter.title,
+  courseId: chapter.courseId,
+  chapters: [{
+    id: chapter._id,
+    _id: chapter._id,
+    title: chapter.title,
+    courseId: chapter.courseId,
+    lessons: (chapter.lessons || []).map(lesson => ({
+      ...lesson,
+      id: lesson._id
+    })),
+    exercicesDone: []
+  }]
+})) || []
 
 
   return (

@@ -8,13 +8,16 @@ import { ShareDialog } from './ShareDialog'
 import { SupportDialog } from './SupportDialog'
 import { useMediaQuery } from '@/hooks/use-media-query'
 import { cn } from '@/lib/utils'
+import type { Course } from '@/types/course'
+import { Id } from '../../../convex/_generated/dataModel'
 
 interface VideoActionButtonsProps {
   onShare?: () => void;
   onSupport?: () => void;
+  courseId: Id<'courses'>;
 }
 
-export const VideoActionButtons = ({ onShare, onSupport }: VideoActionButtonsProps) => {
+export const VideoActionButtons = ({ onShare, onSupport, courseId }: VideoActionButtonsProps) => {
   const [isLiked, setIsLiked] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
@@ -91,8 +94,10 @@ export const VideoActionButtons = ({ onShare, onSupport }: VideoActionButtonsPro
 
       <SupportDialog
         isOpen={isSupportOpen}
+        courseId={courseId}
         onClose={() => setIsSupportOpen(false)}
       />
     </>
   );
 }; 
+

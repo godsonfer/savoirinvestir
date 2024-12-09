@@ -4,9 +4,15 @@
   "description": "Plateforme d'apprentissage d'Invest Mastery Mind",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#000000",
+  "background_color": "#FFFFFF",
+  "theme_color": "#0097A7",
   "orientation": "portrait-primary",
+  "splash": {
+    "image": "/logo.svg",
+    "background_color": "#FFFFFF",
+    "resize_mode": "contain"
+  },
+  
   "icons": [
     {
       "src": "/logo.svg",

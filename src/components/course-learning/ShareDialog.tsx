@@ -62,7 +62,7 @@ export const ShareDialog = ({ isOpen, onClose, title, url }: ShareDialogProps) =
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className={cn(
-        "bg-neutral-900/95 border-white/10 backdrop-blur-sm",
+        "dark:bg-neutral-900/95 dark:text-white  border-white/10 backdrop-blur-sm",
         isMobile ? "w-[95vw] max-w-[95vw] rounded-t-xl mt-auto" : "max-w-md"
       )}>
         <DialogHeader className="space-y-4">

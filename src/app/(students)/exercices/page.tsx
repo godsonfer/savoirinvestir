@@ -19,7 +19,6 @@ import { cn } from "@/lib/utils"
 import { CourseCard } from "./components/cards/course-card"
 import { StatsOverview } from "./components/stats/stats-overview"
 import { DetailedStats } from "./components/stats/detailed-stats"
-import { mockCourses } from "./data/mock-data"
 import { Course, Chapter, Exercise } from "./types"
 import {  useGetBookmarkPurchase } from "@/features/bookmarks/use-user-bookmark-purchase"
 

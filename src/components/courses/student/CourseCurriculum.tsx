@@ -66,7 +66,7 @@ export const CourseCurriculum = ({ chapters }: CourseCurriculumProps) => {
                                             >
                                                 <div className="flex items-center gap-4">
                                                     <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#0097A7]/10 to-[#D6620F]/10 flex items-center justify-center">
-                                                        {getLessonIcon(lesson.type, isCompleted, isLocked)}
+                                                        {getLessonIcon(lesson.type || 'video', isCompleted, isLocked)}
                                                     </div>
                                                     <div>
                                                         <h4 className={`font-medium ${isLocked ? 'text-white/40' : 'text-white'}`}>

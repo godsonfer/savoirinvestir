@@ -63,7 +63,6 @@ export const ChaptersList = ({
           <AccordionContent className="pb-2">
             <div className="space-y-1 px-2">
               {chapter.lessons
-                .sort((a, b) => (a.position || 0) - (b.position || 0))
                 .map((lesson) => (
                   <button
                     key={lesson._id}

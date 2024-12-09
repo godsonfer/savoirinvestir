@@ -45,6 +45,11 @@ export interface Course {
   level: string;
   studentsCount: number;
   rating: number;
+  reviewsCount: number;
+  skills?: string[];
+  prerequisites?: string[];
+  targetAudience?: string[];
+  cover?: string;
 }
 
 export interface Chapter {
@@ -55,14 +60,16 @@ export interface Chapter {
   isPublished: boolean;
 }
 
-export interface Lesson {
+export interface LessonFromAPI {
   _id: string;
   title: string;
   description?: string;
   videoUrl?: string;
-  isPublished: boolean;
-  isFree: boolean;
+  isPublished?: boolean;
+  isFree?: boolean;
   duration?: number;
+  chapterId: string;
+  content?: string;
   muxData?: {
     _id: string;
     playback?: string;
@@ -70,9 +77,29 @@ export interface Lesson {
   } | null;
 }
 
+export interface Lesson extends Omit<LessonFromAPI, 'isPublished' | 'isFree' | 'chapterId'> {
+  isPublished: boolean;
+  isFree: boolean;
+  type?: 'video' | 'article' | 'text';
+}
+
 export interface HTMLNode {
   tag: string;
   attrs?: Record<string, string>;
   content?: string;
   children?: HTMLNode[];
+}
+
+export interface CourseFromAPI {
+  _id: string;
+  title: string;
+  description: string;
+  price: number;
+  duration: number;
+  studentsCount: number;
+  rating: string;
+  reviewsCount: number;
+  category?: string;
+  cover?: string;
+  userId: string;
 }

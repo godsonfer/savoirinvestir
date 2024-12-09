@@ -1,9 +1,11 @@
 import {
-    ChartCandlestick, ChartGantt, LibraryBig, GraduationCap, SearchCheck, HeartIcon, FileTerminal,
-    Notebook, MessageSquareWarning,
-
+    LibraryBig, GraduationCap, SearchCheck, HeartIcon, FileTerminal,
     Users,
-    Shapes
+    Shapes,
+    CandlestickChart,
+    Video,
+    MessageSquare,
+    Book
 } from 'lucide-react'
 
 
@@ -19,7 +21,7 @@ const DashboardSidebar = () => {
             <div className="flex flex-col px-2 mt-4">
                 <SidebarItem
                     label="Statistiques"
-                    icon={ChartGantt}
+                    icon={CandlestickChart}
                     link='/dashboard'
                     variant={"active"}
                 />
@@ -35,17 +37,17 @@ const DashboardSidebar = () => {
                 />
                 <SidebarItem
                     label="Mes Analyses"
-                    icon={ChartCandlestick}
+                    icon={Video}
                     link="/courses"
                 />
                 <SidebarItem
                     label="Mon Journal"
-                    icon={Notebook}
+                    icon={Book}
                     link="/dashboard/certificates"
                 />
                 <SidebarItem
                     label="Mes Messages"
-                    icon={MessageSquareWarning}
+                    icon={MessageSquare}
                     link="/dashboard/certificates"
                 />
                 <SidebarItem

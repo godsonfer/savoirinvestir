@@ -26,7 +26,7 @@ export const CourseDialogs = ({ course, chapters }: CourseDialogsProps) => {
                             Programme du cours
                         </DialogTitle>
                         <button 
-                            onClick={() => document.querySelector('button[aria-label="Close"]')?.click()}
+                            onClick={() => (document.querySelector('button[aria-label="Close"]') as HTMLButtonElement)?.click()}
                             className="text-white/60 hover:text-white md:hidden"
                         >
                             <X className="w-5 h-5" />

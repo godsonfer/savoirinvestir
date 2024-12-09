@@ -7,7 +7,7 @@ import { ChaptersList } from '@/components/course-learning/ChaptersList'
 
 import { useState, useEffect, useCallback } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Progress } from '@/types/course'
+import { Course, Lesson, Chapter, Progress } from '@/types/course'
 import { ResourcesPanel } from '@/components/course-learning/ResourcesPanel'
 import { CommentsPanel } from '@/components/course-learning/CommentsPanel'
 import { MobileNavigation } from '@/components/course-learning/MobileNavigation'
@@ -161,11 +161,11 @@ const CourseLearningPage = () => {
         >
           <div className="flex-1 overflow-y-auto scrollbar-hide">
             <ChaptersList 
-              chapters={data?.chapters || [] }
-              currentLesson={currentLesson}
+                chapters={(data?.chapters as unknown as Chapter[])}
+              currentLesson={(currentLesson as unknown as Lesson)}
               progress={progress}
-              onLessonSelect={(lesson: LessonFromAPI) => {
-                setCurrentLesson(lesson)
+              onLessonSelect={(lesson) => {
+                setCurrentLesson(lesson as unknown as LessonFromAPI)
                 handleLessonComplete(lesson._id)
                 if (isMobile) closeSidebars()
               }}
@@ -177,8 +177,8 @@ const CourseLearningPage = () => {
           <div className="flex-1 flex flex-col bg-black/50">
             <div className="w-full max-w-[1280px] mx-auto px-4">
               <VideoPlayer 
-                currentLesson={currentLesson}
-                course={data?.course}
+                currentLesson={(currentLesson as unknown as Lesson)}
+                course={(data?.course as unknown as Course)}
                 onComplete={handleLessonComplete}
                 hasNext={!!next}
                 onNext={() => setCurrentLesson(next)}

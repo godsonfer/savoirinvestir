@@ -2,18 +2,8 @@ import { useQuery } from "convex/react"
 import { useDebounce } from "@/hooks/use-debounce"
 import { useState } from "react"
 import { api } from "../../../../convex/_generated/api"
-import { Doc } from "../../../../convex/_generated/dataModel"
 
-interface SearchResult extends Doc<"courses"> {
-    category?: string;
-    studentsCount?: number;
-    rating?: string;
-    chaptersCount?: number;
-    canDelete: boolean;
-    chapters?: unknown [];
-    bookmark?: boolean;
-    enrollments?: unknown [];
-}
+type SearchResult = NonNullable<(typeof api.courses.get._returnType)["page"][number]>;
 
 export const useSearchCourses = () => {
     const [searchQuery, setSearchQuery] = useState("")

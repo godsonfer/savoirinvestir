@@ -27,7 +27,6 @@ export const CourseProgress = ({
       <Progress
         className="h-2"
         value={value}
-        variant={"default"}
       />
       <p className={cn(
         "font-medium mt-2 text-sky-700",

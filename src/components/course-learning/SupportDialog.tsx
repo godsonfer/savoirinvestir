@@ -170,7 +170,7 @@ export const SupportDialog = ({ isOpen, onClose, courseId }: SupportDialogProps)
         "border border-white/10",
         "transition-all duration-500 ease-out",
         isMobile 
-          ? "w-full max-w-full h-[85vh] rounded-t-2xl fixed left-1/2 -translate-x-1/2 bottom-0 p-3 pb-0 mx-auto" 
+          ? "w-full max-w-full rounded-t-2xl fixed left-1/2 -translate-x-1/2 bottom-0 p-3 pb-0 mx-auto" 
           : "max-w-xl rounded-3xl"
       )}>
         <motion.div

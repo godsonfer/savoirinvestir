@@ -1,4 +1,4 @@
-import { TriangleAlertIcon } from "lucide-react"
+import { Triangle } from "lucide-react"
 
 interface NotFoundAlertProps {
     message: string
@@ -7,7 +7,7 @@ interface NotFoundAlertProps {
 export const NotFoundAlert = ({ message }: NotFoundAlertProps) => {
     return (
         <div className='h-full flex-1  flex   flex-col  gap-4  items-center justify-center'>
-            <TriangleAlertIcon className='size-12 text-muted-foreground text-orange-400' />
+            <Triangle className='size-12 text-muted-foreground text-orange-400' />
             <span className="text-sm text-muted-foreground">
                 {message}
             </span>

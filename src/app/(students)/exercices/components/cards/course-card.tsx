@@ -46,9 +46,9 @@ export function CourseCard({ course, className }: CourseCardProps) {
                   </h3>
                   <DifficultyBadge difficulty={course.difficulty} />
                 </div>
-                <p className="text-gray-700 dark:text-gray-200 text-sm md:text-base">
+                <div className="text-gray-700 dark:text-gray-200 text-sm md:text-base">
                   {sanitizeAndParseHTML(course.description)}
-                </p>
+                </div>
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-3">
@@ -56,7 +56,7 @@ export function CourseCard({ course, className }: CourseCardProps) {
                 {course.chapters.length} chapitres
               </Badge>
               <Badge variant="secondary" className="bg-primary/10 text-primary dark:text-blue-200 border-0 group-hover:bg-primary/20 transition-colors duration-300">
-                {course.chapters.reduce((acc, ch) => acc + ch.exercises.length, 0)} exercices
+                {course.chapters?.reduce((acc, ch) => acc + (ch.exercices?.length || 0), 0)} exercices
               </Badge>
             </div>
           </div>
@@ -74,11 +74,11 @@ export function CourseCard({ course, className }: CourseCardProps) {
                       {chapter.title}
                     </h4>
                     <Badge variant="outline" className="bg-primary/5 text-primary dark:text-blue-200 border-primary/20 group-hover:border-primary/40 transition-colors duration-300">
-                      {chapter.exercises.length} exercices
+                      {chapter.exercices?.length || 0} exercices
                     </Badge>
                   </div>
                   <div className="pl-4 border-l-2 border-gray-100 dark:border-gray-700 space-y-3">
-                    {chapter.exercises.map((exercise, index) => (
+                    {chapter.exercices?.map((exercise, index) => (
                       <Dialog key={index}>
                         <DialogTrigger asChild>
                           <motion.div

@@ -65,7 +65,7 @@ export const PreviewDialog = ({ lesson, isLocked = false }: PreviewDialogProps) 
                             <span className="font-medium text-white">{lesson.title}</span>
                         </DialogTitle>
                         <button 
-                            onClick={() => document.querySelector('button[aria-label="Close"]')?.click()}
+                            onClick={() => (document.querySelector('button[aria-label="Close"]') as HTMLButtonElement)?.click()}
                             className="text-white/60 hover:text-white transition-colors"
                         >
                             <X className="w-5 h-5" />

@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client"
 import { AvatarFallback, Avatar, AvatarImage } from '@/components/ui/avatar'
-import { useTheme } from '@/contexts/theme-context';
 
 import {
   DropdownMenu,
@@ -19,7 +18,6 @@ import { Separator } from '@/components/ui/separator'
 import { AvatarIcon } from '@radix-ui/react-icons'
 
 const UserButton = () => {
-  // const { isDarkMode, toggleTheme } = useTheme();
 
   const { data, isLoading } = useCurrentUser()
   const { signOut } = useAuthActions()

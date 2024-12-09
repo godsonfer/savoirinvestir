@@ -11,18 +11,18 @@ interface CourseProgressProps {
 }
 
 export function CourseProgress({ course, className }: CourseProgressProps) {
-  const totalExercises = course.chapters.reduce((acc, ch) => acc + ch.exercises.length, 0)
+  const totalExercises = course.chapters.reduce((acc, ch) => acc + (ch.exercices?.length || 0), 0)
   const completedExercises = course.chapters.reduce((acc, ch) => 
-    acc + ch.exercises.filter(ex => ex.isCompleted).length, 0
+    acc + (ch.exercices?.filter(ex => ex.isCompleted).length || 0), 0
   )
 
   const totalPoints = course.chapters.reduce((acc, ch) => {
-    return acc + ch.exercises.reduce((exAcc, ex) => exAcc + ex.points, 0)
+    return acc + (ch.exercices?.reduce((exAcc, ex) => exAcc + ex.points, 0) || 0)
   }, 0)
 
   const earnedPoints = course.chapters.reduce((acc, ch) => {
-    return acc + ch.exercises.reduce((exAcc, ex) => 
-      ex.isCompleted ? exAcc + ex.points : exAcc, 0)
+    return acc + (ch.exercices?.reduce((exAcc, ex) => 
+      ex.isCompleted ? exAcc + ex.points : exAcc, 0) || 0)
   }, 0)
 
   return (

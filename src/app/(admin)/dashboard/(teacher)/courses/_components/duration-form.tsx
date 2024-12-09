@@ -16,10 +16,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
-import { Id } from "../../../../../../convex/_generated/dataModel";
 import { toast } from "sonner";
+import { Id } from "../../../../../../../convex/_generated/dataModel";
 import { useUpdateCourseDuration } from "@/features/courses/api/use-update-course-duration";
-
 interface DurationFormProps {
   initialData: {
     duration?: number;

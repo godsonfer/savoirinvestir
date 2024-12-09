@@ -5,7 +5,6 @@ import { Doc, Id } from '../../convex/_generated/dataModel'
 import { useWorkspaceId } from '@/hooks/use-workspace-id';
 import { useCurrentMember } from '@/features/members/api/use-get-current-member';
 import { cn } from '@/lib/utils';
-import { Button } from './components/ui/button';
 import { Hint } from './ui/hint';
 import { EmojiPopover } from './emoji-popover';
 

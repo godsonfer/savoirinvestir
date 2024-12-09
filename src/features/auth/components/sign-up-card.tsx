@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
-import { TriangleAlert } from 'lucide-react'
+import { Triangle } from 'lucide-react'
 
 // import {FaGithub} from "react-icons/fa"
 import { SignInFlow } from '../types'
@@ -54,7 +54,7 @@ const SignUpCard = ({ setState }: SignUpCardProps) => {
         </CardDescription>
         {!!error &&
           <div className='bg-destructive/5 p-3 text-xs mb-6 rounded-xl flex items-center gap-x-3'>
-            <TriangleAlert className='size-3' />
+            <Triangle className='size-3' />
             <p>
               {error}
             </p>

@@ -7,7 +7,7 @@ import { Separator } from '@/components/ui/separator'
 import { SignInFlow } from '../types'
 import React, { useState } from 'react'
 import { useAuthActions } from '@convex-dev/auth/react'
-import { TriangleAlert } from 'lucide-react'
+import { Triangle } from 'lucide-react'
 
 
 // Interface for the sign-in form
@@ -50,7 +50,7 @@ const SignInCard = ({ setState }: SignInCardProps) => {
         </CardDescription>
         {!!error &&
           <div className='bg-destructive/5 p-3 text-xs mb-6 rounded-xl flex items-center gap-x-3'>
-            <TriangleAlert className='size-3' />
+            <Triangle className='size-3' />
             <p>
               {error}
             </p>

@@ -10,6 +10,7 @@ import { VideoActionButtons } from './VideoActionButtons'
 import { toast } from 'sonner'
 import { useMediaQuery } from '@/hooks/use-media-query'
 import { CourseMuxPlayer } from '../courses/student/MuxPlayer'
+import { Id } from '../../../convex/_generated/dataModel'
 
 interface VideoPlayerProps {
   currentLesson: Lesson | null
@@ -149,10 +150,13 @@ export const VideoPlayer = ({
               
                 </div>
                 <div className="pointer-events-auto">
-                  <VideoActionButtons 
-                    onShare={() => toast.success("Lien copié !")}
-                    onSupport={() => toast.success("Merci pour votre soutien !")}
-                  />
+                  {course?._id && (
+                    <VideoActionButtons 
+                      courseId={course._id as Id<"courses">}
+                      onShare={() => toast.success("Lien copié !")}
+                      onSupport={() => toast.success("Merci pour votre soutien !")}
+                    />
+                  )}
                 </div>
               </div>
             </div>

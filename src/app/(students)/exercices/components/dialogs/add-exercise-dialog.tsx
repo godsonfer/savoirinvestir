@@ -51,11 +51,15 @@ interface AddExerciseDialogProps {
 interface QuestionForm {
   text: string
   points: number
+  courseId: Id<"courses">
+  chapterId: Id<"chapters">
   hint?: string
   category?: string
-  courseId : Id<"courses">
-  chapterId : Id<"chapters">
-
+  options: {
+    text: string
+    isCorrect: boolean
+    explanation: string
+  }[]
 }
 
 const QuestionFormComponent = ({

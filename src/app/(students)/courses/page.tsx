@@ -3,13 +3,11 @@
 import { useGetCourses } from "@/features/courses/api/use-get-courses"
 import { CourseCard } from "@/components/course-card"
 import type { ViewMode } from "@/components/course-card"
-import { Course } from "@/types"
-import { Id } from "@/convex/_generated/dataModel"
 import { Button } from "@/components/ui/button"
-import { 
-    Loader2, Grid, List, Search, SlidersHorizontal, 
+import {
+    Loader2, Grid, List, Search, SlidersHorizontal,
     Check, ArrowUpDown, Clock, Star, TrendingUp,
-    Layers, BookOpen, GraduationCap, Code, Palette, 
+    Layers, BookOpen, GraduationCap, Code, Palette,
     LineChart, Briefcase, Lightbulb
 } from "lucide-react"
 import { useState } from "react"
@@ -28,7 +26,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { useTheme } from "next-themes"
-import type { Course as CourseType } from "@/types"
+import { Course as CourseType } from "@/types"
+import { Id } from "../../../../convex/_generated/dataModel"
 
 type SortOption = {
     label: string
@@ -74,29 +73,29 @@ type Category = {
 
 const categories: Category[] = [
     {
-        label: "Développement",
-        value: "development",
+        label: "Débutant",
+        value: "beginner",
         icon: <Code className="h-4 w-4" />,
-        description: "Programmation, web, mobile et logiciel",
+        description: "Cours de base pour les débutants",
         color: "from-blue-500/20 to-cyan-500/20"
     },
     {
-        label: "Design",
-        value: "design",
+        label: "Intermédiaire",
+        value: "intermediate",
         icon: <Palette className="h-4 w-4" />,
-        description: "UI/UX, graphisme et création visuelle",
+        description: "Cours pour les intermédiaires",
         color: "from-purple-500/20 to-pink-500/20"
     },
     {
-        label: "Business",
-        value: "business",
+        label: "Avancé",
+        value: "advanced",
         icon: <Briefcase className="h-4 w-4" />,
-        description: "Marketing, vente et entrepreneuriat",
+        description: "Cours pour les avancés",
         color: "from-orange-500/20 to-amber-500/20"
     },
     {
-        label: "Innovation",
-        value: "innovation",
+        label: "Professionnel",
+        value: "professional",
         icon: <Lightbulb className="h-4 w-4" />,
         description: "IA, blockchain et nouvelles technologies",
         color: "from-green-500/20 to-emerald-500/20"
@@ -182,9 +181,10 @@ interface RawCourse {
     _id: Id<"courses">
     userId: Id<"users">
     title: string
-    description: string
-    imageUrl: string
-    price: number
+    description?: string
+    imageUrl?: string | string[]
+    price?: number
+    cover?: string
     isPublished?: boolean
     categoryId?: Id<"categories">
     chapters: {
@@ -216,10 +216,11 @@ interface RawCourse {
 
 interface Course {
     _id: Id<"courses">
+    userId: Id<"users">
     title: string
-    description: string
-    imageUrl: string
-    price: number
+    description?: string
+    imageUrl?: string | string[]
+    price?: number
     category?: {
         _id: Id<"categories">
         title: string
@@ -228,36 +229,60 @@ interface Course {
         rates: number[]
         average: number
     }
-    chapters: ApiChapter[]
+    chapters: {
+        _id: Id<"chapters">
+        title: string
+        isPublished: boolean
+        courseId: Id<"courses">
+        lessons: {
+            _id: Id<"lessons">
+            title: string
+            isPublished: boolean
+            type: "video" | "exercise"
+            chapterId: Id<"chapters">
+            courseId: Id<"courses">
+        }[]
+    }[]
     createdAt: number
     updatedAt?: number
     canDelete: boolean
-    bookmark?: boolean
     _creationTime: number
+    cover?: string
+    duration?: number
+    bookmark?: boolean
 }
 
 const formatCourseData = (course: RawCourse): Course => {
-    // Ensure type is always defined for lessons
-    const formattedChapters = course.chapters.map((chapter) => ({
-        ...chapter,
-        courseId: course._id,
-        lessons: chapter.lessons.map((lesson) => ({
-            ...lesson,
-            type: lesson.type || "video" // Default to "video" if type is undefined
-        }))
-    }))
+    const { chapters, _creationTime, ...rest } = course
 
     return {
-        ...course,
-        chapters: formattedChapters,
-        createdAt: course._creationTime,
-        bookmark: false // Default value
+        ...rest,
+        _creationTime,
+        createdAt: _creationTime,
+        rating: { rates: [], average: 0 },
+        category: undefined,
+        chapters: chapters.map(chapter => ({
+            _id: chapter._id,
+            title: chapter.title,
+            isPublished: chapter.isPublished || false,
+            courseId: chapter.courseId,
+            lessons: chapter.lessons
+                .filter(lesson => lesson.type === "video" || lesson.type === "exercise")
+                .map(lesson => ({
+                    _id: lesson._id,
+                    title: lesson.title,
+                    isPublished: lesson.isPublished || false,
+                    type: lesson.type as "video" | "exercise",
+                    chapterId: chapter._id,
+                    courseId: chapter.courseId
+                }))
+        }))
     }
 }
 
 const formatCourseRating = (course: ApiCourse): Course["rating"] => {
     if (!course.rating) return { rates: [], average: 0 }
-    
+
     const rates = course.rating.rates.map((r) => r.rate)
     const average = rates.length > 0
         ? rates.reduce((acc, curr) => acc + curr, 0) / rates.length
@@ -269,18 +294,6 @@ const formatCourseRating = (course: ApiCourse): Course["rating"] => {
     }
 }
 
-const formatDisplayedCourse = (course: Course): CourseType => {
-    const { category, ...rest } = course
-    
-    return {
-        ...rest,
-        rating: formatCourseRating(course),
-        category: category ? {
-            title: category.title,
-            _id: category._id
-        } : undefined
-    }
-}
 
 const CoursesExplorerPage = () => {
     const [viewMode, setViewMode] = useState<ViewMode>("grid")
@@ -291,33 +304,6 @@ const CoursesExplorerPage = () => {
     const [isLoadingMore, setIsLoadingMore] = useState(false)
     const [showFilters, setShowFilters] = useState(false)
     const { theme } = useTheme()
-
-    const formatCourseData = (course: ApiCourse): Course => {
-        const { rating, category, chapters, ...rest } = course
-        
-        return {
-            ...rest,
-            rating: formatCourseRating(course),
-            category: category ? {
-                title: category.title,
-                _id: category._id
-            } : undefined,
-            chapters: chapters.map(chapter => ({
-                _id: chapter._id,
-                title: chapter.title,
-                isPublished: chapter.isPublished,
-                lessons: chapter.lessons.map(lesson => ({
-                    _id: lesson._id,
-                    title: lesson.title,
-                    isPublished: lesson.isPublished,
-                    type: lesson.type === "video" || lesson.type === "exercise" 
-                        ? lesson.type 
-                        : "video",
-                    muxData: lesson.muxData
-                }))
-            }))
-        }
-    }
 
     // Fonction pour gérer le chargement avec loading state
     const handleLoadMore = async () => {
@@ -335,7 +321,7 @@ const CoursesExplorerPage = () => {
 
     const calculateLessonLength = (course: Course) => {
         if (!Array.isArray(course?.chapters)) return 0
-        
+
         return course.chapters.reduce((acc: number, chapter) => {
             return acc + (Array.isArray(chapter?.lessons) ? chapter.lessons.length : 0)
         }, 0)
@@ -432,23 +418,23 @@ const CoursesExplorerPage = () => {
                                     {/* Menus déroulants avec textes ajustés */}
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
-                                            <Button 
-                                                variant="outline" 
+                                            <Button
+                                                variant="outline"
                                                 className="w-full justify-between bg-white/90 dark:bg-[#001e21]/80 backdrop-blur-xl border-[#0097A7]/10 dark:border-[#0097A7]/20 group text-gray-900 dark:text-white/90"
                                             >
                                                 <div className="flex items-center gap-2">
                                                     <Layers className="h-4 w-4 text-gray-700 dark:text-gray-300 group-hover:text-[#0097A7]" />
                                                     <span>
-                                                        {selectedCategory 
-                                                            ? categories.find(c => c.value === selectedCategory)?.label 
+                                                        {selectedCategory
+                                                            ? categories.find(c => c.value === selectedCategory)?.label
                                                             : "Toutes les catégories"}
                                                     </span>
                                                 </div>
                                                 <ChevronDown className="h-4 w-4 text-gray-700 dark:text-gray-300 group-hover:text-[#0097A7]" />
                                             </Button>
                                         </DropdownMenuTrigger>
-                                        <DropdownMenuContent 
-                                            align="end" 
+                                        <DropdownMenuContent
+                                            align="end"
                                             className="w-[300px] p-2 bg-white/90 dark:bg-[#001e21]/90 backdrop-blur-xl border-[#0097A7]/10 dark:border-[#0097A7]/20"
                                         >
                                             <DropdownMenuItem
@@ -496,8 +482,8 @@ const CoursesExplorerPage = () => {
                                     {/* Menu de tri avec textes ajustés */}
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
-                                            <Button 
-                                                variant="outline" 
+                                            <Button
+                                                variant="outline"
                                                 className="w-full justify-between bg-white/90 dark:bg-[#001e21]/80 backdrop-blur-xl border-[#0097A7]/10 dark:border-[#0097A7]/20 group text-gray-900 dark:text-white/90"
                                             >
                                                 <div className="flex items-center gap-2">
@@ -509,8 +495,8 @@ const CoursesExplorerPage = () => {
                                                 <ChevronDown className="h-4 w-4 text-gray-700 dark:text-gray-300 group-hover:text-[#0097A7]" />
                                             </Button>
                                         </DropdownMenuTrigger>
-                                        <DropdownMenuContent 
-                                            align="end" 
+                                        <DropdownMenuContent
+                                            align="end"
                                             className="w-[300px] p-2 bg-white/90 dark:bg-[#001e21]/90 backdrop-blur-xl border-[#0097A7]/10 dark:border-[#0097A7]/20"
                                         >
                                             {sortOptions.map((option) => (
@@ -549,15 +535,15 @@ const CoursesExplorerPage = () => {
                         layout
                         className={cn(
                             "grid gap-6 sm:gap-8",
-                            viewMode === "grid" 
-                                ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3" 
+                            viewMode === "grid"
+                                ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3"
                                 : "grid-cols-1 lg:grid-cols-2"
                         )}
                     >
                         {isLoading && (
                             Array.from({ length: 6 }).map((_, index) => (
-                                <div 
-                                    key={index} 
+                                <div
+                                    key={index}
                                     className="bg-white/90 dark:bg-[#001e21]/80 backdrop-blur-xl animate-shimmer border border-[#0097A7]/10 dark:border-[#0097A7]/20 rounded-xl"
                                     style={{ animationDelay: `${index * 200}ms` }}
                                 >
@@ -607,8 +593,8 @@ const CoursesExplorerPage = () => {
                     {!isLoading && (!displayedCourses || displayedCourses.length === 0) && (
                         <div className="flex flex-col items-center justify-center py-10">
                             <p className="text-gray-700 dark:text-gray-300 text-center">
-                                {searchQuery 
-                                    ? "Aucun cours ne correspond à votre recherche" 
+                                {searchQuery
+                                    ? "Aucun cours ne correspond à votre recherche"
                                     : "Aucune formation disponible pour le moment"}
                             </p>
                         </div>
@@ -616,7 +602,7 @@ const CoursesExplorerPage = () => {
 
                     {/* Bouton "Charger plus" avec textes ajustés */}
                     {!searchQuery && courses && courses.length > 0 && (
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             className="mt-8 mb-12 text-center"
@@ -650,14 +636,14 @@ const CoursesExplorerPage = () => {
                                             Afficher plus de cours
                                         </span>
                                         <motion.div
-                                            animate={{ 
+                                            animate={{
                                                 y: [0, 5, 0],
-                                                opacity: [1, 0.5, 1] 
+                                                opacity: [1, 0.5, 1]
                                             }}
-                                            transition={{ 
+                                            transition={{
                                                 duration: 2,
                                                 repeat: Infinity,
-                                                ease: "easeInOut" 
+                                                ease: "easeInOut"
                                             }}
                                         >
                                             <ChevronDown className="h-4 w-4" />
