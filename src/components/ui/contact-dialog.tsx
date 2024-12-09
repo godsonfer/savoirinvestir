@@ -36,33 +36,33 @@ export const ContactDialog = ({ isOpen, onClose }: ContactDialogProps) => {
     };
 
     // Animation adaptative selon le device
-    const dialogVariants = {
-        hidden: {
-            opacity: 0,
-            y: window?.innerWidth < 768 ? "100%" : 20,
-            scale: window?.innerWidth < 768 ? 1 : 0.95,
-        },
-        visible: { 
-            opacity: 1, 
-            y: 0,
-            scale: 1,
-            transition: {
-                type: "spring",
-                damping: window?.innerWidth < 768 ? 30 : 25,
-                stiffness: window?.innerWidth < 768 ? 300 : 250,
-                duration: 0.5,
-            }
-        },
-        exit: { 
-            opacity: 0,
-            y: window?.innerWidth < 768 ? "100%" : 20,
-            scale: window?.innerWidth < 768 ? 1 : 0.95,
-            transition: { 
-                duration: 0.3,
-                ease: "easeInOut"
-            }
-        }
-    };
+    // const dialogVariants = {
+    //     hidden: {
+    //         opacity: 0,
+    //         y: window?.innerWidth < 768 ? "100%" : 20,
+    //         scale: window?.innerWidth < 768 ? 1 : 0.95,
+    //     },
+    //     visible: { 
+    //         opacity: 1, 
+    //         y: 0,
+    //         scale: 1,
+    //         transition: {
+    //             type: "spring",
+    //             damping: window?.innerWidth < 768 ? 30 : 25,
+    //             stiffness: window?.innerWidth < 768 ? 300 : 250,
+    //             duration: 0.5,
+    //         }
+    //     },
+    //     exit: { 
+    //         opacity: 0,
+    //         y: window?.innerWidth < 768 ? "100%" : 20,
+    //         scale: window?.innerWidth < 768 ? 1 : 0.95,
+    //         transition: { 
+    //             duration: 0.3,
+    //             ease: "easeInOut"
+    //         }
+    //     }
+    // };
 
     return (
         <AnimatePresence>
@@ -80,7 +80,7 @@ export const ContactDialog = ({ isOpen, onClose }: ContactDialogProps) => {
 
                     {/* Dialog avec animation adaptative */}
                     <motion.div
-                        variants={dialogVariants}
+                        // variants={dialogVariants}
                         initial="hidden"
                         animate="visible"
                         exit="exit"
