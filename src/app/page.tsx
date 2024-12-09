@@ -1,9 +1,9 @@
 "use client"
 import React from "react";
-import { Button } from "@/components/ui/button";
 import { useTheme } from 'next-themes'
 import { Menu, BookOpen, BarChart2, Sun, Moon, X, Facebook, Youtube, Mail, User2, Loader, ArrowUp } from "lucide-react";
 import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
 import { AnimatePresence, motion } from "framer-motion";
 import { HeroSection } from "@/components/home/hero-section";
 import { FeaturesSection } from "@/components/home/features-section";
@@ -19,6 +19,7 @@ import { ContactDialog } from "@/components/ui/contact-dialog";
 import Link from "next/link";
 import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
 import { useCurrentUser } from "@/features/auth/api/user-current-user";
 
 const Bubble = ({ className, delay = 0 }: { className?: string; delay?: number }) => (
@@ -97,11 +98,7 @@ type NavigationItem = {
     icon: React.ReactNode;
 }
 
-
-
 export default function Home() {
-
-
     const { data: session, isLoading } = useCurrentUser();
     const { setTheme, theme } = useTheme()
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
