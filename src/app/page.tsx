@@ -100,6 +100,8 @@ type NavigationItem = {
 
 
 export default function Home() {
+
+
     const { data: session, isLoading } = useCurrentUser();
     const { setTheme, theme } = useTheme()
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);

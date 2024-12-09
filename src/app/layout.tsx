@@ -30,11 +30,11 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: '% | Invest Mastery Mind',
+  title: 'Invest Mastery Mind | Bienvenue',
   description: 'Bienvenue sur la plateforme d\'apprentissage d\'Invest Mastery Mind. Notre objectif est de vous donner les outils nécessaires pour devenir un investisseur maîtrisé.',
   metadataBase: new URL('https://investmasterymind.pro'),
-  generator: 'Next.js',
-  applicationName: 'Next.js',
+  generator: 'Invest Mastery Mind',
+  applicationName: 'Invest Mastery Mind',
   referrer: 'origin-when-cross-origin',
   keywords: [ 'signale', 'Trading', 'Investissement', 'Bourse', 'Finance', 'Analyse technique', 'Analyse fondamentale', 'Marchés financiers', 'Trading en ligne', 'Formation trading'],
   authors: [{ name: 'Invest Mastery Mind' }, { name: 'Invest Mastery Mind', url: 'https://investmasterymind.pro' }],
