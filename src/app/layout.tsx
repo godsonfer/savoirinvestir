@@ -1,5 +1,7 @@
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 import type { Metadata } from "next";
+import { SpeedInsights } from '@vercel/speed-insights/next';
+
 import Script from "next/script";
 import { Analytics } from "@vercel/analytics/react"
 import localFont from "next/font/local";
@@ -112,7 +114,8 @@ export default function RootLayout({
                     <NuqsAdapter>
                       {children}
                       <Analytics />
-                      </NuqsAdapter>
+                      <SpeedInsights />
+                    </NuqsAdapter>
                   </QueryProvider>
                 </LoadingProvider>
               </JotaiProvider>
