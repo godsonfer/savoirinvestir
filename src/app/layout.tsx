@@ -1,7 +1,7 @@
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
-import Script from "next/script";
- 
 import type { Metadata } from "next";
+import Script from "next/script";
+import { Analytics } from "@vercel/analytics/react"
 import localFont from "next/font/local";
 import "./globals.css";
 import { ConvexClientProvider } from "@/components/ConvexClientProvider";
@@ -109,7 +109,10 @@ export default function RootLayout({
                   <Toaster />
                   <Modals />
                   <QueryProvider>
-                    <NuqsAdapter>{children}</NuqsAdapter>
+                    <NuqsAdapter>
+                      {children}
+                      <Analytics />
+                      </NuqsAdapter>
                   </QueryProvider>
                 </LoadingProvider>
               </JotaiProvider>
