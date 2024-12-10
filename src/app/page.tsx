@@ -6,21 +6,50 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { AnimatePresence, motion } from "framer-motion";
 import { HeroSection } from "@/components/home/hero-section";
-import { FeaturesSection } from "@/components/home/features-section";
-import { CoursesSection } from "@/components/home/courses-section";
-import { StatsSection } from "@/components/home/stats-section";
-import { TestimonialsSection } from "@/components/home/testimonials-section";
-import { FAQSection } from "@/components/home/faq-section";
-import { Footer } from "@/components/home/footer";
-import { PromoPopup } from "@/components/promo/promo-popup";
-import { FeedbackPopup } from "@/components/feedback/feedback-popup";
 import { SponsorsSection } from "@/components/home/sponsors-section";
-import { ContactDialog } from "@/components/ui/contact-dialog";
-import Link from "next/link";
-import Image from 'next/image';
+import dynamic from 'next/dynamic';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import { useCurrentUser } from "@/features/auth/api/user-current-user";
+import Link from "next/link";
+import Image from "next/image";
+import { Suspense } from 'react';
+
+const FeaturesSection = dynamic(() => import("@/components/home/features-section").then(mod => mod.FeaturesSection), {
+    ssr: true
+});
+
+const CoursesSection = dynamic(() => import("@/components/home/courses-section").then(mod => mod.CoursesSection), {
+    ssr: true
+});
+
+const StatsSection = dynamic(() => import("@/components/home/stats-section").then(mod => mod.StatsSection), {
+    ssr: true
+});
+
+const TestimonialsSection = dynamic(() => import("@/components/home/testimonials-section").then(mod => mod.TestimonialsSection), {
+    ssr: true
+});
+
+const FAQSection = dynamic(() => import("@/components/home/faq-section").then(mod => mod.FAQSection), {
+    ssr: true
+});
+
+const Footer = dynamic(() => import("@/components/home/footer").then(mod => mod.Footer), {
+    ssr: true
+});
+
+const PromoPopup = dynamic(() => import("@/components/promo/promo-popup").then(mod => mod.PromoPopup), {
+    ssr: false
+});
+
+const FeedbackPopup = dynamic(() => import("@/components/feedback/feedback-popup").then(mod => mod.FeedbackPopup), {
+    ssr: false
+});
+
+const ContactDialog = dynamic(() => import("@/components/ui/contact-dialog").then(mod => mod.ContactDialog), {
+    ssr: false
+});
 
 const Bubble = ({ className, delay = 0 }: { className?: string; delay?: number }) => (
     <motion.div
@@ -64,7 +93,7 @@ const menuVariants = {
         opacity: 0,
         height: 0,
         transition: {
-            duration: 0.3,
+            duration: 0.2,
             ease: "easeInOut"
         }
     },
@@ -72,20 +101,20 @@ const menuVariants = {
         opacity: 1,
         height: "auto",
         transition: {
-            duration: 0.3,
+            duration: 0.2,
             ease: "easeInOut"
         }
     }
 };
 
 const itemVariants = {
-    closed: { x: -16, opacity: 0 },
+    closed: { x: 0, opacity: 0 },
     open: (i: number) => ({
         x: 0,
         opacity: 1,
         transition: {
-            delay: i * 0.1,
-            duration: 0.3
+            delay: i * 0.05,
+            duration: 0.2
         }
     })
 };
@@ -97,6 +126,11 @@ type NavigationItem = {
     href: string;
     icon: React.ReactNode;
 }
+
+// Composant de chargement pour les sections
+const SectionLoader = () => (
+    <div className="w-full h-96 animate-pulse bg-gray-100 dark:bg-gray-800 rounded-2xl" />
+);
 
 export default function Home() {
     const { data: session, isLoading } = useCurrentUser();
@@ -387,46 +421,43 @@ export default function Home() {
                 </div>
 
                 {/* Menu mobile déroulant */}
-                <AnimatePresence>
+                <AnimatePresence mode="sync">
                     {isMobileMenuOpen && (
                         <motion.div
                             variants={menuVariants}
                             initial="closed"
                             animate="open"
                             exit="closed"
-                            className="lg:hidden bg-white dark:bg-background-main border-t 
-                            border-gray-100 dark:border-border-light"
+                            className="lg:hidden bg-white/90 dark:bg-background-main/90 border-t 
+                            border-gray-100 dark:border-border-light backdrop-blur-sm"
                         >
-                            <div className="container mx-auto px-4 py-4">
-                                <div className="flex flex-col space-y-2">
+                            <div className="container mx-auto px-4 py-2">
+                                <div className="flex flex-col space-y-1">
                                     {navigationItems.map((item, i) => (
-                                      <Link href={item.href} key={item.id}>
-                                          <motion.button
-                                           
-                                            custom={i}
-                                            variants={itemVariants}
-                                            initial="closed"
-                                            animate="open"
-                                            onClick={() => scrollToSection(item.id)}
-                                            className="flex items-center px-4 py-3 rounded-lg 
-                                            text-gray-600 dark:text-gray-300 
-                                            hover:text-[#0097A7] dark:hover:text-[#0097A7] 
-                                            hover:bg-[#0097A7]/5 dark:hover:bg-[#0097A7]/20 
-                                            transition-all active:scale-95"
-                                        >
-                                            {item.icon && (
-                                                <motion.span 
-                                                    className="mr-3"
-                                                    initial={{ scale: 0.5, opacity: 0 }}
-                                                    animate={{ scale: 1, opacity: 1 }}
-                                                    transition={{ delay: i * 0.1 + 0.2 }}
-                                                >
-                                                    {item.icon}
-                                                </motion.span>
-                                            )}
-                                            {item.label}
-                                        </motion.button>
-                                      </Link>
+                                        <Link href={item.href} key={item.id}>
+                                            <motion.button
+                                                custom={i}
+                                                variants={itemVariants}
+                                                initial="closed"
+                                                animate="open"
+                                                onClick={() => {
+                                                    scrollToSection(item.id);
+                                                    setIsMobileMenuOpen(false);
+                                                }}
+                                                className="flex items-center px-4 py-2 rounded-lg 
+                                                text-gray-600 dark:text-gray-300 
+                                                hover:text-[#0097A7] dark:hover:text-[#0097A7] 
+                                                hover:bg-[#0097A7]/5 dark:hover:bg-[#0097A7]/20 
+                                                transition-colors"
+                                            >
+                                                {item.icon && (
+                                                    <span className="mr-3">
+                                                        {item.icon}
+                                                    </span>
+                                                )}
+                                                {item.label}
+                                            </motion.button>
+                                        </Link>
                                     ))}
 
                                     {/* Séparateur */}
@@ -518,27 +549,39 @@ export default function Home() {
 
                 <SponsorsSection />
 
-                <section id="stats">
-                    <StatsSection />
-                </section>
-                
-                <section id="features">
-                    <FeaturesSection />
-                </section>
-                
-                <section id="courses">
-                    <CoursesSection />
-                </section>
+                <Suspense fallback={<SectionLoader />}>
+                    <section id="stats">
+                        <StatsSection />
+                    </section>
+                </Suspense>
 
-                <section id="testimonials">
-                    <TestimonialsSection />
-                </section>
-                
-                <section id="faq">
-                    <FAQSection />
-                </section>
+                <Suspense fallback={<SectionLoader />}>
+                    <section id="features">
+                        <FeaturesSection />
+                    </section>
+                </Suspense>
 
-                <Footer />
+                <Suspense fallback={<SectionLoader />}>
+                    <section id="courses">
+                        <CoursesSection />
+                    </section>
+                </Suspense>
+
+                <Suspense fallback={<SectionLoader />}>
+                    <section id="testimonials">
+                        <TestimonialsSection />
+                    </section>
+                </Suspense>
+
+                <Suspense fallback={<SectionLoader />}>
+                    <section id="faq">
+                        <FAQSection />
+                    </section>
+                </Suspense>
+
+                <Suspense fallback={<SectionLoader />}>
+                    <Footer />
+                </Suspense>
             </main>
      
 
