@@ -21,9 +21,9 @@ const StudentCoursePage = () => {
     const { data, isLoading } = useGetCourse({ courseId: courseId })
     const course = data?.course as Course | undefined
     const chapters = useMemo(() => (data?.chapters as unknown as Chapter[]) || [], [data?.chapters])
-    
+
     const [isBookmarked, setIsBookmarked] = useState(false)
-  
+
     const [isScrolled, setIsScrolled] = useState(false)
     const [showMobileAction, setShowMobileAction] = useState(true)
 
@@ -54,7 +54,7 @@ const StudentCoursePage = () => {
 
     return (
         <div className="min-h-screen">
-            <FloatingHeader 
+            <FloatingHeader
                 isVisible={isScrolled}
                 title={course.title}
                 isBookmarked={isBookmarked}
@@ -70,18 +70,18 @@ const StudentCoursePage = () => {
                     <div className="container mx-auto px-4 h-full py-20 lg:py-0">
                         <div className="flex flex-col lg:flex-row gap-6 md:gap-12 h-full lg:items-center">
                             <div className="flex flex-col justify-center flex-1 pt-16 md:pt-0">
-                                <motion.div 
+                                <motion.div
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ duration: 0.5 }}
                                     className="space-y-4 md:space-y-6 lg:max-w-3xl"
                                 >
-                                    <CourseBadges 
-                                        category={course.category} 
-                                        level={course.level} 
+                                    <CourseBadges
+                                        category={course.category}
+                                        level={course.level}
                                     />
 
-                                    <motion.h1 
+                                    <motion.h1
                                         initial={{ opacity: 0, y: 20 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: 0.2, duration: 0.5 }}
@@ -93,14 +93,14 @@ const StudentCoursePage = () => {
                                     <CourseDescription description={course.description || ''} />
 
                                     <div className="flex flex-wrap items-center gap-2">
-                                        <ActionButtons 
+                                        <ActionButtons
                                             isBookmarked={isBookmarked}
                                             onBookmark={() => setIsBookmarked(!isBookmarked)}
-                                            onShare={() => {}}
+                                            onShare={() => { }}
                                         />
                                     </div>
 
-                                    <motion.div 
+                                    <motion.div
                                         initial={{ opacity: 0, y: 20 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: 0.8, duration: 0.5 }}
@@ -134,9 +134,9 @@ const StudentCoursePage = () => {
                                 </motion.div>
                             </div>
 
-                            <div className="lg:w-[420px] xl:w-[480px] mt-6 lg:mt-0 flex items-center">
+                            <div className="lg:w-[420px] xl:w-[480px] mt-6 lg:mt-0  items-center hidden md:flex">
                                 <div className="w-full sticky top-24">
-                                    <EnrollmentCard 
+                                    <EnrollmentCard
                                         courseId={courseId}
                                         price={course.price}
                                         firstChapterId={firstChapterId}
@@ -154,7 +154,7 @@ const StudentCoursePage = () => {
                 </div>
             </section>
 
-            <MobileActionButton 
+            <MobileActionButton
                 courseId={courseId}
                 firstChapterId={firstChapterId}
                 isVisible={showMobileAction}

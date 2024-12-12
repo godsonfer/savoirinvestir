@@ -529,7 +529,7 @@ const CoursesExplorerPage = () => {
             </div>
 
             {/* Contenu principal avec le nouveau style */}
-            <div className="flex-grow overflow-y-auto relative pb-20">
+            <div className="flex-1 overflow-y-auto overscroll-auto px-3 md:px-2 py-2 pb-20 relative z-10">
                 <div className="container mx-auto px-2 py-6">
                     <motion.div
                         layout
