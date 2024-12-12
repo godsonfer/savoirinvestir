@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { SidebarItem } from '@/app/(admin)/dashboard/_components/sidebar-items'
+import { useCurrentUser } from '@/features/auth/api/user-current-user'
+
 import {
     LibraryBig, GraduationCap, SearchCheck,  FileTerminal,    Users,    Shapes,    
 } from 'lucide-react'
@@ -11,16 +13,20 @@ import { FaChartBar } from 'react-icons/fa'
 
 const CourseSidebar = () => {
     const pathname = usePathname()
+    const {data: connectedUser} = useCurrentUser ()
+
     return (
         <div className='flex flex-col rounded-l-md  h-full'>
 
             <div className="flex flex-col px-2 mt-4">
+                {connectedUser?.role === "admin" && (
                 <SidebarItem
                     label="Statistiques"
                     icon={FaChartBar}
                     link="/dashboard/courses"
-                    variant={pathname.includes('/dashboard') ? "active" : "default"}
-                />
+                        variant={pathname.includes('/dashboard') ? "active" : "default"}
+                    />
+                )}
                 <SidebarItem
                     label="Explorer"
                     icon={SearchCheck}
@@ -61,7 +67,9 @@ const CourseSidebar = () => {
                     link="/certificates"
                     variant={pathname.includes('/certificates') ? "active" : "default"}
                 />
-                <SidebarItem
+                   {connectedUser?.role === "admin" && (
+              <>
+                  <SidebarItem
                     label="Marketing"
                     icon={Shapes}
                     link="/marketing"
@@ -71,8 +79,10 @@ const CourseSidebar = () => {
                     label="Utilisateurs"
                     icon={Users}
                     link="/users"
-                    variant={pathname.includes('/users') ? "active" : "default"}
-                />
+                        variant={pathname.includes('/users') ? "active" : "default"}
+                    />
+                </>
+                )}
 
             </div>
 
