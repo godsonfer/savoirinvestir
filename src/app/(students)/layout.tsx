@@ -36,16 +36,16 @@ const WorkspaceIdLayout = ({ children }: WorkspaceLayoutProps) => {
     }, []);
 
     return (
-        <div className=" h-[calc(100vh-40px)]  w-full ">
+        <div className=" w-full ">
             {isMobile ? (
-                <>
+                <div className=" h-[calc(100vh-40px)] ">
                     {children}
                     <MobileNavigation
                         onOpenSidebar={() => setIsSidebarOpen(true)}
                         onOpenResources={() => setIsRightSidebarOpen(true)}
                     />
-                    <div className="">{children}</div>
-                </>
+
+                </div>
             ) : (
                 <>
                     <div>
