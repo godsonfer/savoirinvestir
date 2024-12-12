@@ -7,49 +7,22 @@ import { Button } from "@/components/ui/button";
 import { AnimatePresence, motion } from "framer-motion";
 import { HeroSection } from "@/components/home/hero-section";
 import { SponsorsSection } from "@/components/home/sponsors-section";
-import dynamic from 'next/dynamic';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import { useCurrentUser } from "@/features/auth/api/user-current-user";
 import Link from "next/link";
 import Image from "next/image";
 import { Suspense } from 'react';
+import { StatsSection } from "@/components/home/stats-section";
+import { FeaturesSection } from "@/components/home/features-section";
+import { CoursesSection } from "@/components/home/courses-section";
+import { TestimonialsSection } from "@/components/home/testimonials-section";
+import { FAQSection } from "@/components/home/faq-section";
+import { Footer } from "@/components/home/footer";
+import { ContactDialog } from "@/components/ui/contact-dialog";
+import { FeedbackPopup } from "@/components/feedback/feedback-popup";
+import { PromoPopup } from "@/components/promo/promo-popup";
 
-const FeaturesSection = dynamic(() => import("@/components/home/features-section").then(mod => mod.FeaturesSection), {
-    ssr: true
-});
-
-const CoursesSection = dynamic(() => import("@/components/home/courses-section").then(mod => mod.CoursesSection), {
-    ssr: true
-});
-
-const StatsSection = dynamic(() => import("@/components/home/stats-section").then(mod => mod.StatsSection), {
-    ssr: true
-});
-
-const TestimonialsSection = dynamic(() => import("@/components/home/testimonials-section").then(mod => mod.TestimonialsSection), {
-    ssr: true
-});
-
-const FAQSection = dynamic(() => import("@/components/home/faq-section").then(mod => mod.FAQSection), {
-    ssr: true
-});
-
-const Footer = dynamic(() => import("@/components/home/footer").then(mod => mod.Footer), {
-    ssr: true
-});
-
-const PromoPopup = dynamic(() => import("@/components/promo/promo-popup").then(mod => mod.PromoPopup), {
-    ssr: false
-});
-
-const FeedbackPopup = dynamic(() => import("@/components/feedback/feedback-popup").then(mod => mod.FeedbackPopup), {
-    ssr: false
-});
-
-const ContactDialog = dynamic(() => import("@/components/ui/contact-dialog").then(mod => mod.ContactDialog), {
-    ssr: false
-});
 
 const Bubble = ({ className, delay = 0 }: { className?: string; delay?: number }) => (
     <motion.div
@@ -310,7 +283,7 @@ export default function Home() {
                         <div className="flex items-center space-x-2">
                             <Image src="/logo.svg" alt="Logo" className="h-10 w-10" width={40} height={40} />
                             <div>
-                                <div className="text-xl font-bold bg-[#0097A7]  
+                                <div className="text-md font-bold bg-[#0097A7]  
                                 bg-clip-text text-transparent">
                                     INVEST MASTERY MIND
                                 </div>
@@ -392,14 +365,14 @@ export default function Home() {
                                 className="lg:hidden hover:bg-[#0097A7]/5 dark:hover:bg-[#0097A7]/20"
                                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                             >
-                                <AnimatePresence mode="wait">
+                                <AnimatePresence mode="sync">
                                     {isMobileMenuOpen ? (
                                         <motion.div
                                             key="close"
                                             initial={{ rotate: -90, opacity: 0 }}
                                             animate={{ rotate: 0, opacity: 1 }}
                                             exit={{ rotate: 90, opacity: 0 }}
-                                            transition={{ duration: 0.2 }}
+                                            transition={{ duration: 0.1 }}
                                         >
                                             <X className="h-5 w-5 text-gray-600 dark:text-gray-300" />
                                         </motion.div>
@@ -534,10 +507,10 @@ export default function Home() {
             </header>
 
             {/* Popups */}
-            <AnimatePresence>
+            <AnimatePresence mode="sync">
                 {showPromo && <PromoPopup show={showPromo} onClose={() => setShowPromo(false)} />}
             </AnimatePresence>
-            <AnimatePresence>
+            <AnimatePresence mode="sync">
                 {showFeedback && <FeedbackPopup show={showFeedback} onClose={() => setShowFeedback(false)} />}
             </AnimatePresence>
 

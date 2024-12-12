@@ -376,7 +376,7 @@ export const HeroSection = () => {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.8, delay: 0.2 }}
                     >
-                        <div className="absolute -right-20 -top-20 -bottom-20 w-[120%]">
+                        <div className="absolute -right-20 -top-20 -bottom-20 w-[120%] md:hidden sm:hidden lg:block">
                             <TradingChart />
                         </div>
                     </motion.div>

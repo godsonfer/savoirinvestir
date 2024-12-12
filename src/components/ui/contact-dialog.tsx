@@ -38,7 +38,7 @@ export const ContactDialog = ({ isOpen, onClose }: ContactDialogProps) => {
     };
 
     return (
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="sync">
             {isOpen && (
                 <>
                     <motion.div

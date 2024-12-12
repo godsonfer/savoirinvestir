@@ -105,8 +105,8 @@ export const FeedbackPopup = ({ onClose, show }: FeedbackPopupProps) => {
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ duration: 0.2 }}
-                    className="fixed bottom-4 right-4 z-50 bg-black/60 flex items-center justify-center p-4 backdrop-blur-md"
+                    transition={{ duration: 0.1 }}
+                    className="fixed bottom-4 right-4 z-50 flex items-center justify-center p-4 backdrop-blur-md"
                     onClick={(e: React.MouseEvent) => {
                         if (e.target === e.currentTarget) onClose();
                     }}
