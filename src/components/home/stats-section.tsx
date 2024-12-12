@@ -41,7 +41,7 @@ export const StatsSection = () => {
         <section className="py-24 relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-[#0097A7]/10 via-transparent to-[#D6620F]/10 
                 dark:from-[#0097A7]/20 dark:via-transparent dark:to-[#D6620F]/20 backdrop-blur-sm" />
-            <motion.div 
+            <motion.div
                 style={{ y }}
                 className="container mx-auto px-4"
                 initial={{ opacity: 0 }}
@@ -57,21 +57,21 @@ export const StatsSection = () => {
                             initial={{ opacity: 0, y: 30 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
-                            transition={{ 
-                                duration: 0.8, 
+                            transition={{
+                                duration: 0.8,
                                 delay: index * 0.15,
                                 type: "spring",
                                 stiffness: 100
                             }}
                         >
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent 
-                                translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+                            {/* <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent 
+                                translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" /> */}
                             <div className="absolute inset-0 bg-white/80 dark:bg-background-secondary/90 rounded-2xl 
                                 shadow-lg dark:shadow-2xl backdrop-blur-sm
                                 transform group-hover:scale-[1.03] group-hover:-translate-y-1 
                                 transition-all duration-500 ease-out" />
                             <div className="relative p-8 text-center">
-                                <motion.div 
+                                <motion.div
                                     className={`w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br ${stat.bgColor}
                                         flex items-center justify-center transform
                                         group-hover:rotate-12 group-hover:scale-110 transition-all duration-500`}
@@ -88,8 +88,8 @@ export const StatsSection = () => {
                                     initial={{ opacity: 0, scale: 0.5 }}
                                     whileInView={{ opacity: 1, scale: 1 }}
                                     viewport={{ once: true }}
-                                    transition={{ 
-                                        duration: 0.8, 
+                                    transition={{
+                                        duration: 0.8,
                                         delay: index * 0.2,
                                         type: "spring",
                                         bounce: 0.4
@@ -104,19 +104,19 @@ export const StatsSection = () => {
                 </div>
             </motion.div>
 
-            <motion.div 
+            <motion.div
                 initial={{ opacity: 0, scale: 0.5 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 1.5, repeat: Infinity, repeatType: "reverse" }}
                 className="absolute top-0 left-0 w-96 h-96 bg-[#0097A7]/10 dark:bg-[#0097A7]/20 
-                    rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" 
+                    rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"
             />
-            <motion.div 
+            <motion.div
                 initial={{ opacity: 0, scale: 0.5 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 2, repeat: Infinity, repeatType: "reverse", delay: 0.5 }}
                 className="absolute bottom-0 right-0 w-96 h-96 bg-[#D6620F]/10 dark:bg-[#D6620F]/20 
-                    rounded-full blur-3xl translate-x-1/2 translate-y-1/2" 
+                    rounded-full blur-3xl translate-x-1/2 translate-y-1/2"
             />
         </section>
     );

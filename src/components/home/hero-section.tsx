@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
 import { AnimatedButton } from "@/components/ui/animated-button";
 import { useState, useEffect } from "react";
+import Link from "next/link";
 // import Image from 'next/image'
 
 interface Candle {
@@ -300,7 +301,7 @@ export const HeroSection = () => {
                         </motion.span>
 
                         <motion.div variants={fadeInUp} className="space-y-6">
-                            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight">
+                            <h1 className="text-2xl md:text-6xl lg:text-7xl font-bold leading-tight">
                                 <span className="text-gray-900 dark:text-gray-50">
                                     Maîtrisez l&apos;Art de{" "}
                                 </span>
@@ -315,7 +316,7 @@ export const HeroSection = () => {
                                 </span>
                             </h1>
                             <p className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 leading-relaxed max-w-2xl">
-                                Développez votre expertise en investissement avec nos formations 
+                                Développez votre expertise en investissement avec des formations 
                                 complètes, analyses approfondies et une communauté d&apos;investisseurs 
                                 chevronnés.
                             </p>
@@ -328,9 +329,11 @@ export const HeroSection = () => {
                                 shadow-lg shadow-[#0097A7]/20 relative overflow-hidden group
                                 px-8 py-4 text-lg font-semibold"
                             >
+                                <Link href="/courses">
                                 <span className="relative z-10">Découvrir nos Formations</span>
-                                <div className="absolute inset-0 bg-gradient-to-r from-[#D6620F] to-[#0097A7] 
-                                opacity-0 group-hover:opacity-100 transition-all duration-500" />
+                                    <div className="absolute inset-0 bg-gradient-to-r from-[#D6620F] to-[#0097A7] 
+                                    opacity-0 group-hover:opacity-100 transition-all duration-500" />
+                                </Link>
                             </AnimatedButton>
                             <AnimatedButton 
                                 variant="secondary" 
@@ -338,15 +341,17 @@ export const HeroSection = () => {
                                 hover:bg-[#0097A7]/5 dark:hover:bg-[#0097A7]/10
                                 px-8 py-4 text-lg font-semibold"
                             >
-                                Programme Gratuit
+                             <Link href="/login">
+                             Programme Gratuit
+                             </Link>
                             </AnimatedButton>
                         </motion.div>
 
                         <motion.div variants={fadeInUp} className="flex items-center gap-8 pt-8 border-t border-gray-100 dark:border-gray-800">
                             {[
-                                { number: "15K+", label: "Investisseurs Formés" },
+                                { number: "5K+", label: "Investisseurs Formés" },
                                 { number: "300+", label: "Heures de Formation" },
-                                { number: "85%", label: "Taux de Réussite" },
+                                { number: "87%", label: "Taux de Réussite" },
                             ].map((stat, index) => (
                                 <motion.div 
                                     key={index} 

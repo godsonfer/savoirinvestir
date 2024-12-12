@@ -4,7 +4,7 @@ import { useState } from "react";
 
 const sponsors = [
     { name: "Trading View", link: "#" },
-    { name: "TD365", link: "#" },
+    { name: "TD365", link: "https://go.td365.com/visit/?bta=35334&brand=td365" },
     { name: "Binance", link: "#" },
     { name: "MetaTrader", link: "#" },
     { name: "Admiral Markets", link: "#" },
@@ -64,6 +64,7 @@ export const SponsorsSection = () => {
                                 >
                                     <a 
                                         href={sponsor.link}
+                                        target="_blank"
                                         className="relative block px-6 py-3 rounded-xl
                                         font-medium text-gray-600 dark:text-gray-300
                                         hover:text-primary-main dark:hover:text-primary-main

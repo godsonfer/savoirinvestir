@@ -23,9 +23,9 @@ export const RegisterForm = ({ onLoginClick }: RegisterFormProps) => {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [isUploading, setIsUploading] = useState(false)
-  
-  const { 
-    register, 
+
+  const {
+    register,
     handleSubmit,
     formState: { errors, isSubmitting },
     setValue
@@ -40,7 +40,7 @@ export const RegisterForm = ({ onLoginClick }: RegisterFormProps) => {
     if (file) {
       try {
         setIsUploading(true)
-        
+
         if (file.size > 1 * 1024 * 1024) {
           toast.error("L'image est trop volumineuse. Taille maximum : 1MB")
           setIsUploading(false)
@@ -61,7 +61,7 @@ export const RegisterForm = ({ onLoginClick }: RegisterFormProps) => {
         reader.readAsDataURL(file)
         // Upload sur UploadThing
         const res = await startUpload([file])
-        
+
         if (res && res[0]) {
           setValue('avatar', res[0].url) // On stocke maintenant l'URL au lieu du fichier
         } else {
@@ -76,15 +76,15 @@ export const RegisterForm = ({ onLoginClick }: RegisterFormProps) => {
   }
 
   const onSubmit = async (data: RegisterFormData) => {
-  
+
     try {
-      await signIn('password', { 
-        email: data.email, 
+      await signIn('password', {
+        email: data.email,
         password: data.password,
         name: data.fullName,
         phone: data.phone,
         image: data.avatar || '',
-        flow: 'signUp' 
+        flow: 'signUp'
       })
       toast.success("Compte créé avec succès. Vous allez être redirigé vers votre espace.")
       window.location.href = '/courses'
@@ -105,7 +105,7 @@ export const RegisterForm = ({ onLoginClick }: RegisterFormProps) => {
         <div className="relative">
           <Avatar>
             {avatarPreview ? (
-              <AvatarImage 
+              <AvatarImage
                 src={avatarPreview}
                 alt="Avatar preview"
                 className="h-24 w-24"
@@ -144,14 +144,12 @@ export const RegisterForm = ({ onLoginClick }: RegisterFormProps) => {
             <Input
               type="text"
               placeholder="Nom complet"
-              className={`pl-10 h-12 bg-gray-50 border-gray-200 ${
-                errors.fullName ? 'border-red-500 focus:border-red-500' : ''
-              }`}
+              className={`pl-10 h-12 bg-gray-50 border-gray-200 ${errors.fullName ? 'border-red-500 focus:border-red-500' : ''
+                }`}
               {...register('fullName')}
             />
-            <User className={`w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 ${
-              errors.fullName ? 'text-red-500' : 'text-cyan-600'
-            }`} />
+            <User className={`w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 ${errors.fullName ? 'text-red-500' : 'text-cyan-600'
+              }`} />
           </div>
           {errors.fullName && (
             <p className="text-sm text-red-500 ml-1">{errors.fullName.message}</p>
@@ -163,14 +161,12 @@ export const RegisterForm = ({ onLoginClick }: RegisterFormProps) => {
             <Input
               type="email"
               placeholder="Adresse email"
-              className={`pl-10 h-12 bg-gray-50 border-gray-200 ${
-                errors.email ? 'border-red-500 focus:border-red-500' : ''
-              }`}
+              className={`pl-10 h-12 bg-gray-50 border-gray-200 ${errors.email ? 'border-red-500 focus:border-red-500' : ''
+                }`}
               {...register('email')}
             />
-            <Mail className={`w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 ${
-              errors.email ? 'text-red-500' : 'text-cyan-600'
-            }`} />
+            <Mail className={`w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 ${errors.email ? 'text-red-500' : 'text-cyan-600'
+              }`} />
           </div>
           {errors.email && (
             <p className="text-sm text-red-500 ml-1">{errors.email.message}</p>
@@ -182,14 +178,12 @@ export const RegisterForm = ({ onLoginClick }: RegisterFormProps) => {
             <Input
               type="tel"
               placeholder="Numéro de téléphone"
-              className={`pl-10 h-12 bg-gray-50 border-gray-200 ${
-                errors.phone ? 'border-red-500 focus:border-red-500' : ''
-              }`}
+              className={`pl-10 h-12 bg-gray-50 border-gray-200 ${errors.phone ? 'border-red-500 focus:border-red-500' : ''
+                }`}
               {...register('phone')}
             />
-            <Phone className={`w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 ${
-              errors.phone ? 'text-red-500' : 'text-cyan-600'
-            }`} />
+            <Phone className={`w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 ${errors.phone ? 'text-red-500' : 'text-cyan-600'
+              }`} />
           </div>
           {errors.phone && (
             <p className="text-sm text-red-500 ml-1">{errors.phone.message}</p>
@@ -201,14 +195,12 @@ export const RegisterForm = ({ onLoginClick }: RegisterFormProps) => {
             <Input
               type={showPassword ? 'text' : 'password'}
               placeholder="Mot de passe"
-              className={`pl-10 pr-10 h-12 bg-gray-50 border-gray-200 ${
-                errors.password ? 'border-red-500 focus:border-red-500' : ''
-              }`}
+              className={`pl-10 pr-10 h-12 bg-gray-50 border-gray-200 ${errors.password ? 'border-red-500 focus:border-red-500' : ''
+                }`}
               {...register('password')}
             />
-            <Lock className={`w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 ${
-              errors.password ? 'text-red-500' : 'text-cyan-600'
-            }`} />
+            <Lock className={`w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 ${errors.password ? 'text-red-500' : 'text-cyan-600'
+              }`} />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
@@ -227,7 +219,7 @@ export const RegisterForm = ({ onLoginClick }: RegisterFormProps) => {
         </div>
       </div>
 
-    
+
 
       <Button
         type="submit"

@@ -1,17 +1,20 @@
 "use client"
+
+import { useCurrentUser } from "@/features/auth/api/user-current-user";
 import React from "react";
 import { useTheme } from 'next-themes'
-import { Menu, BookOpen, BarChart2, Sun, Moon, X, Facebook, Youtube, Mail, User2, Loader, ArrowUp } from "lucide-react";
 import { useState, useEffect } from "react";
+
+
+import Link from "next/link";
+import Image from "next/image";
+
+import { Menu, BookOpen, BarChart2, Sun, Moon, X, Facebook, Youtube, Mail, User2, Loader, ArrowUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AnimatePresence, motion } from "framer-motion";
 import { HeroSection } from "@/components/home/hero-section";
 import { SponsorsSection } from "@/components/home/sponsors-section";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
-import { useCurrentUser } from "@/features/auth/api/user-current-user";
-import Link from "next/link";
-import Image from "next/image";
 import { Suspense } from 'react';
 import { StatsSection } from "@/components/home/stats-section";
 import { FeaturesSection } from "@/components/home/features-section";
@@ -234,7 +237,7 @@ export default function Home() {
                     dark:from-[#0097A7]/10 dark:to-[#4DD0E1]/5" 
                     delay={0}
                 />
-                <Bubble 
+                {/* <Bubble 
                     className="w-[700px] h-[700px] right-[-15%] top-[5%] 
                     bg-gradient-to-bl from-[#D6620F]/20 to-[#FF8534]/10 
                     dark:from-[#D6620F]/10 dark:to-[#FF8534]/5" 
@@ -251,7 +254,7 @@ export default function Home() {
                     bg-gradient-to-tl from-[#D6620F]/15 to-[#FF8534]/5 
                     dark:from-[#D6620F]/8 dark:to-[#FF8534]/3" 
                     delay={6}
-                />
+                /> */}
 
                 {/* Petites particules flottantes */}
                 <div className="absolute inset-0">
@@ -268,9 +271,9 @@ export default function Home() {
                 </div>
 
                 {/* Effet de flou global */}
-                <div className="absolute inset-0 backdrop-blur-[120px] dark:backdrop-blur-[180px]
+                {/* <div className="absolute inset-0 backdrop-blur-[120px] dark:backdrop-blur-[180px]
                     bg-gradient-to-b from-transparent via-white/30 to-white/50
-                    dark:from-transparent dark:via-background-main/30 dark:to-background-main/50" />
+                    dark:from-transparent dark:via-background-main/30 dark:to-background-main/50" /> */}
             </div>
 
             {/* Header fixe */}

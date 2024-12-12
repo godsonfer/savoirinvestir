@@ -3,8 +3,8 @@ import { Metadata } from 'next'
 import React from 'react'
 
 export const metadata: Metadata = {
-  title: 'Authentification - Plateforme de Formation',
-  description: 'Développez vos compétences en trading et investissement avec nos formations en ligne',
+  title: 'Création de compte - Connexion - Invest Mastery Mind',
+  description: 'Créez ou connectez votre compte pour accéder aux catalogues de  formations en ligne',
 }
 
 const Auth = () => {

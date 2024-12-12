@@ -33,9 +33,9 @@ const Bubbles = () => {
             left: `${Math.random() * 100}%`,
             top: `${Math.random() * 100}%`,
           }}
-          initial={{ 
+          initial={{
             scale: 0,
-            opacity: 0 
+            opacity: 0
           }}
           animate={{
             scale: [0.5 + Math.random() * 0.5],
@@ -72,7 +72,7 @@ export const AuthScreen = () => {
       {/* Background animé */}
       <div className="absolute inset-0 z-0">
         <AnimatedBackground />
-        <motion.div 
+        <motion.div
           className="absolute inset-0"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -109,7 +109,7 @@ export const AuthScreen = () => {
             }}
           />
         </motion.div>
-        
+
         {/* Overlay gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-black/5 via-black/20 to-black/30 dark:from-black/20 dark:via-black/40 dark:to-black/50 backdrop-blur-[1px]" />
       </div>
@@ -121,7 +121,7 @@ export const AuthScreen = () => {
 
       {/* Section gauche (Logo et titre) */}
       <div className="relative z-10 hidden md:flex md:w-[45%] flex-col justify-center items-center p-8 lg:p-12">
-        <motion.div 
+        <motion.div
           className="mb-6"
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -136,8 +136,8 @@ export const AuthScreen = () => {
             priority
           />
         </motion.div>
-        
-        <motion.div 
+
+        <motion.div
           className="text-center max-w-md"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -147,7 +147,7 @@ export const AuthScreen = () => {
             Plateforme de Formation
           </h1>
           <p className="text-lg text-gray-100 drop-shadow">
-            Développez vos compétences en trading et investissement avec nos formations en ligne
+            Développez vos compétences en trading et investissement avec des formations gratuites
           </p>
         </motion.div>
       </div>
@@ -155,7 +155,7 @@ export const AuthScreen = () => {
       {/* Section droite (Formulaires) */}
       <div className="relative z-10 flex-1 flex flex-col min-h-screen md:min-h-0 md:justify-center">
         {/* Bouton Home */}
-        <motion.div 
+        <motion.div
           className="absolute top-4 right-4 z-20"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -184,7 +184,7 @@ export const AuthScreen = () => {
 
         {/* Logo pour mobile uniquement */}
         <div className="md:hidden flex flex-col items-center pt-4 px-4">
-          <motion.div 
+          <motion.div
             className="mb-2"
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -199,8 +199,8 @@ export const AuthScreen = () => {
               priority
             />
           </motion.div>
-          
-          <motion.div 
+
+          <motion.div
             className="text-center mb-4"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -217,14 +217,14 @@ export const AuthScreen = () => {
 
         {/* Conteneur du formulaire */}
         <div className="flex-1 flex flex-col justify-center px-4 py-2 md:py-6 md:px-12 lg:px-16">
-          <motion.div 
+          <motion.div
             className="w-full max-w-md mx-auto bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg rounded-2xl shadow-2xl overflow-hidden"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ 
+            transition={{
               duration: 0.5,
               type: "spring",
-              stiffness: 100 
+              stiffness: 100
             }}
           >
             <div className="p-4 md:p-8">
@@ -237,7 +237,7 @@ export const AuthScreen = () => {
                     exit={{ opacity: 0, x: 20 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <LoginForm 
+                    <LoginForm
                       onRegisterClick={() => setMode('register')}
                       onForgotPasswordClick={() => setMode('forgot-password')}
                     />
@@ -251,7 +251,7 @@ export const AuthScreen = () => {
                     exit={{ opacity: 0, x: -20 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <RegisterForm 
+                    <RegisterForm
                       onLoginClick={() => setMode('login')}
                     />
                   </motion.div>
@@ -287,7 +287,7 @@ export const AuthScreen = () => {
           </motion.div>
 
           {/* Texte légal */}
-          <motion.div 
+          <motion.div
             className="w-full max-w-md mx-auto text-center mt-2 text-xs md:text-sm text-gray-200 dark:text-gray-300 px-4 pb-4 md:pb-0"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

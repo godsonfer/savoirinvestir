@@ -30,7 +30,7 @@ export const FeaturesSection = () => {
         {
             icon: <ShieldCheck className="w-7 h-7" />,
             title: "Gestion des Risques",
-            description: "Protégez et développez votre capital avec nos techniques éprouvées",
+            description: "Protégez et développez votre capital avec des techniques et outils éprouvés",
             bgColor: "from-[#0097A7]/10 to-[#4DD0E1]/10",
             iconColor: "#0097A7"
         },
@@ -43,7 +43,7 @@ export const FeaturesSection = () => {
         },
         {
             icon: <GraduationCap className="w-7 h-7" />,
-            title: "Formation Continue",
+            title: "Formation Gratuite et Continue",
             description: "Accédez à des ressources pédagogiques régulièrement mises à jour",
             bgColor: "from-[#0097A7]/10 to-[#4DD0E1]/10",
             iconColor: "#0097A7"
@@ -51,7 +51,7 @@ export const FeaturesSection = () => {
         {
             icon: <Users className="w-7 h-7" />,
             title: "Communauté d'Elite",
-            description: "Rejoignez une communauté d'investisseurs ambitieux et partageant les mêmes valeurs",
+            description: "Rejoignez une communauté de traders ambitieux et partageant les mêmes valeurs",
             bgColor: "from-[#D6620F]/10 to-[#FF8534]/10",
             iconColor: "#D6620F"
         }
@@ -83,7 +83,7 @@ export const FeaturesSection = () => {
                         </h2>
                         <p className="text-lg text-gray-600 dark:text-gray-400">
                             Découvrez les piliers qui font d&apos;INVEST MASTERY MIND la référence 
-                            en matière de formation à l&apos;investissement.
+                            en matière de formation et d&apos;accompagnement en trading et à l&apos;investissement.
                         </p>
                     </motion.div>
 
@@ -126,20 +126,20 @@ export const FeaturesSection = () => {
                                     {feature.description}
                                 </p>
 
-                                <div className="absolute inset-0 -z-10 bg-gradient-to-r from-transparent via-white/10 to-transparent
+                                {/* <div className="absolute inset-0 -z-10 bg-gradient-to-r from-transparent via-white/10 to-transparent
                                     group-hover:via-white/20 dark:group-hover:via-white/5
-                                    translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+                                    translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" /> */}
                             </motion.div>
                         ))}
                     </div>
                 </motion.div>
                 
-                <div className="absolute top-0 right-0 -z-10 w-2/3 h-2/3 
+                {/* <div className="absolute top-0 right-0 -z-10 w-2/3 h-2/3 
                     bg-gradient-to-br from-[#0097A7]/10 dark:from-[#0097A7]/20 to-transparent 
                     rounded-full blur-[100px] animate-pulse" />
                 <div className="absolute bottom-0 left-0 -z-10 w-2/3 h-2/3 
                     bg-gradient-to-tr from-[#D6620F]/10 dark:from-[#D6620F]/20 to-transparent 
-                    rounded-full blur-[100px] animate-pulse" />
+                    rounded-full blur-[100px] animate-pulse" /> */}
             </section>
         </motion.div>
     );

@@ -16,10 +16,10 @@ interface LoginFormProps {
 }
 
 export const LoginForm = ({ onRegisterClick, onForgotPasswordClick }: LoginFormProps) => {
-    const { signIn } = useAuthActions()
-    const [showPassword, setShowPassword] = useState(false)
-  const { 
-    register, 
+  const { signIn } = useAuthActions()
+  const [showPassword, setShowPassword] = useState(false)
+  const {
+    register,
     handleSubmit,
     formState: { errors, isSubmitting }
   } = useForm<LoginFormData>({
@@ -28,15 +28,15 @@ export const LoginForm = ({ onRegisterClick, onForgotPasswordClick }: LoginFormP
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      await signIn('password', { 
-        email: data.email, 
-        password: data.password, 
-        flow: 'signIn' 
+      await signIn('password', {
+        email: data.email,
+        password: data.password,
+        flow: 'signIn'
       })
       toast.success("Connexion réussie. Vous allez être redirigé vers votre espace.")
       window.location.href = '/courses'
     } catch (error) {
-      toast.error("Quelque chose s'est mal passé")
+      toast.error("Mot de passe ou email incorrect")
       console.error(error)
     }
   }
@@ -55,14 +55,12 @@ export const LoginForm = ({ onRegisterClick, onForgotPasswordClick }: LoginFormP
             <Input
               type="email"
               placeholder="Adresse email"
-              className={`pl-10 h-12 bg-gray-50 border-gray-200 ${
-                errors.email ? 'border-red-500 focus:border-red-500' : ''
-              }`}
+              className={`pl-10 h-12 bg-gray-50 border-gray-200 ${errors.email ? 'border-red-500 focus:border-red-500' : ''
+                }`}
               {...register('email')}
             />
-            <Mail className={`w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 ${
-              errors.email ? 'text-red-500' : 'text-cyan-600'
-            }`} />
+            <Mail className={`w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 ${errors.email ? 'text-red-500' : 'text-cyan-600'
+              }`} />
           </div>
           {errors.email && (
             <p className="text-sm text-red-500 ml-1">{errors.email.message}</p>
@@ -74,14 +72,12 @@ export const LoginForm = ({ onRegisterClick, onForgotPasswordClick }: LoginFormP
             <Input
               type={showPassword ? 'text' : 'password'}
               placeholder="Mot de passe"
-              className={`pl-10 pr-10 h-12 bg-gray-50 border-gray-200 ${
-                errors.password ? 'border-red-500 focus:border-red-500' : ''
-              }`}
+              className={`pl-10 pr-10 h-12 bg-gray-50 border-gray-200 ${errors.password ? 'border-red-500 focus:border-red-500' : ''
+                }`}
               {...register('password')}
             />
-            <Lock className={`w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 ${
-              errors.password ? 'text-red-500' : 'text-cyan-600'
-            }`} />
+            <Lock className={`w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 ${errors.password ? 'text-red-500' : 'text-cyan-600'
+              }`} />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
