@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
 import { AnimatedButton } from "@/components/ui/animated-button";
 import { useState, useEffect } from "react";
+// import Image from 'next/image'
 
 interface Candle {
     open: number;
