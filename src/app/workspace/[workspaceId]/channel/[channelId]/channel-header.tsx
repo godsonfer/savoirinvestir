@@ -57,7 +57,6 @@ export const ChannelHeader = ({ title, description }: ChannelHeaderProps) => {
             channelId: ChannelId,
         }, {
             onSuccess() {
-                console.log("done")
                 toast.success(`${title} a été modifié avec succès!`)
                 // router.push(`/workspace/${workspaceId}/channel/${id}`)
                 setEditOpen(false)
@@ -88,14 +87,14 @@ export const ChannelHeader = ({ title, description }: ChannelHeaderProps) => {
             <ConfirmDialog />
             <Dialog >
                 <DialogTrigger asChild>
-                    <div className='bg-white h-[49px] flex items-center px-4 overflow-hidden'>
+                    <div className='bg-white  dark:bg-gray-900 h-[49px] flex items-center px-4 overflow-hidden'>
                         <Button variant={"ghost"} className='text-lg font-semibold px-2 overflow-hidden w-auto' size={"sm"}>
                             <span className='truncate'># {title}</span>
                             <FaChevronDown className='size-2.5 ml-2 shrink-0' />
                         </Button>
                     </div>
                 </DialogTrigger>
-                <DialogContent className='p-0 bg-gray-50 overflow-hidden' >
+                <DialogContent className='p-0 bg-gray-50  dark:bg-gray-900 overflow-hidden' >
                     <DialogHeader className="p-4 border-b bg-white">
                         <DialogTitle className="text-lg font-semibold"> {title}</DialogTitle>
                         <DialogDescription className="text-sm text-muted-foreground">
@@ -105,7 +104,7 @@ export const ChannelHeader = ({ title, description }: ChannelHeaderProps) => {
                     <div className='px-4 pb-4 flex flex-col gap-y-2'>
                         <Dialog open={editOpen} onOpenChange={handleEditOpen} >
                             <DialogTrigger asChild>
-                                <div className="px-5 py-4 bg-white  rounded-lg border cursor-pointer hover:bg-gray-50">
+                                <div className="px-5 py-4 bg-white  rounded-lg border cursor-pointer hover:bg-gray-50 dark:bg-gray-900">
                                     <div className="flex items-center justify-between gap-2">
                                         <p className="text-sm font-semibold">
                                             Nom du salon

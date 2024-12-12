@@ -5,6 +5,7 @@ import { WorkspaceSection } from './workspace-section'
 import { SidebarItem } from './sidebar-item'
 import { UserItem } from './user-item'
 import { useCreateChannelModal } from '@/features/channels/store/use-create-channel-modal'
+import { useCurrentUser } from "@/features/auth/api/user-current-user";
 
 
 import { useCurrentMember } from '@/features/members/api/use-get-current-member'
@@ -22,6 +23,8 @@ import { FaPoll } from 'react-icons/fa'
 
 
 const WorkspaceSidebar = () => {
+    const {data: connectedUser} = useCurrentUser ()
+
     const workspaceId = useWorkspaceId()
     const channelId = useChannelId()
     const memberId = useMmeberId()
@@ -84,7 +87,7 @@ const WorkspaceSidebar = () => {
                     id="drafts"
                 />
             </div>
-            <WorkspaceSection label="Salons" hint="Nouveaux Salons" onNew={member.role === "admin" ? () => setOpen(true) : undefined}>
+            <WorkspaceSection label="Salons" hint="Nouveaux Salons" onNew={member.role === "admin" && connectedUser?.role === "admin" ? () => setOpen(true) : undefined}>
                 {
                     channels?.map(((item) => (
                         <SidebarItem

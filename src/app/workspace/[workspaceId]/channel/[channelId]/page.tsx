@@ -39,7 +39,7 @@ const ChannelIdPage = () => {
             <div className='flex justify-between items-center border-b'>
                 <ChannelHeader title={channel?.name} description={channel?.description} />
                 <div className="flex gap-2 py-2 mr-4">
-                    <p>5</p>
+                    <p>Plusieurs</p>
                     <MoreVerticalIcon className='mr-3 size-4' />
                 </div>
             </div>

@@ -10,11 +10,17 @@ import {
 import { DahboardToolbar } from "@/components/dashboard-toolbar";
 import { Sidebar } from "../workspace/[workspaceId]/sidebar";
 import CourseSidebar from "../(students)/courses/components/students-sidebar";
+import { useCurrentUser } from "@/features/auth/api/user-current-user";
+import { redirect } from "next/navigation";
 
 interface WorkspaceLayoutProps {
     children: React.ReactNode
 }
 const WorkspaceIdLayout = ({ children }: WorkspaceLayoutProps) => {
+    const {data: connectedUser} = useCurrentUser ()
+    if(connectedUser?.role !== "admin") {
+        return redirect("/courses")
+    }
 
     return (
         <div className="h-full">
