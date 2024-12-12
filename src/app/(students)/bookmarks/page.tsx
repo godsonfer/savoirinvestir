@@ -225,7 +225,7 @@ const calculateStatistics = (courses: BookmarkedCourse[]) => {
             return chAcc + (ch.lessons?.length || 0);
         }, 0) || 0);
     }, 0);
-    
+
     const completedExercises = courses.reduce((acc, course) => {
         return acc + (course.course.chapters?.reduce((chAcc, ch) => {
             return chAcc + (ch.lessons?.filter(lesson => lesson.completed)?.length || 0);
@@ -249,7 +249,7 @@ const calculateStatistics = (courses: BookmarkedCourse[]) => {
     }, {} as Record<string, number>);
 
     const topCategory = Object.entries(categoriesCount)
-        .sort(([,a], [,b]) => b - a)[0]?.[0] || "Non catégorisé";
+        .sort(([, a], [, b]) => b - a)[0]?.[0] || "Non catégorisé";
 
     return {
         totalCourses,
@@ -277,7 +277,7 @@ const BookmarksPage = () => {
     const [viewMode, setViewMode] = useState<ViewMode>('grid')
     const [editingNote, setEditingNote] = useState<EditingNote | null>(null)
     const [isLoading, setIsLoading] = useState(true)
-    const {mutate: deleteBookmark} = useCreateBookmark()
+    const { mutate: deleteBookmark } = useCreateBookmark()
 
     useEffect(() => {
         // Réduire le temps de chargement à 500ms
@@ -287,11 +287,10 @@ const BookmarksPage = () => {
         return () => clearTimeout(timer)
     }, [])
 
-    const filteredCourses = bookmarkedCourses.filter(course => 
-    {
-      return   course.course.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        course.course.description?.toLowerCase().includes(searchQuery.toLowerCase()) 
-    } )
+    const filteredCourses = bookmarkedCourses.filter(course => {
+        return course.course.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            course.course.description?.toLowerCase().includes(searchQuery.toLowerCase())
+    })
 
     const sortedCourses = [...filteredCourses].sort((a, b) => {
         switch (sortBy) {
@@ -305,7 +304,7 @@ const BookmarksPage = () => {
     });
 
     const handleRemoveBookmark = (courseId: Id<'courses'>) => {
-        deleteBookmark({courseId}, {
+        deleteBookmark({ courseId }, {
             onSuccess: () => {
                 toast.success(`Cours retiré des favoris`)
             },
@@ -316,7 +315,7 @@ const BookmarksPage = () => {
     }
 
     const handleLike = (courseId: Id<'courses'>) => {
-   
+
         toast.success("Statut du like mis à jour")
     }
 
@@ -396,7 +395,7 @@ const BookmarksPage = () => {
                         </div>
                         <div className="flex items-center gap-4 animate-slide-left">
                             <SearchBar value={searchQuery} onChange={setSearchQuery} />
-                            <ViewControls 
+                            <ViewControls
                                 sortBy={sortBy}
                                 onSortChange={handleSortChange}
                                 viewMode={viewMode}
@@ -411,13 +410,13 @@ const BookmarksPage = () => {
             <main className="flex-1 overflow-y-auto overscroll-auto px-3 md:px-2 py-2 pb-20 relative z-10">
                 <div className="container mx-auto space-y-6">
                     {isLoading ? (
-                        <div className={viewMode === 'grid' 
+                        <div className={viewMode === 'grid'
                             ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
                             : "grid grid-cols-1 md:grid-cols-2 gap-6"
                         }>
                             {[...Array(6)].map((_, index) => (
-                                <div 
-                                    key={index} 
+                                <div
+                                    key={index}
                                     className="bg-white/90 dark:bg-[#001e21]/80 backdrop-blur-xl animate-shimmer"
                                     style={{ animationDelay: `${index * 200}ms` }}
                                 >
@@ -450,8 +449,8 @@ const BookmarksPage = () => {
                                     <div className="mt-4">
                                         <p className="text-xs text-gray-700 dark:text-gray-400 group-hover:text-[#0097A7] dark:group-hover:text-gray-300 transition-colors">Progression moyenne</p>
                                         <div className="w-full bg-gray-200 dark:bg-gray-700/30 rounded-full h-2 mt-2 overflow-hidden shadow-inner-glow">
-                                            <div 
-                                                className="bg-gradient-to-r from-[#0097A7] to-[#D6620F] h-2 rounded-full transition-all duration-500 ease-elastic animate-glow-pulse" 
+                                            <div
+                                                className="bg-gradient-to-r from-[#0097A7] to-[#D6620F] h-2 rounded-full transition-all duration-500 ease-elastic animate-glow-pulse"
                                                 style={{ width: `${stats.averageProgress}%` }}>
                                             </div>
                                         </div>
@@ -478,8 +477,8 @@ const BookmarksPage = () => {
                                     <div className="mt-4">
                                         <p className="text-xs text-gray-700 dark:text-gray-400 group-hover:text-[#0097A7] dark:group-hover:text-gray-300 transition-colors">Taux de réussite</p>
                                         <div className="w-full bg-gray-200 dark:bg-gray-700/30 rounded-full h-2 mt-2 overflow-hidden shadow-inner-glow">
-                                            <div 
-                                                className="bg-gradient-to-r from-emerald-500 to-emerald-400 h-2 rounded-full transition-all duration-500 ease-elastic animate-glow-pulse" 
+                                            <div
+                                                className="bg-gradient-to-r from-emerald-500 to-emerald-400 h-2 rounded-full transition-all duration-500 ease-elastic animate-glow-pulse"
                                                 style={{ width: `${stats.completionRate}%` }}>
                                             </div>
                                         </div>
@@ -536,7 +535,7 @@ const BookmarksPage = () => {
                                         <p className="text-xs text-gray-700 dark:text-gray-400 group-hover:text-[#0097A7] dark:group-hover:text-gray-300 transition-colors">Répartition des catégories</p>
                                         <div className="mt-2 space-y-1">
                                             {Object.entries(stats.categoriesCount)
-                                                .sort(([,a], [,b]) => b - a)
+                                                .sort(([, a], [, b]) => b - a)
                                                 .slice(0, 3)
                                                 .map(([category, count]) => (
                                                     <div key={category} className="flex items-center justify-between">
@@ -572,14 +571,14 @@ const BookmarksPage = () => {
                                 : "grid grid-cols-1 md:grid-cols-2 gap-6"
                             }>
                                 {sortedCourses.map((course, index) => (
-                                    <div 
-                                        key={course.course._id} 
+                                    <div
+                                        key={course.course._id}
                                         className="animate-scale-up transition-all duration-300 hover:scale-102"
                                         style={{
                                             animationDelay: `${index * 100}ms`
                                         }}
                                     >
-                                        <CourseCard 
+                                        <CourseCard
                                             isBookmarked={course.type === 'bookmark'}
                                             course={{
                                                 id: course.course._id,

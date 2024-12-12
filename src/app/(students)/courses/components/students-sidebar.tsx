@@ -3,7 +3,7 @@ import { SidebarItem } from '@/app/(admin)/dashboard/_components/sidebar-items'
 import { useCurrentUser } from '@/features/auth/api/user-current-user'
 
 import {
-    LibraryBig, GraduationCap, SearchCheck,  FileTerminal,    Users,    Shapes,    
+    LibraryBig, GraduationCap, SearchCheck, FileTerminal, Users, Shapes,
 } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 
@@ -13,17 +13,16 @@ import { FaChartBar } from 'react-icons/fa'
 
 const CourseSidebar = () => {
     const pathname = usePathname()
-    const {data: connectedUser} = useCurrentUser ()
+    const { data: connectedUser } = useCurrentUser()
 
     return (
-        <div className='flex flex-col rounded-l-md  h-full'>
-
+        <div className='hidden  md:flex flex-col rounded-l-md  h-full '>
             <div className="flex flex-col px-2 mt-4">
                 {connectedUser?.role === "admin" && (
-                <SidebarItem
-                    label="Statistiques"
-                    icon={FaChartBar}
-                    link="/dashboard/courses"
+                    <SidebarItem
+                        label="Statistiques"
+                        icon={FaChartBar}
+                        link="/dashboard/courses"
                         variant={pathname.includes('/dashboard') ? "active" : "default"}
                     />
                 )}
@@ -31,7 +30,7 @@ const CourseSidebar = () => {
                     label="Explorer"
                     icon={SearchCheck}
                     link="/courses"
-                    variant={pathname ==='/courses' ? "active" : "default"}
+                    variant={pathname === '/courses' ? "active" : "default"}
                 />
                 <SidebarItem
                     label="Mes cours"
@@ -39,7 +38,7 @@ const CourseSidebar = () => {
                     variant={pathname.includes('/bookmarks') ? "active" : "default"}
                     link="/bookmarks"
                 />
-              
+
                 {/* <SidebarItem
                     label="Mes Analyses"
                     icon={ChartCandlestick}
@@ -67,21 +66,21 @@ const CourseSidebar = () => {
                     link="/certificates"
                     variant={pathname.includes('/certificates') ? "active" : "default"}
                 />
-                   {connectedUser?.role === "admin" && (
-              <>
-                  <SidebarItem
-                    label="Marketing"
-                    icon={Shapes}
-                    link="/marketing"
-                    variant={pathname.includes('/marketing') ? "active" : "default"}
-                />
-                <SidebarItem
-                    label="Utilisateurs"
-                    icon={Users}
-                    link="/users"
-                        variant={pathname.includes('/users') ? "active" : "default"}
-                    />
-                </>
+                {connectedUser?.role === "admin" && (
+                    <>
+                        <SidebarItem
+                            label="Marketing"
+                            icon={Shapes}
+                            link="/marketing"
+                            variant={pathname.includes('/marketing') ? "active" : "default"}
+                        />
+                        <SidebarItem
+                            label="Utilisateurs"
+                            icon={Users}
+                            link="/users"
+                            variant={pathname.includes('/users') ? "active" : "default"}
+                        />
+                    </>
                 )}
 
             </div>

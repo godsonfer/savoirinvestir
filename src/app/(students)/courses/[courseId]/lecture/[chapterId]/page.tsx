@@ -11,8 +11,7 @@ import { Course, Lesson, Chapter, Progress } from '@/types/course'
 import { ResourcesPanel } from '@/components/course-learning/ResourcesPanel'
 import { CommentsPanel } from '@/components/course-learning/CommentsPanel'
 import { MobileNavigation } from '@/components/course-learning/MobileNavigation'
-import { ChevronLeft, ChevronRight, CheckCircle, ChevronLeftIcon, ChevronRightIcon } from 'lucide-react'
-import parse from 'html-react-parser'
+import { ChevronLeft, ChevronRight, } from 'lucide-react'
 
 interface LessonFromAPI {
   _id: string;
@@ -43,10 +42,10 @@ const CourseLearningPage = () => {
   useEffect(() => {
     if (data?.chapters) {
       const totalLessons = data.chapters.reduce(
-        (acc, chapter) => acc + chapter.lessons.length, 
+        (acc, chapter) => acc + chapter.lessons.length,
         0
       )
-      
+
       setProgress({
         completedLessons: [],
         totalLessons,
@@ -73,13 +72,13 @@ const CourseLearningPage = () => {
 
   const handleLessonComplete = (lessonId: string) => {
     if (!progress) return
-    
+
     setProgress(prev => {
       if (!prev) return prev
       const newCompletedLessons = prev.completedLessons.includes(lessonId)
         ? prev.completedLessons
         : [...prev.completedLessons, lessonId]
-      
+
       return {
         ...prev,
         completedLessons: newCompletedLessons,
@@ -103,11 +102,11 @@ const CourseLearningPage = () => {
 
   const findAdjacentLessons = useCallback(() => {
     if (!data?.chapters || !currentLesson) return { prev: null, next: null }
-    
+
     let prevLesson: LessonFromAPI | null = null
     let nextLesson: LessonFromAPI | null = null
     let foundCurrent = false
-    
+
     for (let i = 0; i < data.chapters.length; i++) {
       const lessons = data.chapters[i].lessons
       for (let j = 0; j < lessons.length; j++) {
@@ -131,7 +130,7 @@ const CourseLearningPage = () => {
         nextLesson = data.chapters[i + 1].lessons[0]
       }
     }
-    
+
     return { prev: prevLesson, next: nextLesson }
   }, [data?.chapters, currentLesson])
 
@@ -140,14 +139,14 @@ const CourseLearningPage = () => {
   return (
     <div className="h-screen flex flex-col bg-[#1a1b1a]">
       {isMobile && (isSidebarOpen || isRightSidebarOpen) && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 z-40 transition-opacity duration-300"
           onClick={closeSidebars}
         />
       )}
 
       <div className="flex-1 flex overflow-hidden relative pt-14 lg:pt-0" onClick={handleOutsideClick}>
-        <div 
+        <div
           className={`
             sidebar-content
             h-full flex flex-col bg-[#1a1b1a] border-r border-white/10
@@ -160,8 +159,8 @@ const CourseLearningPage = () => {
           `}
         >
           <div className="flex-1 overflow-y-auto scrollbar-hide">
-            <ChaptersList 
-                chapters={(data?.chapters as unknown as Chapter[])}
+            <ChaptersList
+              chapters={(data?.chapters as unknown as Chapter[])}
               currentLesson={(currentLesson as unknown as Lesson)}
               progress={progress}
               onLessonSelect={(lesson) => {
@@ -176,7 +175,7 @@ const CourseLearningPage = () => {
         <div className="flex-1 flex flex-col h-full overflow-hidden">
           <div className="flex-1 flex flex-col bg-black/50">
             <div className="w-full max-w-[1280px] mx-auto px-4">
-              <VideoPlayer 
+              <VideoPlayer
                 currentLesson={(currentLesson as unknown as Lesson)}
                 course={(data?.course as unknown as Course)}
                 onComplete={handleLessonComplete}
@@ -187,11 +186,11 @@ const CourseLearningPage = () => {
               />
             </div>
 
-          
+
           </div>
         </div>
 
-        <div 
+        <div
           className={`
             sidebar-content
             h-full flex flex-col bg-[#1a1b1a] border-l border-white/10
@@ -205,14 +204,14 @@ const CourseLearningPage = () => {
         >
           <Tabs defaultValue="comments" className="h-full flex flex-col">
             <TabsList className="flex p-2 gap-1 bg-transparent border-b border-white/10">
-              <TabsTrigger 
-                value="comments" 
+              <TabsTrigger
+                value="comments"
                 className="flex-1 data-[state=active]:bg-[#178F65]"
               >
                 Commentaires
               </TabsTrigger>
-              <TabsTrigger 
-                value="attachments" 
+              <TabsTrigger
+                value="attachments"
                 className="flex-1 data-[state=active]:bg-[#178F65]"
               >
                 Ressources
@@ -241,10 +240,9 @@ const CourseLearningPage = () => {
                 ${isSidebarOpen ? 'left-[400px]' : 'left-0'}
               `}
             >
-              <ChevronLeft 
-                className={`w-4 h-4 text-white transition-transform duration-300 ${
-                  isSidebarOpen ? '' : 'rotate-180'
-                }`}
+              <ChevronLeft
+                className={`w-4 h-4 text-white transition-transform duration-300 ${isSidebarOpen ? '' : 'rotate-180'
+                  }`}
               />
             </button>
 
@@ -258,17 +256,16 @@ const CourseLearningPage = () => {
                 ${isRightSidebarOpen ? 'right-[350px]' : 'right-0'}
               `}
             >
-              <ChevronRight 
-                className={`w-4 h-4 text-white transition-transform duration-300 ${
-                  isRightSidebarOpen ? 'rotate-180' : ''
-                }`}
+              <ChevronRight
+                className={`w-4 h-4 text-white transition-transform duration-300 ${isRightSidebarOpen ? 'rotate-180' : ''
+                  }`}
               />
             </button>
           </>
         )}
       </div>
 
-      <MobileNavigation 
+      <MobileNavigation
         courseId={courseId}
         courseTitle={data?.course?.title}
         onOpenSidebar={() => setIsSidebarOpen(true)}
