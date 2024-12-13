@@ -10,7 +10,7 @@ import { Eye, EyeOff, Lock, Mail, User, Phone, Camera } from 'lucide-react'
 import { RegisterFormData, registerSchema } from '../schemas/auth.schema'
 import { useAuthActions } from '@convex-dev/auth/react'
 import { toast } from 'sonner'
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar, AvatarImage } from '@/components/ui/avatar'
 import { useUploadThing } from "@/utils/uploadthing";
 
 interface RegisterFormProps {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
 import {
     ResizableHandle,
@@ -16,8 +17,8 @@ interface WorkspaceLayoutProps {
 }
 
 const WorkspaceIdLayout = ({ children }: WorkspaceLayoutProps) => {
-    const [_isSidebarOpen, setIsSidebarOpen] = useState(true);
-    const [_isRightSidebarOpen, setIsRightSidebarOpen] = useState(true);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [ isRightSidebarOpen, setIsRightSidebarOpen] = useState(true);
     const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {

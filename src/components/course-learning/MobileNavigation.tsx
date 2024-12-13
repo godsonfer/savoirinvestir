@@ -1,5 +1,4 @@
 import React from 'react'
-import Link from 'next/link'
 import { BookOpen, Users2, GraduationCap, MenuIcon, FileTextIcon, Search, } from 'lucide-react'
 import UserButton from '@/features/auth/components/user-button'
 import { Id } from '../../../convex/_generated/dataModel'
