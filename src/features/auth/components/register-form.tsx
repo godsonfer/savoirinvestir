@@ -41,8 +41,8 @@ export const RegisterForm = ({ onLoginClick }: RegisterFormProps) => {
       try {
         setIsUploading(true)
 
-        if (file.size > 1 * 1024 * 1024) {
-          toast.error("L'image est trop volumineuse. Taille maximum : 1MB")
+        if (file.size > 4 * 1024 * 1024) {
+          toast.error("L'image est trop volumineuse. Taille maximum : 4MB")
           setIsUploading(false)
           return
         }
@@ -61,7 +61,6 @@ export const RegisterForm = ({ onLoginClick }: RegisterFormProps) => {
         reader.readAsDataURL(file)
         // Upload sur UploadThing
         const res = await startUpload([file])
-
         if (res && res[0]) {
           setValue('avatar', res[0].url) // On stocke maintenant l'URL au lieu du fichier
         } else {
