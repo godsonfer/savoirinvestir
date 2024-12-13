@@ -80,7 +80,7 @@ export const MobileNavigation = ({
       <div className="fixed bottom-0 left-0 right-0 h-16 bg-[#1a1b1a] border-t border-white/10 lg:hidden">
         <div className="flex h-full items-center justify-around hover:translate-y-[-2px] mb-4">
           <SidebarButton href='/courses' icon={Search} label='Explorer' isActive={pathname.includes('/courses')} />
-          <SidebarButton href='/courses' icon={GraduationCap} label='Mes Cours' isActive={pathname.includes('/bookmarks')} />
+          <SidebarButton href='/bookmarks' icon={GraduationCap} label='Mes Cours' isActive={pathname.includes('/bookmarks')} />
           <SidebarButton href='/exercices' icon={BookOpen} label='Exercices' isActive={pathname.includes('/exercices')} />
           <SidebarButton href='/workspace' icon={Users2} label='Communauté' isActive={pathname.includes('/workspace')} />
           <div className="flex flex-col items-center justify-center">
