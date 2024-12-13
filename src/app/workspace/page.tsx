@@ -52,7 +52,7 @@ const LoadingScreen = () => (
                 ))}
             </div>
             <p className="text-sm text-gray-600 dark:text-gray-400">
-                Chargement de votre espace, veuillez patienter...
+                Chargement de votre espace, assurez vous d&apos;avoir un accès a la communauté...
             </p>
         </div>
     </div>
