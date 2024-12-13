@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
 import {
     ResizableHandle,
@@ -17,17 +16,13 @@ interface WorkspaceLayoutProps {
 }
 
 const WorkspaceIdLayout = ({ children }: WorkspaceLayoutProps) => {
-    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-    const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true);
+    const [_isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [_isRightSidebarOpen, setIsRightSidebarOpen] = useState(true);
     const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
         const checkMobile = () => {
-            setIsMobile(window.innerWidth < 1024);
-            if (window.innerWidth < 1024) {
-                setIsSidebarOpen(false);
-                setIsRightSidebarOpen(false);
-            }
+            setIsMobile(window.innerWidth < 768);
         };
 
         checkMobile();
@@ -40,11 +35,12 @@ const WorkspaceIdLayout = ({ children }: WorkspaceLayoutProps) => {
             {isMobile ? (
                 <div className=" h-[calc(100vh-40px)] ">
                     {children}
-                    <MobileNavigation
-                        onOpenSidebar={() => setIsSidebarOpen(true)}
-                        onOpenResources={() => setIsRightSidebarOpen(true)}
-                    />
-
+                    <div className="fixed bottom-0 left-0 right-0 z-50">
+                        <MobileNavigation
+                            onOpenSidebar={() => setIsSidebarOpen(true)}
+                            onOpenResources={() => setIsRightSidebarOpen(true)}
+                        />
+                    </div>
                 </div>
             ) : (
                 <>
@@ -87,4 +83,3 @@ const WorkspaceIdLayout = ({ children }: WorkspaceLayoutProps) => {
 }
 
 export default WorkspaceIdLayout;
-

@@ -32,16 +32,16 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: 'Invest Mastery Mind | Bienvenue',
+  title: 'Invest Mastery Mind | IMM |Bienvenue',
   description: 'Bienvenue sur la plateforme d\'apprentissage d\'Invest Mastery Mind. Notre objectif est de vous donner les outils nécessaires pour devenir un investisseur maîtrisé.',
   metadataBase: new URL('https://investmasterymind.pro'),
-  generator: 'Invest Mastery Mind',
-  applicationName: 'Invest Mastery Mind',
+  generator: 'Invest Mastery Mind | IMM',
+  applicationName: 'Invest Mastery Mind | IMM',
   referrer: 'origin-when-cross-origin',
   keywords: [ 'signale', 'Trading', 'Investissement', 'Bourse', 'Finance', 'Analyse technique', 'Analyse fondamentale', 'Marchés financiers', 'Trading en ligne', 'Formation trading'],
-  authors: [{ name: 'Invest Mastery Mind' }, { name: 'Invest Mastery Mind', url: 'https://investmasterymind.pro' }],
-  creator: 'Invest Mastery Mind',
-  publisher: 'Invest Mastery Mind',
+  authors: [{ name: 'Invest Mastery Mind | IMM' }, { name: 'Invest Mastery Mind | IMM', url: 'https://investmasterymind.pro' }],
+  creator: 'Invest Mastery Mind | IMM',
+  publisher: 'Invest Mastery Mind | IMM',
   robots: 'index, follow',
   alternates: {
     canonical: '/',
@@ -84,7 +84,7 @@ export default function RootLayout({
       <html lang="en">
         <head>
           <Script src="https://cdn.fedapay.com/checkout.js?v=1.1.2" />
-          <Script id="register-sw" strategy="afterInteractive">
+          {/* <Script id="register-sw" strategy="afterInteractive">
             {`
               if ('serviceWorker' in navigator) {
                 window.addEventListener('load', function() {
@@ -99,13 +99,13 @@ export default function RootLayout({
                 });
               }
             `}
-          </Script>
+          </Script> */}
         </head>
         <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
           <ThemeProvider>
             <ConvexClientProvider>
               <JotaiProvider>
-                <LoadingProvider>
+                  <LoadingProvider>
                   <InitialLoader />
                   <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
                   <Toaster />

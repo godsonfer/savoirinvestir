@@ -5,7 +5,6 @@ import React from "react";
 import { useTheme } from 'next-themes'
 import { useState, useEffect } from "react";
 
-
 import Link from "next/link";
 import Image from "next/image";
 
@@ -128,6 +127,7 @@ export default function Home() {
 
     useEffect(() => {
         const handleScroll = () => {
+            console.log(window.scrollY)
             if (window.scrollY > 200) {
                 setShowScrollTop(true);
             } else {

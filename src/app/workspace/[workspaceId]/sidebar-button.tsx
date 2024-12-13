@@ -23,7 +23,7 @@ export const SidebarButton = ({ label, icon: Icon, isActive, href = "/dashboard"
                 variant='transparent'
                 className={cn(
                     "size-9 p-2 group-hover:bg-accent/20 ",
-                    isActive && ("bg-accent/30 text-sky-500  ")
+                    isActive && ("bg-accent text-sky-500  ")
                 )}
             >
                 <Icon className='size-5 text-white group-hover:scale-150 transition-all ' />
