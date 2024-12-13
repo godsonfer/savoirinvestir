@@ -84,8 +84,6 @@ export const MobileNavigation = ({
           <SidebarButton href='/courses' icon={GraduationCap} label='Mes Cours' isActive={pathname.includes('/bookmarks')} />
           <SidebarButton href='/exercices' icon={BookOpen} label='Exercices' isActive={pathname.includes('/exercices')} />
           <SidebarButton href='/workspace' icon={Users2} label='Communauté' isActive={pathname.includes('/workspace')} />
-
-
           <div className="flex flex-col items-center justify-center">
             <UserButton  />
             <span className="text-[12px] text-white font-bold  justify-center group-hover:text-accent">Profile</span>

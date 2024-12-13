@@ -103,26 +103,28 @@ export const RegisterForm = ({ onLoginClick }: RegisterFormProps) => {
     >
       <div className="flex flex-col items-center mb-6">
         <div className="relative">
-          <Avatar>
-            {avatarPreview ? (
-              <AvatarImage
-                src={avatarPreview}
-                alt="Avatar preview"
-                className="h-24 w-24"
-              />
-            ) : (
-              <AvatarFallback>
-                <User className="h-24 w-24" />
-              </AvatarFallback>
-            )}
-          </Avatar>
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            className="absolute bottom-0 right-0 p-2 bg-cyan-600 rounded-full text-white hover:bg-cyan-700 transition-colors"
-          >
-            <Camera className="w-4 h-4" />
-          </button>
+          <div className="relative">
+            <Avatar className="h-24 w-24">
+              {avatarPreview ? (
+                <AvatarImage
+                  src={avatarPreview}
+                  alt="Avatar preview"
+                  className="rounded-full"
+                />
+              ) : (
+               <div className="  border border-cyan-300 rounded-full h-24 w-24 flex items-center justify-center bg-gradient-to-r from-cyan-600 to-orange-600">
+               <User className="w-20 h-20  text-cyan-200" />
+               </div>
+              )}
+            </Avatar>
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="absolute bottom-0 right-0 p-2 rounded-full bg-white border border-gray-300 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500"
+            >
+              <Camera className="h-5 w-5 text-gray-500" />
+            </button>
+          </div>
           <input
             type="file"
             ref={fileInputRef}

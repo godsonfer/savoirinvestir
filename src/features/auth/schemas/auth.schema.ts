@@ -20,7 +20,7 @@ export const registerSchema = z.object({
   phone: z
     .string()
     .min(1, "Le numéro de téléphone est requis")
-    .regex(/^00\d{11,13}$/, "Format de numéro de téléphone invalide"),
+    .regex(/^\d{8,}$/, "Format de numéro de téléphone invalide, doit contenir au moins 8 chiffres"),
   avatar: z.string().optional(),
   password: z
     .string()
