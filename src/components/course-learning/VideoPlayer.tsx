@@ -41,7 +41,7 @@ export const VideoPlayer = ({
   }
 
   return (
-    <div className="space-y-6 w-full max-w-screen-lg mx-auto px-4">
+    <div className=" w-full min-h-screen py-24 px-1">
       <div className="relative group">
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
@@ -50,12 +50,14 @@ export const VideoPlayer = ({
           transition={{ duration: 0.3 }}
           className="relative rounded-xl overflow-hidden bg-black/50 backdrop-blur-sm w-full max-w-[90vw] md:max-w-none mx-auto"
         >
-          <div className="aspect-video bg-black w-full">
+          <div className="aspect-video bg-black w-full items-center justify-center">
             {currentLesson.muxData?.playback ? (
-              <CourseMuxPlayer
+           <div className = "p-2">
+               <CourseMuxPlayer
                 playbackId={currentLesson?.muxData?.playback || ''}
                 title={currentLesson.title}
               />
+           </div>
             ) : (
               <div className="w-full h-full flex items-center justify-center">
                 <Play className="w-16 h-16 text-white/50" />
@@ -67,7 +69,7 @@ export const VideoPlayer = ({
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="absolute inset-0 flex items-center justify-between p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+            className="hidden absolute inset-0 md:flex items-center justify-between p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
           >
             <AnimatePresence>
               {hasPrevious && (
@@ -75,7 +77,7 @@ export const VideoPlayer = ({
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
-                  className="pointer-events-auto"
+                  className="pointer-events-auto hidden md:block"
                 >
                   <Button
                     variant="outline"
@@ -93,7 +95,7 @@ export const VideoPlayer = ({
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 20 }}
-                  className="pointer-events-auto"
+                  className="pointer-events-auto hidden md:block"
                 >
                   <Button
                     variant="outline"
@@ -112,11 +114,11 @@ export const VideoPlayer = ({
           {/* Barre d'informations */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            animate={{ opacity: currentLesson?.muxData?.playback ? 1 : 0, y: 0 }}
             className={cn(
-              "absolute bottom-0 left-0 right-0 bg-black ",
+              "absolute bottom-0 left-0 right-0 bg-black/60 opacity-0 group:hover:opacity-100 transition-opacity duration-300",
               "pointer-events-none",
-              isMobile ? "p-3" : "p-6"
+              isMobile ? "p-3 hidden" : "p-6"
             )}
           >
             <div className="max-w-3xl mx-auto">
@@ -127,7 +129,7 @@ export const VideoPlayer = ({
                 <div className="flex-1">
                   <motion.h2 
                     initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
+                    animate={{ opacity: currentLesson?.muxData?.playback ? 1 : 0, y: 0 }}
                     className="text-xl font-semibold text-white mb-3"
                   >
                     {currentLesson.title}
@@ -174,7 +176,7 @@ export const VideoPlayer = ({
             "max-w-3xl mx-auto flex items-center",
             isMobile ? "flex-col gap-2" : "justify-between"
           )}>
-            <div className="flex gap-2">
+            <div className="hidden md:flex gap-2">
               <AnimatePresence mode="wait">
                 {hasPrevious && (
                   <motion.div
@@ -201,7 +203,7 @@ export const VideoPlayer = ({
                   >
                     <Button
                       onClick={onNext}
-                      className="flex items-center gap-2 px-4 py-2 text-sm text-white 
+                      className="flex  items-center gap-2 px-4 py-2 text-sm text-white 
                         bg-[#0097A7] rounded-lg hover:bg-[#008697] transition-all duration-300
                         hover:shadow-lg hover:shadow-[#0097A7]/20"
                     >

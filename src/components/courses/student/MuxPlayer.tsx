@@ -23,7 +23,7 @@ export const CourseMuxPlayer = ({ playbackId, title, onLoad }: MuxPlayerProps) =
     }, [onLoad])
 
     return (
-        <div className="relative aspect-video bg-black/90">
+        <div className="relative aspect-video bg-black/90 rounded-md ">
               <MuxPlayer
                 title={title}
                 playbackId={playbackId}
@@ -34,9 +34,9 @@ export const CourseMuxPlayer = ({ playbackId, title, onLoad }: MuxPlayerProps) =
                 <Image 
                     src="/logo.svg" 
                     alt="Logo" 
-                    width={90} 
-                    height={45} 
-                    className="filter brightness-0 invert drop-shadow-lg"
+                    width={44} 
+                    height={44} 
+                    className="filter  drop-shadow-lg"
                 />
             </div>
 
@@ -51,9 +51,9 @@ export const CourseMuxPlayer = ({ playbackId, title, onLoad }: MuxPlayerProps) =
                     <Image 
                         src="/logo.svg" 
                         alt="Logo" 
-                        width={140} 
-                        height={70}
-                        className="animate-pulse filter brightness-0 invert drop-shadow-lg"
+                        width={44} 
+                        height={44} 
+                        className="animate-pulse filter   drop-shadow-lg"
                     />
                     <Loader2 className="w-8 h-8 text-[#0097A7] animate-spin drop-shadow-lg" />
                 </div>

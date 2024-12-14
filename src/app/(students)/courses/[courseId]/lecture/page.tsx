@@ -173,9 +173,9 @@ const CourseLearningPage = () => {
           </div>
         </div>
 
-        <div className="flex-1 flex flex-col h-full overflow-hidden">
+        <div className="flex-1 flex flex-col h-full overflow-hidden mt-auto">
           <div className="flex-1 flex flex-col dark:bg-black/50">
-            <div className="w-full max-w-[1280px] mx-auto px-4">
+            <div className="w-full max-w-[1280px]  mx-auto px-4">
               <VideoPlayer
                 currentLesson={(currentLesson as unknown as Lesson)}
                 course={(data?.course as unknown as Course)}
