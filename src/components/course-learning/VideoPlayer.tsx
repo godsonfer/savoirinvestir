@@ -52,7 +52,7 @@ export const VideoPlayer = ({
         >
           <div className="aspect-video bg-black w-full items-center justify-center">
             {currentLesson.muxData?.playback ? (
-           <div className = "p-2">
+           <div className = "p-0">
                <CourseMuxPlayer
                 playbackId={currentLesson?.muxData?.playback || ''}
                 title={currentLesson.title}
