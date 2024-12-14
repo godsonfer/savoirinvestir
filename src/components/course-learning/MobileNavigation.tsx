@@ -52,7 +52,7 @@ export const MobileNavigation = ({
                <>
                  <div className="flex h-full items-center px-4 justify-between">
               <button
-                onClick={onOpenSidebar}
+                onClick={ onOpenSidebar}
                 className="flex items-center justify-center w-10 h-10"
               >
                 <MenuIcon className="w-5 h-5 text-white" />

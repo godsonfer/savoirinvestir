@@ -12,12 +12,36 @@ import { ResourcesPanel } from '@/components/course-learning/ResourcesPanel'
 import { CommentsPanel } from '@/components/course-learning/CommentsPanel'
 import { MobileNavigation } from '@/components/course-learning/MobileNavigation'
 import { ChevronLeft, ChevronRight, } from 'lucide-react'
+import { Id } from '../../../../../../convex/_generated/dataModel'
+type ResourceType = 'pdf' | 'video' | 'image' | 'other';
+interface Comment {
+  _id: string;
+  canDelete : boolean
+  user: {
+    _id: Id<"users"> | undefined;
+    name?: string;
+    avatar?: string;
+  };
+  message: string;
+  createdAt?: Date;
+  type?: 'text' | 'audio' | 'video' | 'image';
+  replies?: Comment[];
+}
+
+interface Attachment {
+  _id:  Id <"attachments">;
+  name : string;
+  url : string
+  type : ResourceType
+  description?: string;
+}
 
 interface LessonFromAPI {
   _id: string;
   title: string;
   description?: string;
-  type?: "video" | "text" | "article" | "quiz";
+  type?: 'video' | 'text' | 'article' | 'quiz';
+  comments?: Comment[];
   muxData: {
     _id: string;
     _creationTime: number;
@@ -136,7 +160,6 @@ const CourseLearningPage = () => {
   }, [data?.chapters, currentLesson])
 
   const { prev, next } = findAdjacentLessons()
-
   return (
     <div className="h-screen flex flex-col bg-[#1a1b1a]">
       {isMobile && (isSidebarOpen || isRightSidebarOpen) && (
@@ -202,26 +225,29 @@ const CourseLearningPage = () => {
           `}
         >
           <Tabs defaultValue="comments" className="h-full flex flex-col">
-            <TabsList className="flex p-2 gap-1 bg-transparent border-b border-white/10">
+            <TabsList className="flex p-2 gap-1 bg-transparent border-b border-white/50">
               <TabsTrigger
                 value="comments"
-                className="flex-1 data-[state=active]:bg-[#178F65]"
+                className="flex-1 data-[state=active]:bg-[#178F65] text-white"
               >
                 Commentaires
               </TabsTrigger>
               <TabsTrigger
                 value="attachments"
-                className="flex-1 data-[state=active]:bg-[#178F65]"
+                className="flex-1 data-[state=active]:bg-[#178F65] text-white"
               >
                 Ressources
               </TabsTrigger>
             </TabsList>
             <div className="flex-1 overflow-hidden">
               <TabsContent value="comments" className="h-full m-0">
-                <CommentsPanel />
+                <CommentsPanel
+                  message={currentLesson?.comments as Comment[]}
+                  lessonId={currentLesson?._id as Id<"lessons">}
+                />
               </TabsContent>
               <TabsContent value="attachments" className="h-full m-0">
-                <ResourcesPanel />
+                <ResourcesPanel resources={data?.attachments as Attachment[]} />
               </TabsContent>
             </div>
           </Tabs>
@@ -268,8 +294,8 @@ const CourseLearningPage = () => {
       isCourseLecuture  = {true}
         courseId={courseId}
         courseTitle={data?.course?.title}
-        onOpenSidebar={() => setIsSidebarOpen(true)}
-        onOpenResources={() => setIsRightSidebarOpen(true)}
+        onOpenSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+        onOpenResources={() => setIsRightSidebarOpen(!isRightSidebarOpen)}
       />
 
       <style jsx global>{`

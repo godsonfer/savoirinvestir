@@ -1,4 +1,4 @@
-import { Id } from "@hello-pangea/dnd"
+import { Id } from "../../convex/_generated/dataModel"
 
 export type BookmarkedCourse = {
     id: string
@@ -118,4 +118,19 @@ export interface CourseFromAPI {
   category?: string;
   cover?: string;
   userId: string;
+}
+
+export interface Comment {
+  _id: Id<"comments">;
+  user: {
+    _id: Id<"users">;
+    name: string;
+    image?: string;
+  };
+  mesage: string;
+  createdAt: number;
+  type: 'text' | 'audio' | 'video' | 'image';
+  replies?: Comment[];
+  chapterId?: Id<"chapters">;
+  lessonId: Id<"lessons">;
 }

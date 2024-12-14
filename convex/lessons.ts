@@ -337,3 +337,47 @@ export const publishLesson = mutation({
     return lesson;
   },
 });
+
+export const createLessonMessage = mutation ({
+  args: {
+    lessonId: (v.id("lessons")),
+    message: v.string(),
+    file: v.optional(v.array(v.id("_storage"))) ,
+    type : v.optional(v.union(v.literal("text"), v.literal("audio"), v.literal("video"), v.literal("image"))) || "text", 
+  }, 
+  handler: async (ctx, {   lessonId, message,  type, file }) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Unauthorized");
+    const user = await ctx.db.get(userId);
+    if (!user) throw new Error("Unauthorized");
+    const lesson = await ctx.db.get(lessonId);
+    if (!lesson) throw new Error("Unauthorized");
+    const newMessage = await ctx.db.insert("comments", {
+      userId,
+      lessonId,
+      message,
+      type,
+      chapterId : lesson.chapterId,
+      courseId: lesson.courseId,
+      file,
+    });
+    return newMessage;
+  }
+})
+
+export const removeLessonMessage =  mutation ({
+  args: {
+    id: v.id("comments"),
+  }, 
+  handler: async (ctx, { id }) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Unauthorized");
+    const user = await ctx.db.get(userId);
+    if (!user) throw new Error("Unauthorized");
+    const message = await ctx.db.get(id);
+    if (!message) throw new Error("Unauthorized");
+    if(message.userId !== userId && user.role !== "admin") throw new Error("Unauthorized");
+    const removedMessage = await ctx.db.delete(id);
+    return removedMessage;
+  }
+})

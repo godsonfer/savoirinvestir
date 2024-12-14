@@ -389,6 +389,8 @@ const schema = defineSchema({
     lessonId : v.optional (v.id('lessons')),
     chapterId: v.optional(v.id("chapters")),
     exercicesId: v.optional(v.id("exercices")),
+    descripton :  v.optional(v.string()),
+    type : v.optional(v.union( v.literal('video'), v.literal('image'), v.literal('pdf'), v.literal("other"))) || 'pdf',
     name: v.optional(v.string()),
     url: v.string(),
   })
@@ -568,11 +570,13 @@ const schema = defineSchema({
 
   // comments
   comments: defineTable({
+    chapterId: v.optional(v.id("chapters")),
+    courseId :  v.optional (v.id("courses")),
     userId: v.id("users"),
-    lessonId: v.optional(v.id("lessons")),
-    chapterId: v.id("chapters"),
+    lessonId: (v.id("lessons")),
+    message: v.string(),
     file: v.optional(v.array(v.id("_storage"))),
-    content: v.string(),
+    type : v.optional(v.union(v.literal("text"), v.literal("audio"), v.literal("video"), v.literal("image"))) || "text",
     upatedAt: v.optional(v.number()),
   })
     .index("by_chapter_id", ["chapterId"])

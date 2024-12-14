@@ -12,49 +12,21 @@ import {
 import { motion, AnimatePresence } from "framer-motion"
 import { useMediaQuery } from '@/hooks/use-media-query'
 import { cn } from '@/lib/utils'
+import { Id } from '../../../convex/_generated/dataModel'
 
 type ResourceType = 'pdf' | 'video' | 'image' | 'other';
 
 type Resource = {
-  id: string;
-  title: string;
+  _id: Id <"attachments">;
+  name: string;
   type: ResourceType;
-  size: string;
+  size ?: string;
   url: string;
-  description?: string;
-  addedAt: Date;
-  downloadProgress?: number;
+  description?: string | "Guide complet du cours avec tous les concepts clés et exercices pratiques"
+  addedAt?: Date | null;
+  downloadProgress?: number | null;
 };
 
-const DEMO_RESOURCES: Resource[] = [
-  {
-    id: '1',
-    title: 'Guide complet du cours - Documentation détaillée.pdf',
-    type: 'pdf',
-    size: '2.5 MB',
-    url: '/resources/guide.pdf',
-    description: 'Guide complet du cours avec tous les concepts clés et exercices pratiques',
-    addedAt: new Date('2024-03-15')
-  },
-  {
-    id: '2',
-    title: 'Vidéo explicative - Introduction aux concepts',
-    type: 'video',
-    size: '15 MB',
-    url: '/resources/video.mp4',
-    description: 'Démonstration pratique des concepts fondamentaux du cours',
-    addedAt: new Date('2024-03-14')
-  },
-  {
-    id: '3',
-    title: 'Diagramme architecture système',
-    type: 'image',
-    size: '1.2 MB',
-    url: '/resources/diagram.png',
-    description: 'Schéma détaillé de l\'architecture du système étudié',
-    addedAt: new Date('2024-03-13')
-  }
-];
 
 const getResourceIcon = (type: ResourceType) => {
   switch (type) {
@@ -77,16 +49,16 @@ const formatDate = (date: Date) => {
   }).format(date);
 };
 
-export const ResourcesPanel = () => {
+export const ResourcesPanel = ({ resources }: { resources: Resource[] }) => {
   const isMobile = useMediaQuery('(max-width: 768px)')
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedType, setSelectedType] = useState<ResourceType | 'all'>('all');
   const [downloading, setDownloading] = useState<Record<string, number>>({});
   const [sortBy, setSortBy] = useState<'date' | 'name' | 'size'>('date');
 
-  const filteredResources = DEMO_RESOURCES
+  const filteredResources = resources
     .filter(resource => {
-      const matchesSearch = resource.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      const matchesSearch = resource.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           resource.description?.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesType = selectedType === 'all' || resource.type === selectedType;
       return matchesSearch && matchesType;
@@ -94,29 +66,29 @@ export const ResourcesPanel = () => {
     .sort((a, b) => {
       switch (sortBy) {
         case 'date':
-          return b.addedAt.getTime() - a.addedAt.getTime();
+          return (b?.addedAt?.getTime() || 0) - (a?.addedAt?.getTime() || 0);
         case 'name':
-          return a.title.localeCompare(b.title);
+          return a?.name?.localeCompare(b?.name) || 0;
         case 'size':
-          return parseFloat(a.size) - parseFloat(b.size);
+          return parseFloat(a?.size || '0') - parseFloat(b?.size || '0');
         default:
           return 0;
       }
     });
 
   const handleDownload = async (resource: Resource) => {
-    setDownloading(prev => ({ ...prev, [resource.id]: 0 }));
+    setDownloading(prev => ({ ...prev, [resource._id]: 0 }));
     
     // Simuler un téléchargement progressif
     for (let i = 0; i <= 100; i += 10) {
       await new Promise(resolve => setTimeout(resolve, 200));
-      setDownloading(prev => ({ ...prev, [resource.id]: i }));
+      setDownloading(prev => ({ ...prev, [resource._id]: i }));
     }
     
     window.open(resource.url, '_blank');
     setDownloading(prev => {
       const newState = { ...prev };
-      delete newState[resource.id];
+      delete newState[resource._id];
       return newState;
     });
   };
@@ -138,7 +110,7 @@ export const ResourcesPanel = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Rechercher une ressource..."
-              className="pl-9 bg-white/5 border-white/10 focus:border-[#0097A7] 
+              className="pl-9 bg-white/5 text-gray-50 border-white/10 focus:border-[#0097A7] 
                 transition-all duration-300 focus:bg-white/10"
             />
           </div>
@@ -149,12 +121,12 @@ export const ResourcesPanel = () => {
                 size="icon" 
                 className="shrink-0 hover:bg-[#0097A7] hover:border-[#0097A7] transition-colors"
               >
-                <Filter className="w-4 h-4" />
+                <Filter className="w-4 h-4 text-white" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent 
               align="end"
-              className="bg-neutral-900/95 backdrop-blur-md border-white/10"
+              className="bg-white/95 backdrop-blur-md border-white/10"
             >
               <DropdownMenuItem 
                 onClick={() => setSortBy('date')}
@@ -187,7 +159,7 @@ export const ResourcesPanel = () => {
           {['all', 'pdf', 'video', 'image'].map((type) => (
             <Button 
               key={type}
-              variant={selectedType === type ? "default" : "ghost"} 
+              variant={selectedType === type ? "default" : "transparent"} 
               size="sm" 
               className={`text-xs transition-all duration-300 ${
                 selectedType === type 
@@ -221,7 +193,7 @@ export const ResourcesPanel = () => {
           ) : (
             filteredResources.map((resource, index) => (
               <motion.div 
-                key={resource.id}
+                key={resource._id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, x: -20 }}
@@ -247,10 +219,10 @@ export const ResourcesPanel = () => {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
                         <h4 className="text-sm font-medium text-white truncate">
-                          {resource.title}
+                          {resource.name}
                         </h4>
                         <span className="text-xs text-gray-400 shrink-0">
-                          {formatDate(resource.addedAt)}
+                          {formatDate(resource.addedAt as Date)}
                         </span>
                       </div>
                       {resource.description && (
@@ -263,10 +235,10 @@ export const ResourcesPanel = () => {
                 </div>
                 
                 <div className="px-4 pb-4">
-                  {downloading[resource.id] !== undefined ? (
+                  {downloading[resource._id] !== undefined ? (
                     <div className="space-y-2">
                       <Progress 
-                        value={downloading[resource.id]} 
+                        value={downloading[resource._id]} 
                         className={`h-1 bg-white/5 ${
                           resource.type === 'pdf'
                             ? '[&>div]:bg-[#D6620F]'
@@ -280,7 +252,7 @@ export const ResourcesPanel = () => {
                         <span className={`text-xs ${
                           resource.type === 'pdf' ? 'text-[#D6620F]' : 'text-[#0097A7]'
                         }`}>
-                          {downloading[resource.id]}%
+                          {downloading[resource._id]}%
                         </span>
                       </div>
                     </div>
@@ -291,9 +263,9 @@ export const ResourcesPanel = () => {
                       </span>
                       <Button
                         size="sm"
-                        variant="ghost"
+                        variant="orange"
                         className={`
-                          opacity-0 group-hover:opacity-100 transition-all duration-300
+                          opacity-20 group-hover:opacity-100 transition-all duration-300
                           ${resource.type === 'pdf'
                             ? 'hover:bg-[#D6620F] hover:text-white'
                             : 'hover:bg-[#0097A7] hover:text-white'}

@@ -21,9 +21,16 @@ const populateChapters = async (ctx: QueryCtx, courseId: Id<"courses">) => {
             .query("muxData")
             .withIndex("by_lesson_id", (q) => q.eq("lessonId", lesson._id))
             .first();
+            // commentaires
+            const comments =  await ctx.db.query("comments").withIndex("by_lesson_id", (q) => q.eq("lessonId", lesson._id)).collect()
+            const commentWithUser = await Promise.all(comments.map(async (comment) => {
+              const user = await ctx.db.get(comment.userId) 
+              return  {...comment, canDelete : user?._id === comment.userId || user?.role === "admin", user : { _id : user?._id, name : user?.name, image : user?.image}}
+            }))
           return {
             ...lesson,
-            muxData
+            muxData,
+            comments : commentWithUser,
           };
         })
       );
@@ -56,6 +63,9 @@ const populatePurchass = async (ctx: QueryCtx, courseId: Id<"courses">) => {
     .collect();
 };
 
+const populateAttachements =  async (ctx: QueryCtx, courseId : Id<"courses">) => {
+  return await ctx.db.query("attachments").withIndex("by_course_id", (q) => q.eq("courseId", courseId)).collect()
+}
 const populateCategory = async (
   ctx: QueryCtx,
   categoryId: Id<"categories">
@@ -143,11 +153,12 @@ export const courseById = query({
       return null;
     }
 
-    const [chapters, purchases, rating, bookmark] = await Promise.all([
+    const [chapters, purchases, rating, bookmark, attachments] = await Promise.all([
       populateChapters(ctx, courseId),
       populatePurchass(ctx, courseId),
       populateRating(ctx, courseId, userId),
-      populateBookmarks(ctx, userId, courseId)
+      populateBookmarks(ctx, userId, courseId),
+      populateAttachements(ctx, courseId)
     ]);
 
     // Filtrer les chapitres et leçons si nécessaire
@@ -168,7 +179,6 @@ export const courseById = query({
       ? rating.rates.reduce((acc, curr) => acc + curr.rate, 0) / rating.rates.length
       : 0;
     const reviewsCount = rating.rates.length;
-
     // Construction de l'objet de retour
     return {
       course: {
@@ -190,7 +200,8 @@ export const courseById = query({
       purchases,
       category,
       rating,
-      isBookmarked: bookmark.length > 0
+      isBookmarked: bookmark.length > 0,
+      attachments: attachments
     };
   },
 });
