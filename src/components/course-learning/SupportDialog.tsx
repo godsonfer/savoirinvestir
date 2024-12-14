@@ -96,14 +96,14 @@ export const SupportDialog = ({ isOpen, onClose, courseId }: SupportDialogProps)
     onComplete(resp: { reason: string }) {
       const FedaPay = window.FedaPay;
       if (resp.reason === FedaPay.DIALOG_DISMISSED) {
-        toast.error('Vous avez annulé le paiement');
+        toast.error('Vous avez annulé le don');
       } else {
         createSupport({courseId}, {
           onSuccess: () => {
-            toast.success('Transaction terminée: ' + resp.reason);
+            toast.success('Don terminée: ' + resp.reason);
           },
           onError: () => {
-            toast.error('Une erreur est survenue lors de la transaction');
+            toast.error('Une erreur est survenue lors de la donation');
           }
         })
       }
@@ -165,12 +165,12 @@ export const SupportDialog = ({ isOpen, onClose, courseId }: SupportDialogProps)
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className={cn(
-        "bg-gradient-to-b from-neutral-900/95 to-neutral-950/95 bottom-0",
-        "backdrop-blur-2xl shadow-2xl",
+        "bg-gradient-to-b from-neutral-900/95 to-neutral-950/95 ",
+        "dark:backdrop-blur-2xl shadow-2xl",
         "border border-white/10",
         "transition-all duration-500 ease-out",
         isMobile 
-          ? "w-full max-w-full rounded-t-2xl fixed left-1/2 -translate-x-1/2 bottom-0 p-3 pb-0 mx-auto" 
+          ? "w-full max-w-full rounded-t-2xl fixed left-1/2 -translate-x-1/2  p-2 pb-0 mx-auto" 
           : "max-w-xl rounded-3xl"
       )}>
         <motion.div
@@ -188,7 +188,7 @@ export const SupportDialog = ({ isOpen, onClose, courseId }: SupportDialogProps)
 
           <DialogHeader className={cn(
             "space-y-2",
-            isMobile ? "pt-1 pb-2" : "pt-6"
+            isMobile ? "pt-1 pb-1" : "pt-6"
           )}>
             <motion.div
               initial={{ opacity: 0, y: -20 }}

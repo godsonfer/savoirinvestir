@@ -32,7 +32,8 @@ interface LessonFromAPI {
 
 const CourseLearningPage = () => {
   const courseId = useCourseId()
-  const { data } = useGetCourse({ courseId })
+  const { data, isLoading } = useGetCourse({ courseId })
+
   const [currentLesson, setCurrentLesson] = useState<LessonFromAPI | null>(null)
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true)
@@ -40,8 +41,8 @@ const CourseLearningPage = () => {
   const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
-    if (data?.chapters) {
-      const totalLessons = data.chapters.reduce(
+    if ( !isLoading && data &&data?.chapters) {
+      const totalLessons = data?.chapters.reduce(
         (acc, chapter) => acc + chapter.lessons.length,
         0
       )
@@ -54,7 +55,7 @@ const CourseLearningPage = () => {
         percentageCompleted: 0
       })
     }
-  }, [data?.chapters])
+  }, [data?.chapters, data, isLoading])
 
   useEffect(() => {
     const checkMobile = () => {
@@ -173,7 +174,7 @@ const CourseLearningPage = () => {
         </div>
 
         <div className="flex-1 flex flex-col h-full overflow-hidden">
-          <div className="flex-1 flex flex-col bg-black/50">
+          <div className="flex-1 flex flex-col dark:bg-black/50">
             <div className="w-full max-w-[1280px] mx-auto px-4">
               <VideoPlayer
                 currentLesson={(currentLesson as unknown as Lesson)}
@@ -185,8 +186,6 @@ const CourseLearningPage = () => {
                 onPrevious={() => setCurrentLesson(prev)}
               />
             </div>
-
-
           </div>
         </div>
 
@@ -266,6 +265,7 @@ const CourseLearningPage = () => {
       </div>
 
       <MobileNavigation
+      isCourseLecuture  = {true}
         courseId={courseId}
         courseTitle={data?.course?.title}
         onOpenSidebar={() => setIsSidebarOpen(true)}

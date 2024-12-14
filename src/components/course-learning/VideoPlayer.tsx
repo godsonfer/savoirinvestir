@@ -41,16 +41,16 @@ export const VideoPlayer = ({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full max-w-screen-lg mx-auto px-4">
       <div className="relative group">
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
-          className="relative rounded-xl overflow-hidden bg-black/50 backdrop-blur-sm"
+          className="relative rounded-xl overflow-hidden bg-black/50 backdrop-blur-sm w-full max-w-[90vw] md:max-w-none mx-auto"
         >
-          <div className="aspect-video bg-black">
+          <div className="aspect-video bg-black w-full">
             {currentLesson.muxData?.playback ? (
               <CourseMuxPlayer
                 playbackId={currentLesson?.muxData?.playback || ''}

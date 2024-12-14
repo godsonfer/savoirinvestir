@@ -2,14 +2,17 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { ActionButtons } from './ActionButtons'
 import { Play } from 'lucide-react'
+import { Id } from '../../../../convex/_generated/dataModel'
 
 interface FloatingHeaderProps {
     isVisible: boolean
     title: string
     isBookmarked: boolean
     onBookmark: () => void
-    courseId: string
+    courseId: Id<"courses">
     firstChapterId?: string
+    onGift: () => void
+    isGifted: boolean
 }
 
 export const FloatingHeader = ({ 
@@ -18,7 +21,10 @@ export const FloatingHeader = ({
     isBookmarked, 
     onBookmark,
     courseId,
-    firstChapterId 
+    firstChapterId,
+    onGift,
+    isGifted
+   
 }: FloatingHeaderProps) => (
     <motion.div 
         initial={{ y: -100, opacity: 0 }}
@@ -42,6 +48,9 @@ export const FloatingHeader = ({
                             onBookmark={onBookmark}
                             onShare={() => {}}
                             variant="compact"
+                            courseId={courseId}
+                            isGifted={isGifted}
+                            onGift={onGift}
                         />
                     </div>
                     {firstChapterId && (

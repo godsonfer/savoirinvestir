@@ -1,18 +1,23 @@
-import { Bookmark, Share2, Facebook, Twitter, Linkedin, Link2 } from 'lucide-react'
+import {  Share2, Facebook, Twitter, Linkedin, Link2, Gift } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { toast } from 'sonner'
+import { SupportDialog } from '@/components/course-learning/SupportDialog'
+import { Id } from '../../../../convex/_generated/dataModel'
 
 interface ActionButtonsProps {
     isBookmarked: boolean
+    isGifted :boolean
     onBookmark: () => void
+    onGift: () => void
     onShare: () => void
     variant?: 'default' | 'compact'
+    courseId :  Id<"courses">
 }
 
 const handleShare = (platform: 'facebook' | 'twitter' | 'linkedin' | 'copy') => {
     const url = window.location.href
     const text = `Découvrez ce cours`
-    
+
     const shareUrls = {
         facebook: `https://www.facebook.com/sharer/sharer.php?u=${url}`,
         twitter: `https://twitter.com/intent/tweet?url=${url}&text=${text}`,
@@ -28,13 +33,13 @@ const handleShare = (platform: 'facebook' | 'twitter' | 'linkedin' | 'copy') => 
     window.open(shareUrls[platform], '_blank')
 }
 
-export const ActionButtons = ({ isBookmarked, onBookmark }: ActionButtonsProps) => (
+export const ActionButtons = ({ onGift,  courseId,   isGifted }: ActionButtonsProps) => (
     <div className="flex flex-wrap items-center gap-2 mt-4 md:mt-8">
-        <button 
+        {/* <button
             onClick={onBookmark}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all duration-300
-                ${isBookmarked 
-                    ? 'bg-[#0097A7] border-[#0097A7] text-white' 
+                ${isBookmarked
+                    ? 'bg-[#0097A7] border-[#0097A7] text-white'
                     : 'border-white/20 hover:border-[#0097A7] text-white/90 hover:text-[#0097A7]'
                 }`}
         >
@@ -42,8 +47,20 @@ export const ActionButtons = ({ isBookmarked, onBookmark }: ActionButtonsProps) 
             <span className="text-sm font-medium">
                 {isBookmarked ? 'Sauvegardé' : 'Sauvegarder'}
             </span>
+        </button> */}
+        <button
+            onClick={onGift}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all duration-300
+                ${isGifted
+                    ? 'bg-[#0097A7] border-[#0097A7] text-white'
+                    : 'border-white/20 hover:border-[#0097A7] text-white/90 hover:text-[#0097A7]'
+                }`}
+        >
+            <Gift className={`w-4 h-4 ${isGifted ? 'fill-white' : ''}`} />
+            <span className="text-sm font-medium">
+                {isGifted ? 'Soutenu' : 'Soutenir'}
+            </span>
         </button>
-
         <Dialog>
             <DialogTrigger asChild>
                 <button className="flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-white/20 text-white/90 hover:border-[#D6620F] hover:text-[#D6620F] transition-all duration-300">
@@ -87,5 +104,6 @@ export const ActionButtons = ({ isBookmarked, onBookmark }: ActionButtonsProps) 
                 </div>
             </DialogContent>
         </Dialog>
+        <SupportDialog  isOpen={isGifted}  onClose={() => onGift()} courseId={courseId}/>
     </div>
 ) 

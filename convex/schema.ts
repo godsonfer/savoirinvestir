@@ -200,6 +200,7 @@ const schema = defineSchema({
   newletters: defineTable({
     email: v.array(v.object({ email: v.string() })),
   }).index("by_email", ["email"]),
+
   // marketings table
   marketing: defineTable({
     title: v.string(),
@@ -581,7 +582,7 @@ const schema = defineSchema({
     .index("by_user_id_lesson_chapter_id", ["userId", "lessonId", "chapterId"]),
 
   // reviews
-  review: defineTable({
+  reviews: defineTable({
     userId: v.id("users"),
     courseId: v.id("courses"),
     rating: v.number(),

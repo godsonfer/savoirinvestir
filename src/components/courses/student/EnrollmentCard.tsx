@@ -31,7 +31,7 @@ export const EnrollmentCard = ({ courseId, price, firstChapterId }: EnrollmentCa
                 </div>
 
                 {firstChapterId && (
-                    <Link href={`/courses/${courseId}/lecture/${firstChapterId}`}>
+                    <Link href={`/courses/${courseId}/lecture`}>
                         <motion.button 
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}

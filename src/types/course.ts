@@ -1,3 +1,5 @@
+import { Id } from "@hello-pangea/dnd"
+
 export type BookmarkedCourse = {
     id: string
     title: string
@@ -32,7 +34,20 @@ export interface Progress {
   totalChapters: number;
   percentageCompleted: number;
 }
-
+export interface User  {
+  _id:   Id<"users">;
+  name: string;
+  image: string;
+  createdAt: number,
+}
+export interface Rating  {
+  _id : Id<"ratings">;
+  author :User ;
+  canDelete : boolean;
+  rate: number
+  createdAt: number
+  comment: string
+}
 export interface Course {
   _id: string;
   title: string;
@@ -44,9 +59,10 @@ export interface Course {
   category: string;
   level: string;
   studentsCount: number;
-  rating: number;
+  rating: number | 4.6;
   reviewsCount: number;
   skills?: string[];
+  reviewComments :Rating [];
   prerequisites?: string[];
   targetAudience?: string[];
   cover?: string;

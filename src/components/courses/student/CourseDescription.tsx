@@ -62,7 +62,7 @@ export const CourseDescription = ({ description }: CourseDescriptionProps) => {
                         onClick={() => setIsExpanded(false)}
                     >
                         <motion.div 
-                            className="bg-black/90 rounded-xl p-6 max-w-lg w-full max-h-[80vh] overflow-y-auto"
+                            className=" dark:bg-black/90 border border-white/10 rounded-xl p-6 max-w-lg w-full max-h-[80vh] overflow-y-auto"
                             onClick={e => e.stopPropagation()}
                         >
                             <div className="flex justify-between items-start mb-4">
@@ -74,8 +74,8 @@ export const CourseDescription = ({ description }: CourseDescriptionProps) => {
                                     <ChevronUp className="w-5 h-5" />
                                 </button>
                             </div>
-                            <p className="text-base text-white/90 leading-relaxed whitespace-pre-wrap">
-                                {description}
+                            <p className="text-base dark:text-white text-gray-400 leading-relaxed whitespace-pre-wrap">
+                                {sanitizeAndParseHTML  (description)}
                             </p>
                         </motion.div>
                     </motion.div>

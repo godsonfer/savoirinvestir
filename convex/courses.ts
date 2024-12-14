@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { v } from "convex/values";
+import { GenericId, v } from "convex/values";
 import { mutation, query, QueryCtx } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { Id } from "./_generated/dataModel";
@@ -76,23 +76,28 @@ const populateBookmarks = async (
     .collect();
   return bookmarks;
 };
-const populateRating = async (ctx: QueryCtx, courseId: Id<"courses">) => {
+const populateRating = async (ctx: QueryCtx, courseId: Id<"courses">, userId: Id<"users"> | null) => {
   const ratings = await ctx.db
     .query("ratings")
     .withIndex("by_course_id", (q) => q.eq("courseId", courseId))
     .collect();
-  const _raters = [];
+  const _raters: { _id: GenericId<"users"> | undefined; name: string | undefined; image: any; createdAt: number | undefined; }[] = [];
   for (const rating of ratings) {
     const user = await ctx.db.get(rating.userId);
     _raters.push({
+      _id: user?._id,
       name: user?.name,
+      image: user?.image,
       createdAt: user?._creationTime,
     });
   }
   return {
     users: _raters,
     rates: ratings.map((rating) => ({
+      author:   _raters.find(user => user._id === rating.userId) || "Utilisateur inconnu",
+      canDelete :  userId &&userId === rating.userId,
       rate: rating.rating,
+      _id : rating._id,
       createdAt: rating._creationTime,
       comment: rating.comment,
     })),
@@ -141,7 +146,7 @@ export const courseById = query({
     const [chapters, purchases, rating, bookmark] = await Promise.all([
       populateChapters(ctx, courseId),
       populatePurchass(ctx, courseId),
-      populateRating(ctx, courseId),
+      populateRating(ctx, courseId, userId),
       populateBookmarks(ctx, userId, courseId)
     ]);
 
@@ -176,6 +181,7 @@ export const courseById = query({
         studentsCount,
         rating: averageRating.toFixed(1),
         reviewsCount,
+        reviewComments : rating.rates,
         category: category?.title,
         isBookmarked: bookmark.length > 0,
         chaptersCount: filteredChapters.length,
@@ -472,7 +478,7 @@ export const get = query({
             const category = course.categoryId
               ? await populateCategory(ctx, course.categoryId)
               : null;
-            const rating = await populateRating(ctx, course._id);
+            const rating = await populateRating(ctx, course._id, userId);
             const bookmark = await populateBookmarks(ctx, userId, course._id);
             const isBookmarked = bookmark.length ? true : false;
             const canDelete = isAdminOrTeacher ? true : false;
@@ -526,7 +532,7 @@ export const getHomeCourses = query({
             const category = course.categoryId
               ? await populateCategory(ctx, course.categoryId)
               : null;
-            const rating = await populateRating(ctx, course._id);
+            const rating = await populateRating(ctx, course._id, null);
          
             return {
               ...course,
@@ -560,7 +566,7 @@ export const search = query({
                 const [chapters, purchases, rating] = await Promise.all([
                     populateChapters(ctx, course._id),
                     populatePurchass(ctx, course._id),
-                    populateRating(ctx, course._id),
+                    populateRating(ctx, course._id,null),
                 ]);
 
                 const category = course.categoryId
@@ -589,4 +595,3 @@ export const search = query({
 function slugify(title: string): string {
   return title.toLowerCase().replace(/ /g, '-');
 }
-

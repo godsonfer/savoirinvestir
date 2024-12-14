@@ -23,6 +23,7 @@ const StudentCoursePage = () => {
     const chapters = useMemo(() => (data?.chapters as unknown as Chapter[]) || [], [data?.chapters])
 
     const [isBookmarked, setIsBookmarked] = useState(false)
+    const [isGifted, setIsGifted] = useState(false)
 
     const [isScrolled, setIsScrolled] = useState(false)
     const [showMobileAction, setShowMobileAction] = useState(true)
@@ -53,114 +54,116 @@ const StudentCoursePage = () => {
     }
 
     return (
-        <div className="min-h-screen">
-            <FloatingHeader
-                isVisible={isScrolled}
-                title={course.title}
-                isBookmarked={isBookmarked}
-                onBookmark={() => setIsBookmarked(!isBookmarked)}
-                courseId={courseId}
-                firstChapterId={firstChapterId}
-            />
+      <div className="min-h-screen">
+        <FloatingHeader
+          isVisible={isScrolled}
+          title={course.title}
+          isBookmarked={isBookmarked}
+          onBookmark={() => setIsBookmarked(!isBookmarked)}
+          courseId={courseId}
+          firstChapterId={firstChapterId}
+          onGift={() => {
+            setIsGifted(!isGifted);
+          }}
+          isGifted={isGifted}
+        />
 
-            <section className="relative min-h-screen lg:h-screen bg-gradient-to-b from-[#0097A7]/20 via-black/5 to-black/90">
-                <HeroSection course={course} />
+        <section className="relative min-h-screen lg:h-screen bg-gradient-to-b from-[#0097A7]/20 via-black/5 to-black/90">
+          <HeroSection course={course} />
 
-                <div className="absolute inset-0 z-10">
-                    <div className="container mx-auto px-4 h-full py-20 lg:py-0">
-                        <div className="flex flex-col lg:flex-row gap-6 md:gap-12 h-full lg:items-center">
-                            <div className="flex flex-col justify-center flex-1 pt-16 md:pt-0">
-                                <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.5 }}
-                                    className="space-y-4 md:space-y-6 lg:max-w-3xl"
-                                >
-                                    <CourseBadges
-                                        category={course.category}
-                                        level={course.level}
-                                    />
+          <div className="absolute inset-0 z-10">
+            <div className="container mx-auto px-4 h-full py-20 lg:py-0">
+              <div className="flex flex-col lg:flex-row gap-6 md:gap-12 h-full lg:items-center">
+                <div className="flex flex-col justify-center flex-1 pt-16 md:pt-0">
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="space-y-4 md:space-y-6 lg:max-w-3xl"
+                  >
+                    <CourseBadges
+                      category={course.category}
+                      level={course.level}
+                    />
 
-                                    <motion.h1
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: 0.2, duration: 0.5 }}
-                                        className="text-3xl md:text-5xl lg:text-6xl font-bold text-white leading-tight"
-                                    >
-                                        {course.title}
-                                    </motion.h1>
+                    <motion.h1
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2, duration: 0.5 }}
+                      className="text-3xl md:text-5xl lg:text-6xl font-bold text-white leading-tight"
+                    >
+                      {course.title}
+                    </motion.h1>
 
-                                    <CourseDescription description={course.description || ''} />
+                    <CourseDescription description={course.description || ""} />
 
-                                    <div className="flex flex-wrap items-center gap-2">
-                                        <ActionButtons
-                                            isBookmarked={isBookmarked}
-                                            onBookmark={() => setIsBookmarked(!isBookmarked)}
-                                            onShare={() => { }}
-                                        />
-                                    </div>
-
-                                    <motion.div
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: 0.8, duration: 0.5 }}
-                                        className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4"
-                                    >
-                                        <StatCard
-                                            icon={<Users className="w-4 h-4 md:w-5 md:h-5" />}
-                                            value={course.studentsCount}
-                                            label="Étudiants"
-                                        />
-                                        <StatCard
-                                            icon={<Clock className="w-4 h-4 md:w-5 md:h-5" />}
-                                            value={`${totalDuration} min`}
-                                            label="Durée"
-                                        />
-                                        <StatCard
-                                            icon={<BookOpen className="w-4 h-4 md:w-5 md:h-5" />}
-                                            value={chapters.length}
-                                            label="Chapitres"
-                                        />
-                                        <StatCard
-                                            icon={<Star className="w-4 h-4 md:w-5 md:h-5 text-[#D6620F]" />}
-                                            value={course.rating}
-                                            label="Note"
-                                        />
-                                    </motion.div>
-
-                                    <div className="overflow-x-auto pb-4 -mx-4 px-4 md:overflow-visible md:pb-0 md:px-0 md:mx-0">
-                                        <CourseDialogs course={course} chapters={chapters} />
-                                    </div>
-                                </motion.div>
-                            </div>
-
-                            <div className="lg:w-[420px] xl:w-[480px] mt-6 lg:mt-0  items-center hidden md:flex">
-                                <div className="w-full sticky top-24">
-                                    <EnrollmentCard
-                                        courseId={courseId}
-                                        price={course.price}
-                                        firstChapterId={firstChapterId}
-                                    />
-                                </div>
-                            </div>
-                        </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <ActionButtons
+                        courseId={courseId}
+                        isGifted={isGifted}
+                        onGift={() => setIsGifted(!isGifted)}
+                        isBookmarked={isBookmarked}
+                        onBookmark={() => setIsBookmarked(!isBookmarked)}
+                        onShare={() => {}}
+                      />
                     </div>
-                </div>
-            </section>
 
-            <section className="lg:hidden">
-                <div className="container mx-auto px-4 py-8">
-                    <CourseDialogs course={course} chapters={chapters} />
-                </div>
-            </section>
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.8, duration: 0.5 }}
+                      className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4"
+                    >
+                      <StatCard
+                        icon={<Users className="w-4 h-4 md:w-5 md:h-5" />}
+                        value={course.studentsCount}
+                        label="Étudiants"
+                      />
+                      <StatCard
+                        icon={<Clock className="w-4 h-4 md:w-5 md:h-5" />}
+                        value={`${totalDuration} min`}
+                        label="Durée"
+                      />
+                      <StatCard
+                        icon={<BookOpen className="w-4 h-4 md:w-5 md:h-5" />}
+                        value={chapters.length}
+                        label="Chapitres"
+                      />
+                      <StatCard
+                        icon={
+                          <Star className="w-4 h-4 md:w-5 md:h-5 text-[#D6620F]" />
+                        }
+                        value={course.rating || 4.6}
+                        label="Notes"
+                      />
+                    </motion.div>
 
-            <MobileActionButton
-                courseId={courseId}
-                firstChapterId={firstChapterId}
-                isVisible={showMobileAction}
-            />
-        </div>
-    )
+                    <div className="overflow-x-auto pb-4 -mx-4 px-4 md:overflow-visible md:pb-0 md:px-0 md:mx-0">
+                      <CourseDialogs course={course} chapters={chapters} />
+                    </div>
+                  </motion.div>
+                </div>
+
+                <div className="lg:w-[420px] xl:w-[480px] mt-6 lg:mt-0  items-center hidden md:flex">
+                  <div className="w-full sticky top-24">
+                    <EnrollmentCard
+                      courseId={courseId}
+                      price={course.price}
+                      firstChapterId={firstChapterId}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <MobileActionButton
+          courseId={courseId}
+          firstChapterId={firstChapterId}
+          isVisible={showMobileAction}
+        />
+      </div>
+    );
 }
 
 export default StudentCoursePage

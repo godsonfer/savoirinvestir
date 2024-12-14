@@ -1,6 +1,7 @@
 import { Course } from '@/types/course'
 import { CheckCircle2, Info, Target } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { sanitizeAndParseHTML } from '@/utils/sanitizeAndParsedHtml'
 
 interface CourseDetailsProps {
     course: Course
@@ -16,7 +17,7 @@ export const CourseDetails = ({ course }: CourseDetailsProps) => {
                 className="bg-white/5 backdrop-blur-sm rounded-xl p-6"
             >
                 <h3 className="text-xl font-bold mb-4 text-white">À propos de ce cours</h3>
-                <p className="text-white/90 whitespace-pre-line">{course?.description}</p>
+                <p className="text-white/90 whitespace-pre-line">{sanitizeAndParseHTML(course?.description)}</p>
             </motion.div>
 
             {/* Ce que vous apprendrez */}

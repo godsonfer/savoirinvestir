@@ -29,16 +29,16 @@ export const ChaptersList = ({
   return (
     <Accordion 
       type="multiple" 
-      defaultValue={chapters.map(chapter => chapter._id)} 
+      defaultValue={ chapters &&  chapters.map(chapter => chapter._id)} 
       className="space-y-2"
     >
-      {chapters.map((chapter) => (
+       { chapters && chapters.map((chapter) => (
         <AccordionItem 
           key={chapter._id} 
           value={chapter._id}
           className="border-0 bg-white/5 rounded-xl overflow-hidden"
         >
-          <AccordionTrigger className="px-4 py-3 hover:no-underline hover:bg-white/5">
+          <AccordionTrigger className=" ml-4 mr-4  px-4 py-3 hover:no-underline hover:bg-white/5">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-[#178F65]/20">
                 <FolderOpen className="w-4 h-4 text-[#178F65]" />
