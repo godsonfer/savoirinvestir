@@ -7,7 +7,7 @@ import { DataTable } from "@/components/ui/data-table"
 import { Heading } from "@/components/ui/heading"
 import { Separator } from "@/components/ui/separator"
 import { Calendar, Plus } from "lucide-react"
-import { columns } from "./_components/columns"
+import { columns, CourseColumn } from "./_components/columns"
 import { SpinLoader } from "@/components/spin-loader"
 import { CourseStats } from "./_components/course-stats"
 import { CourseCharts } from "./_components/course-charts"
@@ -22,6 +22,7 @@ import { PiCertificate } from "react-icons/pi"
 import { useGetCourses, getCoursesReturnType } from "@/features/courses/api/use-get-courses"
 import { Id } from "../../../../../../convex/_generated/dataModel"
 import { CoursesSkeleton } from "./_components/courses-skeleton"
+import { Course } from "@/types"
 
 interface CourseWithDetails {
   _id: Id<"courses">;
@@ -59,7 +60,7 @@ export default function CoursesPage() {
     setSortedCourses(courses)
   }, [courses])
 
-  const handleSort = (key: keyof CourseWithDetails, direction: "asc" | "desc") => {
+  const handleSort = (key: keyof Course, direction: "asc" | "desc") => {
     const sorted = [...(courses ?? [])].sort((a, b) => {
       const aValue = a[key]
       const bValue = b[key]
@@ -300,15 +301,15 @@ export default function CoursesPage() {
                 averageProgress={averageProgress}
               />
             </div>
-            {/* <CourseActions
-              courses={formattedCourses}
+             <CourseActions
+              courses={formattedCourses as Course[]}
               onSort={handleSort}
             />
             <DataTable
               searchKey="title"
               columns={columns}
-              data={tableData}
-            /> */}
+              data={tableData as CourseColumn[]}
+            /> 
           </div>
         </div>
       </div>

@@ -24,7 +24,7 @@ export const PreviewDialog = ({ lesson, isLocked = false }: PreviewDialogProps) 
             case 'text':
                 return <BookOpen className="w-5 h-5 text-[#0097A7]" />
             default:
-                return null
+                return <BookOpen className="w-5 h-5 text-[#0097A7]" />
         }
     }
 

@@ -17,8 +17,8 @@ interface WorkspaceLayoutProps {
     children: React.ReactNode
 }
 const WorkspaceIdLayout = ({ children }: WorkspaceLayoutProps) => {
-    const {data: connectedUser} = useCurrentUser ()
-    if(connectedUser?.role !== "admin") {
+    const {data: connectedUser, isLoading} = useCurrentUser ()
+    if( !isLoading && connectedUser?.role !== "admin") {
         return redirect("/courses")
     }
 
