@@ -38,10 +38,10 @@ export const metadata: Metadata = {
   generator: 'Invest Mastery Mind | IMM',
   applicationName: 'Invest Mastery Mind | IMM',
   referrer: 'origin-when-cross-origin',
-  keywords: [ 'signale', 'Trading', 'Investissement', 'Bourse', 'Finance', 'Analyse technique', 'Analyse fondamentale', 'Marchés financiers', 'Trading en ligne', 'Formation trading'],
-  authors: [{ name: 'Invest Mastery Mind | IMM' }, { name: 'Invest Mastery Mind | IMM', url: 'https://investmasterymind.pro' }],
-  creator: 'Invest Mastery Mind | IMM',
-  publisher: 'Invest Mastery Mind | IMM',
+  keywords: ['signale', "IMM", "Invest Mastery Mind", "Savoir Investir", 'Trading', 'Investissement', 'Bourse', 'Finance', 'Analyse technique', 'Analyse fondamentale', 'Marchés financiers', 'Trading en ligne', 'Formation trading'],
+  authors: [{ name: 'Invest Mastery Mind | IMM - Savoir investir' }, { name: 'Invest Mastery Mind | IMM', url: 'https://investmasterymind.pro' }],
+  creator: 'Invest Mastery Mind | IMM -Savoir Investir',
+  publisher: 'Invest Mastery Mind | IMM -Savoir Investir',
   robots: 'index, follow',
   alternates: {
     canonical: '/',
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
   openGraph: {
     images: '/logo.svg',
   },
-  
+
   icons: {
     icon: '/logo.svg',
     shortcut: '/logo.svg',
@@ -105,7 +105,7 @@ export default function RootLayout({
           <ThemeProvider>
             <ConvexClientProvider>
               <JotaiProvider>
-                  <LoadingProvider>
+                <LoadingProvider>
                   <InitialLoader />
                   <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
                   <Toaster />
