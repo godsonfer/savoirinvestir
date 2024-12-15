@@ -5,13 +5,12 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { Id } from "./_generated/dataModel";
 import { paginationOptsValidator } from "convex/server";
 
-
 const populateChapters = async (ctx: QueryCtx, courseId: Id<"courses">) => {
   const chapters = await ctx.db
     .query("chapters")
     .withIndex("by_course_id", (q) => q.eq("courseId", courseId))
     .collect();
-  
+
   const chaptersWithLessons = await Promise.all(
     chapters.map(async (chapter) => {
       const lessons = await populateChaptersLessons(ctx, chapter._id);
@@ -21,20 +20,30 @@ const populateChapters = async (ctx: QueryCtx, courseId: Id<"courses">) => {
             .query("muxData")
             .withIndex("by_lesson_id", (q) => q.eq("lessonId", lesson._id))
             .first();
-            // commentaires
-            const comments =  await ctx.db.query("comments").withIndex("by_lesson_id", (q) => q.eq("lessonId", lesson._id)).collect()
-            const commentWithUser = await Promise.all(comments.map(async (comment) => {
-              const user = await ctx.db.get(comment.userId) 
-              return  {...comment, canDelete : user?._id === comment.userId || user?.role === "admin", user : { _id : user?._id, name : user?.name, image : user?.image}}
-            }))
+          // commentaires
+          const comments = await ctx.db
+            .query("comments")
+            .withIndex("by_lesson_id", (q) => q.eq("lessonId", lesson._id))
+            .collect();
+          const commentWithUser = await Promise.all(
+            comments.map(async (comment) => {
+              const user = await ctx.db.get(comment.userId);
+              return {
+                ...comment,
+                canDelete:
+                  user?._id === comment.userId || user?.role === "admin",
+                user: { _id: user?._id, name: user?.name, image: user?.image },
+              };
+            })
+          );
           return {
             ...lesson,
             muxData,
-            comments : commentWithUser,
+            comments: commentWithUser,
           };
         })
       );
-      
+
       return {
         ...chapter,
         lessons: lessonsWithMuxData,
@@ -52,7 +61,7 @@ const populateChaptersLessons = async (
   return await ctx.db
     .query("lessons")
     .withIndex("by_chapter_id", (q) => q.eq("chapterId", chapterId))
-  
+
     .collect();
 };
 
@@ -63,9 +72,12 @@ const populatePurchass = async (ctx: QueryCtx, courseId: Id<"courses">) => {
     .collect();
 };
 
-const populateAttachements =  async (ctx: QueryCtx, courseId : Id<"courses">) => {
-  return await ctx.db.query("attachments").withIndex("by_course_id", (q) => q.eq("courseId", courseId)).collect()
-}
+const populateAttachements = async (ctx: QueryCtx, courseId: Id<"courses">) => {
+  return await ctx.db
+    .query("attachments")
+    .withIndex("by_course_id", (q) => q.eq("courseId", courseId))
+    .collect();
+};
 const populateCategory = async (
   ctx: QueryCtx,
   categoryId: Id<"categories">
@@ -86,12 +98,21 @@ const populateBookmarks = async (
     .collect();
   return bookmarks;
 };
-const populateRating = async (ctx: QueryCtx, courseId: Id<"courses">, userId: Id<"users"> | null) => {
+const populateRating = async (
+  ctx: QueryCtx,
+  courseId: Id<"courses">,
+  userId: Id<"users"> | null
+) => {
   const ratings = await ctx.db
     .query("ratings")
     .withIndex("by_course_id", (q) => q.eq("courseId", courseId))
     .collect();
-  const _raters: { _id: GenericId<"users"> | undefined; name: string | undefined; image: any; createdAt: number | undefined; }[] = [];
+  const _raters: {
+    _id: GenericId<"users"> | undefined;
+    name: string | undefined;
+    image: string | undefined;
+    createdAt: number | undefined;
+  }[] = [];
   for (const rating of ratings) {
     const user = await ctx.db.get(rating.userId);
     _raters.push({
@@ -104,10 +125,12 @@ const populateRating = async (ctx: QueryCtx, courseId: Id<"courses">, userId: Id
   return {
     users: _raters,
     rates: ratings.map((rating) => ({
-      author:   _raters.find(user => user._id === rating.userId) || "Utilisateur inconnu",
-      canDelete :  userId &&userId === rating.userId,
+      author:
+        _raters.find((user) => user._id === rating.userId) ||
+        "Utilisateur inconnu",
+      canDelete: userId && userId === rating.userId,
       rate: rating.rating,
-      _id : rating._id,
+      _id: rating._id,
       createdAt: rating._creationTime,
       comment: rating.comment,
     })),
@@ -148,26 +171,30 @@ export const courseById = query({
     // Vérifier si l'utilisateur peut accéder au cours
     const isAuthor = course.userId === userId;
     const isAdminOrTeacher = user?.role === "admin" || user?.role === "teacher";
-    
+
     if (!course.isPublished && !isAuthor && !isAdminOrTeacher) {
       return null;
     }
 
-    const [chapters, purchases, rating, bookmark, attachments] = await Promise.all([
-      populateChapters(ctx, courseId),
-      populatePurchass(ctx, courseId),
-      populateRating(ctx, courseId, userId),
-      populateBookmarks(ctx, userId, courseId),
-      populateAttachements(ctx, courseId)
-    ]);
+    const [chapters, purchases, rating, bookmark, attachments] =
+      await Promise.all([
+        populateChapters(ctx, courseId),
+        populatePurchass(ctx, courseId),
+        populateRating(ctx, courseId, userId),
+        populateBookmarks(ctx, userId, courseId),
+        populateAttachements(ctx, courseId),
+      ]);
 
     // Filtrer les chapitres et leçons si nécessaire
-    const filteredChapters = isAuthor || isAdminOrTeacher
-      ? chapters
-      : chapters.map(chapter => ({
-          ...chapter,
-          lessons: chapter.lessons.filter(lesson => lesson.isPublished)
-        })).filter(chapter => chapter.lessons.length > 0);
+    const filteredChapters =
+      isAuthor || isAdminOrTeacher
+        ? chapters
+        : chapters
+            .map((chapter) => ({
+              ...chapter,
+              lessons: chapter.lessons.filter((lesson) => lesson.isPublished),
+            }))
+            .filter((chapter) => chapter.lessons.length > 0);
 
     const category = course.categoryId
       ? await populateCategory(ctx, course.categoryId)
@@ -175,9 +202,11 @@ export const courseById = query({
 
     // Calcul des statistiques
     const studentsCount = purchases.length;
-    const averageRating = rating.rates.length > 0
-      ? rating.rates.reduce((acc, curr) => acc + curr.rate, 0) / rating.rates.length
-      : 0;
+    const averageRating =
+      rating.rates.length > 0
+        ? rating.rates.reduce((acc, curr) => acc + curr.rate, 0) /
+          rating.rates.length
+        : 0;
     const reviewsCount = rating.rates.length;
     // Construction de l'objet de retour
     return {
@@ -191,7 +220,7 @@ export const courseById = query({
         studentsCount,
         rating: averageRating.toFixed(1),
         reviewsCount,
-        reviewComments : rating.rates,
+        reviewComments: rating.rates,
         category: category?.title,
         isBookmarked: bookmark.length > 0,
         chaptersCount: filteredChapters.length,
@@ -201,7 +230,7 @@ export const courseById = query({
       category,
       rating,
       isBookmarked: bookmark.length > 0,
-      attachments: attachments
+      attachments: attachments,
     };
   },
 });
@@ -269,7 +298,7 @@ export const updateSkills = mutation({
 export const updateLevel = mutation({
   args: {
     courseId: v.id("courses"),
-    level: v.optional(v.string()  ),
+    level: v.optional(v.string()),
   },
   handler: async (ctx, { courseId, level }) => {
     const userId = await getAuthUserId(ctx);
@@ -458,10 +487,12 @@ export const get = query({
 
     // Si l'utilisateur n'est pas admin ou professeur, filtrer uniquement les cours publiés
     if (user?.role !== "admin" && user?.role !== "teacher") {
-      coursesQuery = coursesQuery.filter(q => q.eq(q.field("isPublished"), true));
+      coursesQuery = coursesQuery.filter((q) =>
+        q.eq(q.field("isPublished"), true)
+      );
     }
 
-    const courses = await coursesQuery.order("desc").paginate(paginationOpts);
+    const courses = await coursesQuery.order("asc").paginate(paginationOpts);
 
     return {
       ...courses,
@@ -470,22 +501,28 @@ export const get = query({
           (await courses).page.map(async (course) => {
             // Vérifier si l'utilisateur est l'auteur du cours
             const isAuthor = course.userId === userId;
-            const isAdminOrTeacher = user?.role === "admin" || user?.role === "teacher";
+            const isAdminOrTeacher =
+              user?.role === "admin" || user?.role === "teacher";
 
             const chapters = await populateChapters(ctx, course._id);
             if (!chapters) return null;
 
             // Filtrer les chapitres et leçons si l'utilisateur n'est pas l'auteur
-            const filteredChapters = isAuthor || isAdminOrTeacher
-              ? chapters
-              : chapters.map(chapter => ({
-                  ...chapter,
-                  lessons: chapter.lessons.filter(lesson => lesson.isPublished)
-                })).filter(chapter => chapter.lessons.length > 0);
+            const filteredChapters =
+              isAuthor || isAdminOrTeacher
+                ? chapters
+                : chapters
+                    .map((chapter) => ({
+                      ...chapter,
+                      lessons: chapter.lessons.filter(
+                        (lesson) => lesson.isPublished
+                      ),
+                    }))
+                    .filter((chapter) => chapter.lessons.length > 0);
 
             const purchases = await populatePurchass(ctx, course._id);
             if (!purchases) return null;
-            
+
             const category = course.categoryId
               ? await populateCategory(ctx, course.categoryId)
               : null;
@@ -510,15 +547,16 @@ export const get = query({
   },
 });
 
-
 export const getHomeCourses = query({
   args: {
     paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, { paginationOpts }) => {
-
-
-    const courses = await  ctx.db.query("courses").filter((q) => q.eq(q.field("isPublished"), true)).order("desc").paginate(paginationOpts);
+    const courses = await ctx.db
+      .query("courses")
+      .filter((q) => q.eq(q.field("isPublished"), true))
+      .order("desc")
+      .paginate(paginationOpts);
 
     return {
       ...courses,
@@ -526,25 +564,26 @@ export const getHomeCourses = query({
         await Promise.all(
           (await courses).page.map(async (course) => {
             // Vérifier si l'utilisateur est l'auteur du cours
-        
 
             const chapters = await populateChapters(ctx, course._id);
             if (!chapters) return null;
 
             // Filtrer les chapitres et leçons si l'utilisateur n'est pas l'auteur
-            const filteredChapters =  chapters.map(chapter => ({
-                  ...chapter,
-                  lessons: chapter.lessons.filter(lesson => lesson.isPublished)
-                })).filter(chapter => chapter.lessons.length > 0);
+            const filteredChapters = chapters
+              .map((chapter) => ({
+                ...chapter,
+                lessons: chapter.lessons.filter((lesson) => lesson.isPublished),
+              }))
+              .filter((chapter) => chapter.lessons.length > 0);
 
             const purchases = await populatePurchass(ctx, course._id);
             if (!purchases) return null;
-            
+
             const category = course.categoryId
               ? await populateCategory(ctx, course.categoryId)
               : null;
             const rating = await populateRating(ctx, course._id, null);
-         
+
             return {
               ...course,
               chapters: filteredChapters,
@@ -559,50 +598,54 @@ export const getHomeCourses = query({
   },
 });
 
-
 export const search = query({
-    args: { query: v.string() },
-    handler: async (ctx, args) => {
-        const { query } = args;
-        
-        const courses = await ctx.db
-            .query("courses")
-            .filter((q) => q.eq(q.field("title"), query) || q.eq(q.field("description"), query))
-            .order("desc")
-            .collect();
+  args: { query: v.string() },
+  handler: async (ctx, args) => {
+    const { query } = args;
 
-        // Enrichir les résultats avec les informations supplémentaires
-        const enrichedCourses = await Promise.all(
-            courses.map(async (course) => {
-                const [chapters, purchases, rating] = await Promise.all([
-                    populateChapters(ctx, course._id),
-                    populatePurchass(ctx, course._id),
-                    populateRating(ctx, course._id,null),
-                ]);
+    const courses = await ctx.db
+      .query("courses")
+      .filter(
+        (q) =>
+          q.eq(q.field("title"), query) || q.eq(q.field("description"), query)
+      )
+      .order("desc")
+      .collect();
 
-                const category = course.categoryId
-                    ? await populateCategory(ctx, course.categoryId)
-                    : null;
+    // Enrichir les résultats avec les informations supplémentaires
+    const enrichedCourses = await Promise.all(
+      courses.map(async (course) => {
+        const [chapters, purchases, rating] = await Promise.all([
+          populateChapters(ctx, course._id),
+          populatePurchass(ctx, course._id),
+          populateRating(ctx, course._id, null),
+        ]);
 
-                const studentsCount = purchases.length;
-                const averageRating = rating.rates.length > 0
-                    ? rating.rates.reduce((acc, curr) => acc + curr.rate, 0) / rating.rates.length
-                    : 0;
+        const category = course.categoryId
+          ? await populateCategory(ctx, course.categoryId)
+          : null;
 
-                return {
-                    ...course,
-                    category: category?.title,
-                    studentsCount,
-                    rating: averageRating.toFixed(1),
-                    chaptersCount: chapters.length,
-                };
-            })
-        );
+        const studentsCount = purchases.length;
+        const averageRating =
+          rating.rates.length > 0
+            ? rating.rates.reduce((acc, curr) => acc + curr.rate, 0) /
+              rating.rates.length
+            : 0;
 
-        return enrichedCourses;
-    },
+        return {
+          ...course,
+          category: category?.title,
+          studentsCount,
+          rating: averageRating.toFixed(1),
+          chaptersCount: chapters.length,
+        };
+      })
+    );
+
+    return enrichedCourses;
+  },
 });
 
 function slugify(title: string): string {
-  return title.toLowerCase().replace(/ /g, '-');
+  return title.toLowerCase().replace(/ /g, "-");
 }
