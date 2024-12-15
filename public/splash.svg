@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+    <style>
+        @media (prefers-color-scheme: dark) {
+            .logo-bg { fill: #0097A7; }
+            .logo-text { fill: #FFFFFF; }
+        }
+        @media (prefers-color-scheme: light) {
+            .logo-bg { fill: #FFFFFF; }
+            .logo-text { fill: #0097A7; }
+        }
+    </style>
+    <rect class="logo-bg" width="512" height="512" rx="64"/>
+    <text class="logo-text" x="256" y="256" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="120" font-weight="bold">IMM</text>
+</svg>

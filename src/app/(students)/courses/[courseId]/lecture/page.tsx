@@ -16,7 +16,7 @@ import { Id } from '../../../../../../convex/_generated/dataModel'
 type ResourceType = 'pdf' | 'video' | 'image' | 'other';
 interface Comment {
   _id: string;
-  canDelete : boolean
+  canDelete: boolean
   user: {
     _id: Id<"users"> | undefined;
     name?: string;
@@ -29,10 +29,10 @@ interface Comment {
 }
 
 interface Attachment {
-  _id:  Id <"attachments">;
-  name : string;
-  url : string
-  type : ResourceType
+  _id: Id<"attachments">;
+  name: string;
+  url: string
+  type: ResourceType
   description?: string;
 }
 
@@ -65,7 +65,7 @@ const CourseLearningPage = () => {
   const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
-    if ( !isLoading && data &&data?.chapters) {
+    if (!isLoading && data && data?.chapters) {
       const totalLessons = data?.chapters.reduce(
         (acc, chapter) => acc + chapter.lessons.length,
         0
@@ -291,7 +291,7 @@ const CourseLearningPage = () => {
       </div>
 
       <MobileNavigation
-      isCourseLecuture  = {true}
+        isCourseLecuture={true}
         courseId={courseId}
         courseTitle={data?.course?.title}
         onOpenSidebar={() => setIsSidebarOpen(!isSidebarOpen)}

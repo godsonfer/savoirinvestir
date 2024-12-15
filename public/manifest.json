@@ -1,18 +1,29 @@
 {
   "name": "Invest Mastery Mind",
   "short_name": "IMM",
-  "description": "Plateforme d'apprentissage d'Invest Mastery Mind",
+  "description": "Plateforme de formation en trading, investissement - Invest Mastery Mind",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#FFFFFF",
   "theme_color": "#0097A7",
-  "orientation": "portrait-primary",
-  "splash": {
-    "image": "/logo.svg",
-    "background_color": "#FFFFFF",
-    "resize_mode": "contain"
-  },
-  
+  "orientation": "any",
+  "categories": ["education", "finance"],
+  "prefer_related_applications": false,
+  "splash_screens": [
+    {
+      "src": "/splash.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Tableau de bord",
+      "url": "/dashboard",
+      "icons": [{ "src": "/icons/dashboard.svg", "sizes": "96x96" }]
+    }
+  ],
   "icons": [
     {
       "src": "/logo.svg",
@@ -63,4 +74,4 @@
       "purpose": "any maskable"
     }
   ]
-} 
+}
