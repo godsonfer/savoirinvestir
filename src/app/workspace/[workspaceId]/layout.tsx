@@ -19,6 +19,10 @@ import { useEffect, useState } from "react";
 import { MobileNavigation } from "@/components/course-learning/MobileNavigation";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 
+export const metadata = {
+    title: 'Communauté de traders | Invest Mastery Mind - Savoir investir',
+    description: 'Réjoignez notre communauté et profitez de l\'assistance et de la motivation des autres traders prêts à vous assister ',
+}
 interface WorkspaceLayoutProps {
     children: React.ReactNode
 }
