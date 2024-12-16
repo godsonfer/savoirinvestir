@@ -62,7 +62,7 @@ const WorkspaceSidebar = () => {
             <div className='flex flex-col items-center gap-y-2 justify-center bg-[#fafafa] h-full'>
                 <AlertTriangle className='size-5 text-[#1a1b1a]' />
                 <p className='text-[#1a1b1a] text-sm'>
-                    Workspace introuvable
+                    Espace communautaire introuvable
                 </p>
             </div>
         )
@@ -100,21 +100,25 @@ const WorkspaceSidebar = () => {
                     )))
                 }
             </WorkspaceSection>
-
-            <WorkspaceSection label="Message Directs" hint="Nouveau Message" onNew={() => { }}>
-                {
-                    members?.map(((item) => (
-                        <div key={item._id}>
-                            <UserItem
-                                label={item.user.name}
-                                id={item._id}
-                                image={item.user.image}
-                                variant={item._id === memberId ? "active" : "default"}
-                            />
-                        </div>
-                    )))
-                }
-            </WorkspaceSection>
+            {
+                connectedUser?.role === "admin" && member.role === "admin" && (
+                    <WorkspaceSection label="Message Directs" hint="Nouveau Message" onNew={() => { }}>
+                    {
+                        members?.map(((item) => (
+                            <div key={item._id}>
+                                <UserItem
+                                    label={item.user.name}
+                                    id={item._id}
+                                    image={item.user.image}
+                                    variant={item._id === memberId ? "active" : "default"}
+                                />
+                            </div>
+                        )))
+                    }
+                </WorkspaceSection>
+                )
+            }
+          
         </div >
     )
 }
