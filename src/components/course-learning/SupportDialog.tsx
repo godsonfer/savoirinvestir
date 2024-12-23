@@ -10,7 +10,8 @@ import {
   Coffee,
   Heart,
   Crown,
-  Sparkles
+  Sparkles,
+  Gift
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useMediaQuery } from '@/hooks/use-media-query'
@@ -70,6 +71,7 @@ export const SupportDialog = ({ isOpen, onClose, courseId }: SupportDialogProps)
       description: 'Fonctinalité premium 👑',
       link: "https://me.fedapay.com/W4E4oQ58"
     },
+
     {
       icon: Sparkles,
       label: 'Super VIP',
@@ -79,6 +81,16 @@ export const SupportDialog = ({ isOpen, onClose, courseId }: SupportDialogProps)
       textColor: 'text-purple-500',
       description: 'Fonctinalité premium + Support + Assistance ✨',
       link: "https://me.fedapay.com/c-Yi7hq-"
+    },
+    {
+      icon: Gift,
+      label: 'Autre',
+      price: 'Selon votre choix',
+      color: 'bg-purple-500',
+      hoverColor: 'hover:from-purple-500/20 hover:to-purple-600/20',
+      textColor: 'text-purple-500',
+      description: 'Soutenez le projet avec un montant personnalisé 💝',
+      link: "https://me.fedapay.com/SHOaX0jH"
     }
   ]
 
