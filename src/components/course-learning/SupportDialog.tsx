@@ -83,6 +83,7 @@ export const SupportDialog = ({ isOpen, onClose, courseId }: SupportDialogProps)
       link: "https://me.fedapay.com/c-Yi7hq-"
     },
     {
+
       icon: Gift,
       label: 'Autre',
       price: 'Selon votre choix',
