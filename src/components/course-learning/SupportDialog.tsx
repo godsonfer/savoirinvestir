@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Dialog,
   DialogContent,
@@ -5,9 +6,9 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog"
-import { 
-  Coffee, 
-  Heart, 
+import {
+  Coffee,
+  Heart,
   Crown,
   Sparkles
 } from 'lucide-react'
@@ -31,12 +32,12 @@ declare global {
 interface SupportDialogProps {
   isOpen: boolean
   onClose: () => void
-  courseId: Id<'courses'>
+  courseId?: Id<'courses'>
 }
 
 export const SupportDialog = ({ isOpen, onClose, courseId }: SupportDialogProps) => {
- 
- const {mutate: createSupport} = usePurchaseCourse()
+
+  const { mutate: createSupport } = usePurchaseCourse()
   const isMobile = useMediaQuery('(max-width: 768px)')
   const supportOptions = [
     {
@@ -46,7 +47,8 @@ export const SupportDialog = ({ isOpen, onClose, courseId }: SupportDialogProps)
       color: 'bg-amber-500',
       hoverColor: 'hover:from-amber-500/20 hover:to-amber-600/20',
       textColor: 'text-amber-500',
-      description: 'Pour garder la motivation ☕️'
+      description: 'Pour garder la motivation ☕️',
+      link: "https://me.fedapay.com/RLr59TEE"
     },
     {
       icon: Heart,
@@ -55,7 +57,8 @@ export const SupportDialog = ({ isOpen, onClose, courseId }: SupportDialogProps)
       color: 'bg-pink-500',
       hoverColor: 'hover:from-pink-500/20 hover:to-pink-600/20',
       textColor: 'text-pink-500',
-      description: 'Soutenez le projet 💝'
+      description: 'Soutenez le projet 💝',
+      link: "https://me.fedapay.com/h4QJ1gCA"
     },
     {
       icon: Crown,
@@ -64,7 +67,8 @@ export const SupportDialog = ({ isOpen, onClose, courseId }: SupportDialogProps)
       color: 'bg-yellow-500',
       hoverColor: 'hover:from-yellow-500/20 hover:to-yellow-600/20',
       textColor: 'text-yellow-500',
-      description: 'Accès privilégié 👑'
+      description: 'Fonctinalité premium 👑',
+      link: "https://me.fedapay.com/W4E4oQ58"
     },
     {
       icon: Sparkles,
@@ -73,51 +77,52 @@ export const SupportDialog = ({ isOpen, onClose, courseId }: SupportDialogProps)
       color: 'bg-purple-500',
       hoverColor: 'hover:from-purple-500/20 hover:to-purple-600/20',
       textColor: 'text-purple-500',
-      description: 'Accès premium + Support ✨'
+      description: 'Fonctinalité premium + Support + Assistance ✨',
+      link: "https://me.fedapay.com/c-Yi7hq-"
     }
   ]
 
   // checkout 
- const  checkoutButtonOptions = (price : number) => {
-  return  {
-    public_key: 'pk_live_nHzuYzNKHkiVRuw5nDywMtpU',
-    
-    transaction: {
-      amount: price,
-      description: 'Don pour le projet'
-    },
-    currency: {
-      iso: 'XOF'
-    },
-    button: {
-      class: 'btn btn-primary',
-      text: ` ${price/700}€`
-    },
-    onComplete(resp: { reason: string }) {
-      const FedaPay = window.FedaPay;
-      if (resp.reason === FedaPay.DIALOG_DISMISSED) {
-        toast.error('Vous avez annulé le don');
-      } else {
-        createSupport({courseId}, {
-          onSuccess: () => {
-            toast.success('Don terminée: ' + resp.reason);
-          },
-          onError: () => {
-            toast.error('Une erreur est survenue lors de la donation');
-          }
-        })
+  const checkoutButtonOptions = (price: number) => {
+    return {
+      public_key: 'pk_live_nHzuYzNKHkiVRuw5nDywMtpU',
+
+      transaction: {
+        amount: price,
+        description: 'Don pour le projet'
+      },
+      currency: {
+        iso: 'XOF'
+      },
+      button: {
+        class: 'btn btn-primary',
+        text: ` ${price / 700}€`
+      },
+      onComplete(resp: { reason: string }) {
+        const FedaPay = window.FedaPay;
+        if (resp.reason === FedaPay.DIALOG_DISMISSED) {
+          toast.error('Vous avez annulé le don');
+        } else {
+          courseId && createSupport({ courseId }, {
+            onSuccess: () => {
+              toast.success('Don terminée: ' + resp.reason);
+            },
+            onError: () => {
+              toast.error('Une erreur est survenue lors de la donation');
+            }
+          })
+        }
       }
     }
-  }
   };
 
   const dialogVariants = {
-    hidden: { 
+    hidden: {
       opacity: 0,
       scale: 0.95,
       y: 20
     },
-    visible: { 
+    visible: {
       opacity: 1,
       scale: 1,
       y: 0,
@@ -127,7 +132,7 @@ export const SupportDialog = ({ isOpen, onClose, courseId }: SupportDialogProps)
         bounce: 0.3
       }
     },
-    exit: { 
+    exit: {
       opacity: 0,
       scale: 0.95,
       y: 20,
@@ -138,7 +143,7 @@ export const SupportDialog = ({ isOpen, onClose, courseId }: SupportDialogProps)
   }
 
   const cardVariants = {
-    hidden: { 
+    hidden: {
       opacity: 0,
       x: -20
     },
@@ -169,8 +174,8 @@ export const SupportDialog = ({ isOpen, onClose, courseId }: SupportDialogProps)
         "dark:backdrop-blur-2xl shadow-2xl",
         "border border-white/10",
         "transition-all duration-500 ease-out",
-        isMobile 
-          ? "w-full max-w-full rounded-t-2xl fixed left-1/2 -translate-x-1/2  p-2 pb-0 mx-auto" 
+        isMobile
+          ? "w-full max-w-full rounded-t-2xl fixed left-1/2 -translate-x-1/2  p-2 pb-0 mx-auto"
           : "max-w-xl rounded-3xl"
       )}>
         <motion.div
@@ -246,8 +251,8 @@ export const SupportDialog = ({ isOpen, onClose, courseId }: SupportDialogProps)
                     )}
                   >
                     <div className="flex items-center gap-3 flex-1">
-                      <motion.div 
-                        whileHover={{ 
+                      <motion.div
+                        whileHover={{
                           scale: 1.1,
                           rotate: 5,
                           transition: { type: "spring", stiffness: 400 }
@@ -312,31 +317,36 @@ export const SupportDialog = ({ isOpen, onClose, courseId }: SupportDialogProps)
                         "px-4 py-2",
                         isMobile ? "text-base" : "text-xl"
                       )}>
-                        <FedaCheckoutButton options={checkoutButtonOptions(parseInt(option.price)*700)} />
+                        <a target="_blank" href={option.link} className={cn(
+                          "text-gray-400 text-xs mt-1",
+                          "group-hover:text-gray-300"
+                        )}>
+                          Soutnenir
+                        </a>
                       </div>
-                      <span className={cn(
-                        "text-gray-400 text-xs mt-1",
-                        "group-hover:text-gray-300"
-                      )}>
-                        Donner
-                      </span>
+
                     </div>
                   </div>
                 </motion.div>
               ))}
             </AnimatePresence>
 
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7, duration: 0.5 }}
               className={cn(
-                "flex items-center justify-center gap-1.5",
+                "flex flex-col   items-center justify-center gap-1.5",
                 "text-gray-400/80 hover:text-gray-300",
                 "transition-all duration-300",
                 isMobile ? "mt-2 text-[10px]" : "mt-6 text-sm"
               )}
             >
+              <div className="flex">
+                <p>
+                  Par <strong>Dogecoin</strong> ( <span> </span> <span className="font-bold text-sky-600 ">  {' '}9yWznUpu91cGz5H9WbeXahVL3ZJDpB5d6Y</span>)
+                </p>
+              </div>
               <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>

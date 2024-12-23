@@ -8,6 +8,7 @@ import { SignInFlow } from '../types'
 import React, { useState } from 'react'
 import { useAuthActions } from '@convex-dev/auth/react'
 import { Triangle } from 'lucide-react'
+import { resend } from '@/lib/resend'
 
 
 // Interface for the sign-in form
@@ -32,7 +33,14 @@ const SignInCard = ({ setState }: SignInCardProps) => {
       .catch((): void => {
         setError("Quelque chose s'est mal passée")
       })
-      .finally((): void => {
+      .finally(async (): Promise<void> => {
+        const sendEmail = await resend.emails.send ({
+          from: "Savoir Investir <savoirinvestir@investmasterymind.pro>",
+          to: email,
+          subject: "Connexion réussie",
+          html: "<p>Connexion réussie</p>"
+        })
+        console.log(sendEmail)
         setPending(false)
         window.location.href = '/'
       })
